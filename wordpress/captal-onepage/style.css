@@ -1,0 +1,19 @@
+/*
+Theme Name: CAP=TAL One-Page
+Theme URI: https://github.com/TempestOutdoors/Capiital-Investment-Bank
+Author: CAP=TAL
+Description: One-page site for CAP=TAL, an independent advisory firm — navy hero, client marquee, advisory grid, tombstone ledger, insights, offices and footer. Ships its own header and footer; no page builder required.
+Version: 1.0.0
+Requires at least: 5.5
+Tested up to: 6.6
+Requires PHP: 7.0
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: captal-onepage
+*/
+
+/*
+  This file exists because WordPress identifies a theme by it. The actual
+  design lives in assets/css/tokens.css and assets/css/styles.css, which
+  functions.php enqueues in that order.
+*/
