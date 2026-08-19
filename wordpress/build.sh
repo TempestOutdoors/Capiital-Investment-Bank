@@ -78,7 +78,29 @@ for src, dst in (('assets/js/main.js', 'assets/js/main.js'),
                  ('assets/favicon.svg', 'assets/favicon.svg')):
     open(os.path.join(theme, dst), 'w').write(open(os.path.join(repo, src)).read())
 
-print('build: generated index.php (%d bytes) and assets' % len(template))
+# --- paste route -----------------------------------------------------------
+# Two files for people dropping the site into an existing page rather than
+# installing the theme: one Custom HTML block, one Additional CSS paste.
+paste = os.path.join(repo, 'wordpress', 'paste')
+os.makedirs(paste, exist_ok=True)
+
+js = open(os.path.join(repo, 'assets/js/main.js')).read().strip()
+open(os.path.join(paste, '1-custom-html-block.html'), 'w').write(
+    '<!-- CAP=TAL — paste this ENTIRE file into a Custom HTML block. -->\n'
+    '<!-- The stylesheet goes separately into Appearance > Customize > Additional CSS. -->\n\n'
+    + body + '\n\n<script>\n' + js + '\n</script>\n'
+)
+
+# Additional CSS cannot resolve a relative @import, so the two sheets are
+# merged here in dependency order instead.
+open(os.path.join(paste, '2-additional-css.css'), 'w').write(
+    '/* CAP=TAL — paste this ENTIRE file into Appearance > Customize > Additional CSS.\n'
+    '   tokens.css and styles.css are already merged here in the required order;\n'
+    '   the @import has been removed because Additional CSS cannot resolve it. */\n\n'
+    + tokens.rstrip() + '\n\n' + styles.lstrip()
+)
+
+print('build: generated index.php (%d bytes), assets and paste/' % len(template))
 PY
 
 if command -v php >/dev/null; then
