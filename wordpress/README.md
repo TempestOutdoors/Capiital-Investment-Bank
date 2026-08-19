@@ -10,8 +10,9 @@ the next build:
 wordpress/build.sh
 ```
 
-The script rewrites `index.php` and the theme's assets, checks the PHP syntax if
-`php` is available, and repacks `captal-onepage.zip`.
+The PHP templates live in `wordpress/src/`; the script injects the markup split
+out of `index.html` into them, checks the PHP syntax if `php` is available,
+verifies `the_content()` survived, and repacks `captal-onepage.zip`.
 
 ## Install
 
@@ -19,20 +20,52 @@ The script rewrites `index.php` and the theme's assets, checks the PHP syntax if
 2. **Appearance → Themes → Add New → Upload Theme** → choose the zip → Install.
 3. **Activate.**
 
-That's it — there is no page to create and nothing to configure. The theme's
-`index.php` renders the one-pager for every front-end request.
+That's it — there is no page to create and nothing to configure. The front page
+renders the one-page design; every other page, post and archive renders through
+`the_content()` so Elementor and the block editor both work.
 
-## Why it is a theme and not a page
+## Elementor
 
-The design owns the entire page: it ships its own sticky header, its own nav and
-its own footer. Dropped into an ordinary WordPress page it would render *inside*
-the active theme's header and footer, giving two navs, two footers and a
-container that fights the full-bleed sections.
+The theme is Elementor-compatible. Elementor renders by replacing the post
+content filter, so it needs a template that calls `the_content()` inside the
+loop — a template printing hardcoded markup gives it nothing to render into,
+which is what the "Check Theme Compatibility" notice is reporting.
 
-For the same reason `index.php` deliberately does **not** call `get_header()` or
-`get_footer()`. It calls `wp_head()`, `wp_body_open()` and `wp_footer()`
-directly, so plugins and the admin bar still work while nothing else is injected
-around the design.
+- `page.php`, `single.php`, `index.php` and `search.php` all run the loop and
+  call `the_content()`.
+- `header.php` and `footer.php` defer to Elementor Pro's Theme Builder via
+  `elementor_theme_do_location()`, so a header or footer published there
+  replaces the design's own.
+- `captal_register_elementor_locations()` registers the core locations, without
+  which Theme Builder silently falls back to the theme's templates.
+- On a page built with Elementor the theme stands down: `captal_is_builder_page()`
+  adds a body class that removes the theme's title, padding and content measure,
+  so Elementor controls its own layout instead of being caged by ours.
+
+`build.sh` fails the build if `the_content()` ever disappears from `page.php` or
+`single.php`, since losing it breaks the builder silently.
+
+## Where the one-page design lives
+
+The design is no longer the whole theme — it is a template part
+(`template-parts/onepage.php`) rendered by two entry points:
+
+- **`front-page.php`** — the site's front page, used only when the assigned page
+  has no content of its own. Build that page in Elementor and its content wins.
+- **`template-onepage.php`** — a "CAP=TAL One-Page" template you can assign to
+  any page from the editor's Template dropdown.
+
+The sticky header and the footer moved out into `header.php` and `footer.php`,
+so ordinary pages, builder pages and the one-pager all share the same chrome
+rather than each carrying a copy.
+
+## Menus
+
+The header nav falls back to the design's own links until a menu is assigned to
+the **Primary** location under Appearance → Menus, at which point that menu
+renders instead. `wp_nav_menu` emits `<ul><li><a>` where the design expects bare
+`<a>`; rather than ship a custom walker, `wordpress.css` makes the list
+transparent to the flex layout so both shapes lay out identically.
 
 ## Editing the content
 
