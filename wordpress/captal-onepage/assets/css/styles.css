@@ -1,0 +1,737 @@
+/* ============================================================================
+   CAP=TAL — one-page site
+   Structure comes from hairlines, not shadows. Every "gap:1px over a coloured
+   background" grid below is deliberate: the gap IS the rule.
+   ========================================================================== */
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
+*{box-sizing:border-box;border-color:var(--border)}
+html{scroll-behavior:smooth}
+
+/* Anchor targets clear the sticky header rather than sliding under it. */
+:target,
+section[id]{scroll-margin-top:var(--nav-height)}
+
+body{
+  margin:0;
+  background-color:var(--background);
+  color:var(--foreground);
+  font-family:var(--font-sans);
+  font-feature-settings:"ss01","cv11";
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4{
+  font-family:var(--font-display);
+  font-weight:var(--weight-regular);
+  letter-spacing:var(--tracking-heading);
+  margin:0;
+}
+
+p{text-wrap:pretty}
+
+a{
+  color:inherit;
+  text-decoration:none;
+  transition:color var(--duration-fast) var(--ease-standard);
+}
+a:hover{color:var(--taupe)}
+.on-ink a:hover{color:var(--taupe-soft)}
+
+:focus-visible{
+  outline:var(--ring-width) solid var(--ring-color);
+  outline-offset:3px;
+}
+
+.font-display{font-family:var(--font-display)}
+.italic-accent{font-style:italic;color:var(--taupe)}
+.on-ink .italic-accent{color:var(--taupe-soft)}
+
+.eyebrow{
+  font-family:var(--font-sans);
+  font-size:var(--text-eyebrow);
+  letter-spacing:var(--tracking-eyebrow);
+  text-transform:uppercase;
+  color:var(--taupe);
+  font-weight:var(--weight-medium);
+}
+.on-ink .eyebrow{color:var(--taupe-soft)}
+
+.hairline{height:1px;background:currentColor;opacity:0.18}
+
+.skip-link{
+  position:absolute;
+  left:-9999px;
+  top:0;
+  z-index:100;
+  padding:var(--space-4) var(--space-6);
+  background:var(--ink);
+  color:var(--cream);
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-nav);
+}
+.skip-link:focus{left:0}
+
+/* ── Motion ───────────────────────────────────────────────────────────────── */
+
+@keyframes rise{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes marquee{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
+
+.animate-rise{animation:rise var(--duration-rise) var(--ease-rise) both}
+.delay-1{animation-delay:0.15s}
+.delay-2{animation-delay:0.3s}
+.delay-3{animation-delay:0.45s}
+.delay-4{animation-delay:0.6s}
+.animate-marquee{animation:marquee var(--duration-marquee) linear infinite}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .animate-rise,.animate-marquee{animation:none}
+}
+
+/* ── Layout primitives ────────────────────────────────────────────────────── */
+
+.container{
+  max-width:var(--measure-max);
+  margin:0 auto;
+  width:100%;
+}
+
+.section{padding:var(--section-y) var(--gutter-lg)}
+.section--band{background:var(--bone)}
+
+/* Section head: heading left, supporting copy right, both sitting on a
+   shared baseline. */
+.section-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:var(--space-8);
+  margin-bottom:var(--space-20);
+}
+.section-head__title{
+  margin:var(--space-6) 0 0;
+  font-size:var(--text-7xl);
+  line-height:var(--leading-display);
+}
+.section-head__aside{
+  max-width:28rem;
+  margin:0;
+  font-size:var(--text-base);
+  line-height:var(--leading-relaxed);
+  color:color-mix(in oklab, var(--cream) 70%, transparent);
+}
+
+.grid-12{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:var(--space-12);
+}
+
+/* Hairline grids — the 1px gap over a tinted ground draws every rule. */
+.hairline-grid{
+  display:grid;
+  gap:var(--grid-hairline);
+  background:var(--border);
+}
+.hairline-grid--on-ink{background:color-mix(in oklab, var(--taupe-soft) 20%, transparent)}
+.hairline-grid--2{grid-template-columns:1fr 1fr}
+.hairline-grid--3{grid-template-columns:repeat(3,1fr)}
+
+/* ── Links & buttons ──────────────────────────────────────────────────────── */
+
+.link-caps{
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-nav);
+  display:inline-flex;
+  align-items:center;
+  gap:var(--space-3);
+}
+
+/* Underscored call-to-action: the rule under it is taupe, not a border box. */
+.link-rule{
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-button);
+  border-bottom:1px solid var(--taupe);
+  padding-bottom:var(--space-1);
+  white-space:nowrap;
+}
+.link-rule--nav{
+  letter-spacing:var(--tracking-nav);
+  display:inline-flex;
+  align-items:center;
+  gap:var(--space-3);
+}
+.on-ink .link-rule{border-bottom-color:color-mix(in oklab, var(--taupe-soft) 50%, transparent)}
+
+.btn-outline{
+  display:inline-flex;
+  align-items:center;
+  gap:var(--space-4);
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-button);
+  padding:var(--space-5) var(--space-8);
+  border:1px solid color-mix(in oklab, var(--taupe-soft) 40%, transparent);
+  transition:background-color var(--duration-fast) var(--ease-standard),
+             border-color var(--duration-fast) var(--ease-standard),
+             color var(--duration-fast) var(--ease-standard);
+}
+.on-ink .btn-outline:hover{
+  background:var(--taupe);
+  border-color:var(--taupe);
+  color:var(--cream);
+}
+
+/* ── Wordmark ─────────────────────────────────────────────────────────────── */
+/* CAP=TAL is constructed in type: Inter 400 at 0.22em tracking, with the "="
+   drawn as two rules 0.09em thick rather than set as a glyph. */
+
+.logo{
+  color:var(--ink);
+  font-family:var(--font-sans);
+  font-weight:var(--weight-regular);
+  font-size:16px;
+  letter-spacing:var(--tracking-wordmark);
+  display:inline-flex;
+  align-items:center;
+  gap:0.05em;
+}
+.logo--cream{color:var(--cream)}
+.logo__equals{
+  display:inline-block;
+  width:0.55em;
+  position:relative;
+  height:1em;
+}
+.logo__equals::before,
+.logo__equals::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  height:0.09em;
+  background:currentColor;
+}
+.logo__equals::before{top:42%}
+.logo__equals::after{top:62%}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.site-header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  background:color-mix(in oklab, var(--cream) 95%, transparent);
+  backdrop-filter:blur(var(--backdrop-blur));
+  -webkit-backdrop-filter:blur(var(--backdrop-blur));
+  border-bottom:1px solid var(--border);
+}
+.site-header__inner{
+  max-width:var(--measure-max);
+  margin:0 auto;
+  padding:0 var(--gutter-lg);
+  height:var(--nav-height);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.site-nav{
+  display:flex;
+  align-items:center;
+  gap:var(--space-10);
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-nav);
+}
+
+/* Mobile nav toggle — hidden until the desktop row stops fitting. */
+.nav-toggle{
+  display:none;
+  background:none;
+  border:1px solid var(--border);
+  color:inherit;
+  font:inherit;
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-nav);
+  padding:var(--space-3) var(--space-4);
+  cursor:pointer;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:var(--space-32) var(--gutter-lg) var(--gutter-lg);
+}
+.hero__body{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.hero__title{
+  margin:var(--space-8) 0 0;
+  font-size:var(--text-hero);
+  line-height:var(--leading-hero);
+  letter-spacing:var(--tracking-hero);
+}
+.hero__lede{
+  margin:var(--space-10) 0 0;
+  max-width:36rem;
+  font-size:var(--text-lg);
+  font-weight:var(--weight-light);
+  line-height:var(--leading-relaxed);
+  color:var(--on-ink-body);
+}
+.hero__actions{
+  margin-top:var(--space-12);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--space-6);
+}
+.hero__stats{
+  margin:var(--space-16) auto 0;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:var(--space-12);
+  border-top:1px solid color-mix(in oklab, var(--taupe-soft) 20%, transparent);
+  padding-top:var(--space-10);
+}
+
+/* ── Stat blocks ──────────────────────────────────────────────────────────── */
+
+.stat__value{
+  font-family:var(--font-display);
+  font-size:var(--text-5xl);
+  line-height:1;
+  color:var(--cream);
+}
+.stat__label{
+  margin-top:var(--space-2);
+  font-size:var(--text-2xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-caps);
+  color:var(--taupe-soft);
+}
+.stat--sm .stat__value{
+  font-size:var(--text-3xl);
+  color:inherit;
+}
+.stat--sm .stat__label{color:var(--muted-foreground)}
+
+/* ── Client marquee ───────────────────────────────────────────────────────── */
+
+.marquee{
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+  padding:var(--space-8) 0;
+  background:var(--surface-band);
+}
+.marquee__track{
+  display:flex;
+  align-items:center;
+  gap:var(--space-16);
+  white-space:nowrap;
+  color:color-mix(in oklab, var(--foreground) 55%, transparent);
+  width:max-content;
+}
+.marquee__row{
+  display:flex;
+  align-items:center;
+  gap:var(--space-16);
+  flex-shrink:0;
+}
+.marquee__name{
+  font-family:var(--font-display);
+  font-size:var(--text-2xl);
+  letter-spacing:var(--tracking-meta);
+}
+
+/* ── The Firm ─────────────────────────────────────────────────────────────── */
+
+.firm__grid{gap:var(--space-16)}
+.firm__intro{grid-column:span 4}
+.firm__title{
+  margin:var(--space-6) 0 0;
+  font-size:var(--text-6xl);
+  line-height:var(--leading-heading);
+}
+.firm__prose{
+  grid-column:6 / span 7;
+  display:grid;
+  gap:var(--space-8);
+  font-size:var(--text-lg);
+  font-weight:var(--weight-light);
+  line-height:var(--leading-relaxed);
+  color:var(--text-body);
+}
+.firm__prose p{margin:0}
+.firm__stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:var(--space-8);
+  padding-top:var(--space-8);
+}
+
+/* ── Advisory practice ────────────────────────────────────────────────────── */
+
+.service-card{
+  padding:var(--pad-card-lg);
+  cursor:pointer;
+  background:var(--ink);
+  color:var(--cream);
+  transition:color var(--duration-fast) var(--ease-standard);
+}
+.service-card__head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:var(--space-10);
+}
+.service-card__number{
+  font-family:var(--font-display);
+  font-size:var(--text-2xl);
+  color:var(--taupe-soft);
+}
+/* "Explore →" is a hover affordance only — it holds its space either way. */
+.service-card__cue{
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-caps);
+  color:var(--taupe-soft);
+  opacity:0;
+  transition:opacity var(--duration-fast) var(--ease-standard);
+}
+.service-card:hover .service-card__cue,
+.service-card:focus-within .service-card__cue{opacity:1}
+.service-card__title{
+  font-size:var(--text-5xl);
+  line-height:1.1;
+  margin-bottom:var(--space-6);
+  color:var(--cream);
+  transition:color var(--duration-fast) var(--ease-standard);
+}
+.service-card:hover .service-card__title,
+.service-card:focus-within .service-card__title{color:var(--taupe-soft)}
+.service-card__body{
+  font-size:var(--text-base);
+  line-height:var(--leading-relaxed);
+  max-width:28rem;
+  margin:0;
+  color:var(--on-ink-quiet);
+}
+
+/* ── Transactions ledger ──────────────────────────────────────────────────── */
+
+.ledger{border-top:1px solid var(--border)}
+.transaction{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:var(--space-6);
+  padding:var(--space-10) var(--space-4);
+  margin:0 calc(-1 * var(--space-4));
+  border-bottom:1px solid var(--border);
+  align-items:baseline;
+  background:transparent;
+  transition:background-color var(--duration-fast) var(--ease-standard);
+}
+.transaction:hover{background:color-mix(in oklab, var(--bone) 50%, transparent)}
+.transaction__figure{grid-column:span 3}
+.transaction__value{
+  font-family:var(--font-display);
+  font-size:var(--text-5xl);
+  line-height:1;
+  color:var(--ink);
+}
+.transaction__sub{margin-top:var(--space-2)}
+.transaction__desc{
+  grid-column:span 6;
+  font-size:var(--text-lg);
+  font-weight:var(--weight-light);
+  line-height:var(--leading-relaxed);
+  color:var(--text-body-strong);
+}
+.transaction__sector{
+  grid-column:span 2;
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-meta);
+  color:var(--muted-foreground);
+}
+.transaction__year{
+  grid-column:span 1;
+  text-align:right;
+  font-family:var(--font-display);
+  font-size:var(--text-base);
+  color:var(--muted-foreground);
+}
+
+/* ── Insights ─────────────────────────────────────────────────────────────── */
+
+.insights__head{margin-bottom:var(--space-16)}
+.insights__intro{grid-column:span 5}
+.insights__title{
+  margin:var(--space-6) 0 0;
+  font-size:var(--text-6xl);
+  line-height:var(--leading-heading);
+}
+.insights__aside{
+  grid-column:7 / span 5;
+  align-self:end;
+  margin:0;
+  font-size:var(--text-lg);
+  font-weight:var(--weight-light);
+  line-height:var(--leading-relaxed);
+  color:var(--text-body);
+}
+
+.insight-card{
+  background:var(--background);
+  padding:var(--pad-card);
+  cursor:pointer;
+  transition:background-color var(--duration-fast) var(--ease-standard);
+}
+.insight-card:hover{background:var(--cream)}
+.insight-card__head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:var(--space-12);
+}
+.insight-card__date{
+  font-size:var(--text-xs);
+  color:var(--muted-foreground);
+}
+.insight-card__title{
+  font-size:var(--text-3xl);
+  line-height:var(--leading-snug);
+  margin-bottom:var(--space-12);
+  transition:color var(--duration-fast) var(--ease-standard);
+}
+.insight-card:hover .insight-card__title,
+.insight-card:focus-within .insight-card__title{color:var(--taupe)}
+.insight-card__foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:var(--text-xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-meta);
+  color:var(--muted-foreground);
+  border-top:1px solid var(--border);
+  padding-top:var(--space-6);
+}
+.insight-card:hover .insight-card__cue,
+.insight-card:focus-within .insight-card__cue{color:var(--taupe)}
+
+/* ── Offices & contact ────────────────────────────────────────────────────── */
+
+.contact__head{margin-bottom:var(--space-20)}
+.contact__intro{grid-column:span 6}
+.contact__aside{
+  grid-column:8 / span 5;
+  align-self:end;
+}
+.contact__aside p{
+  margin:0;
+  font-size:var(--text-lg);
+  line-height:var(--leading-relaxed);
+  color:color-mix(in oklab, var(--cream) 75%, transparent);
+}
+.contact__email{
+  margin-top:var(--space-6);
+  display:inline-flex;
+  align-items:center;
+  gap:var(--space-4);
+  font-family:var(--font-display);
+  font-size:var(--text-2xl);
+  border-bottom:1px solid color-mix(in oklab, var(--taupe-soft) 40%, transparent);
+  padding-bottom:var(--space-2);
+}
+
+.office-card{
+  padding:var(--pad-card);
+  background:var(--ink);
+  color:var(--cream);
+}
+.office-card__role{
+  font-size:var(--text-2xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-caps);
+  color:var(--taupe-soft);
+}
+.office-card__city{
+  font-family:var(--font-display);
+  font-size:var(--text-4xl);
+  margin-top:var(--space-4);
+}
+.office-card__addr{
+  margin-top:var(--space-4);
+  font-size:var(--text-sm);
+  color:var(--on-ink-quiet);
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+.site-footer{
+  padding:var(--space-16) var(--gutter-lg);
+  background:var(--ink);
+  color:var(--cream);
+  border-top:1px solid var(--rule-on-ink);
+}
+.site-footer__grid{margin-bottom:var(--space-16)}
+.site-footer__brand{grid-column:span 4}
+.site-footer__blurb{
+  margin-top:var(--space-8);
+  max-width:20rem;
+  font-size:var(--text-sm);
+  line-height:var(--leading-relaxed);
+  color:color-mix(in oklab, var(--cream) 60%, transparent);
+}
+.site-footer__col{grid-column:span 2}
+.site-footer__heading{
+  font-size:var(--text-2xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-caps);
+  margin-bottom:var(--space-6);
+  color:var(--taupe-soft);
+}
+.site-footer__links{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:var(--space-3);
+  font-size:var(--text-sm);
+  color:color-mix(in oklab, var(--cream) 75%, transparent);
+}
+.site-footer__base{
+  padding-top:var(--space-8);
+  border-top:1px solid var(--rule-on-ink);
+  display:flex;
+  justify-content:space-between;
+  gap:var(--space-4);
+  flex-wrap:wrap;
+  font-size:var(--text-2xs);
+  text-transform:uppercase;
+  letter-spacing:var(--tracking-nav);
+  color:color-mix(in oklab, var(--cream) 55%, transparent);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+/* The design is drawn at desktop. Below it the 12-column editorial grids
+   collapse and the hairline grids shed columns, but every type scale, rule and
+   tint stays exactly as specified.
+
+   Note: a `repeat(12, 1fr)` track floors each column at its min-content width,
+   so these grids must be re-declared — not just re-spanned — or the page grows
+   wider than the viewport. */
+
+@media (max-width:1100px){
+  .section-head{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:var(--space-8);
+  }
+  .section-head__title{font-size:var(--text-6xl)}
+
+  /* Editorial grids become a single column; the spans above go with them. */
+  .grid-12{
+    grid-template-columns:1fr;
+    gap:var(--space-10);
+  }
+  .firm__intro,.firm__prose,
+  .insights__intro,.insights__aside,
+  .contact__intro,.contact__aside{grid-column:auto}
+
+  .hairline-grid--2,
+  .hairline-grid--3{grid-template-columns:1fr 1fr}
+  .hero__stats{grid-template-columns:repeat(2,1fr)}
+
+  /* Footer keeps its columns — they are short lists, not prose. */
+  .site-footer__grid{grid-template-columns:repeat(3,1fr)}
+  .site-footer__brand{grid-column:1 / -1}
+  .site-footer__col{grid-column:auto}
+
+  .transaction{
+    grid-template-columns:repeat(6,1fr);
+    row-gap:var(--space-4);
+  }
+  .transaction__figure{grid-column:span 6}
+  .transaction__desc{grid-column:span 6}
+  .transaction__sector{grid-column:span 5}
+  .transaction__year{grid-column:span 1}
+}
+
+@media (max-width:860px){
+  :root{--gutter-lg:var(--gutter)}
+
+  .site-nav{
+    display:none;
+    position:absolute;
+    top:var(--nav-height);
+    left:0;
+    right:0;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:var(--space-6);
+    padding:var(--space-8) var(--gutter);
+    background:var(--cream);
+    border-bottom:1px solid var(--border);
+  }
+  .site-nav[data-open="true"]{display:flex}
+  .nav-toggle{display:inline-flex}
+  .site-header__portal{display:none}
+
+  .section{padding:var(--space-20) var(--gutter)}
+  .hero{padding:var(--space-20) var(--gutter) var(--gutter)}
+  .section-head__title,
+  .firm__title,
+  .insights__title{font-size:var(--text-5xl)}
+
+  .hairline-grid--2,
+  .hairline-grid--3{grid-template-columns:1fr}
+  .service-card{padding:var(--pad-card)}
+  .service-card__title{font-size:var(--text-4xl)}
+
+  /* The ledger stops being a table and becomes stacked records. */
+  .transaction{
+    grid-template-columns:1fr auto;
+    row-gap:var(--space-3);
+    padding:var(--space-8) var(--space-4);
+  }
+  .transaction__figure,
+  .transaction__desc{grid-column:1 / -1}
+  .transaction__value{font-size:var(--text-4xl)}
+  .transaction__sector{grid-column:1}
+  .transaction__year{grid-column:2}
+
+  .contact__email{font-size:var(--text-xl)}
+  .site-footer__grid{grid-template-columns:repeat(2,1fr)}
+}
+
+@media (max-width:520px){
+  .hero__stats{grid-template-columns:1fr}
+  .firm__stats{grid-template-columns:1fr}
+  .site-footer__grid{grid-template-columns:1fr}
+  .section-head__title,
+  .firm__title,
+  .insights__title{font-size:var(--text-4xl)}
+}
