@@ -948,10 +948,27 @@ body:has(.front) .site-header[data-scrolled="false"] .scroll-progress__bar{backg
 
 
 /* ── Elementor wrappers ──────────────────────────────────────────────────── */
-.elementor-widget-container:has(> .capiital-part),
-.elementor-widget-html:has(.capiital-part){padding:0!important;margin:0!important}
-.elementor-section:has(.capiital-part) > .elementor-container{max-width:none!important;width:100%!important}
-.elementor-section:has(.capiital-part),
-.elementor-section:has(.capiital-part) > .elementor-container > .elementor-column,
-.elementor-section:has(.capiital-part) .elementor-widget-wrap{padding:0!important;margin:0!important}
+/* Elementor drops every HTML widget inside section > container > column > wrap,
+   each of which is width-constrained and padded by default. Two things go wrong
+   if they are left alone: the full-bleed grounds stop at the content width, and
+   any padding above the front page shows a band of the page ground through the
+   transparent header. Scoped by :has() to wrappers that actually hold a piece of
+   this design, so the rest of the site's Elementor content is untouched. */
+:is(.elementor,
+    .elementor-location-single,
+    .elementor-section,
+    .elementor-column,
+    .elementor-widget-wrap,
+    .elementor-widget,
+    .elementor-widget-html,
+    .elementor-widget-container,
+    .e-con,
+    .e-con-inner):has(:is(.capiital-part, .front, .site-header, .site-footer)){
+  padding:0!important;
+  margin:0!important;
+}
+.elementor-section:has(:is(.capiital-part, .front, .site-header, .site-footer)) > .elementor-container{
+  max-width:none!important;
+  width:100%!important;
+}
 .capiital-part{width:100%}

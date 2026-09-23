@@ -179,6 +179,34 @@ for leftover in ('assets/css/', 'assets/js/', 'assets/favicon'):
         sys.exit('build: %s survived in the single-file export' % leftover)
 open(os.path.join(dist, 'capiital-website.html'), 'w').write(single)
 
+ELEMENTOR_COMPAT = """
+/* ── Elementor wrappers ──────────────────────────────────────────────────── */
+/* Elementor drops every HTML widget inside section > container > column > wrap,
+   each of which is width-constrained and padded by default. Two things go wrong
+   if they are left alone: the full-bleed grounds stop at the content width, and
+   any padding above the front page shows a band of the page ground through the
+   transparent header. Scoped by :has() to wrappers that actually hold a piece of
+   this design, so the rest of the site's Elementor content is untouched. */
+:is(.elementor,
+    .elementor-location-single,
+    .elementor-section,
+    .elementor-column,
+    .elementor-widget-wrap,
+    .elementor-widget,
+    .elementor-widget-html,
+    .elementor-widget-container,
+    .e-con,
+    .e-con-inner):has(:is(.capiital-part, .front, .site-header, .site-footer)){
+  padding:0!important;
+  margin:0!important;
+}
+.elementor-section:has(:is(.capiital-part, .front, .site-header, .site-footer)) > .elementor-container{
+  max-width:none!important;
+  width:100%!important;
+}
+.capiital-part{width:100%}
+"""
+
 # --- Elementor template ------------------------------------------------------
 # One importable file for Elementor: Templates > Saved Templates > Import.
 # The whole page rides in a single HTML widget, because the design is authored as
@@ -197,7 +225,8 @@ def eid(seed):
 font_import = "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');"
 
 widget_html = (
-    '<style>\n' + font_import + '\n\n' + tokens.rstrip() + '\n\n' + styles.lstrip() + '\n</style>\n\n'
+    '<style>\n' + font_import + '\n\n' + tokens.rstrip() + '\n\n' + styles.lstrip()
+    + '\n' + ELEMENTOR_COMPAT + '</style>\n\n'
     + body + '\n\n<script>\n'
     + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>\n'
 )
@@ -331,12 +360,29 @@ order = [
 # the site's Elementor content is untouched.
 COMPAT = """
 /* ── Elementor wrappers ──────────────────────────────────────────────────── */
-.elementor-widget-container:has(> .capiital-part),
-.elementor-widget-html:has(.capiital-part){padding:0!important;margin:0!important}
-.elementor-section:has(.capiital-part) > .elementor-container{max-width:none!important;width:100%!important}
-.elementor-section:has(.capiital-part),
-.elementor-section:has(.capiital-part) > .elementor-container > .elementor-column,
-.elementor-section:has(.capiital-part) .elementor-widget-wrap{padding:0!important;margin:0!important}
+/* Elementor drops every HTML widget inside section > container > column > wrap,
+   each of which is width-constrained and padded by default. Two things go wrong
+   if they are left alone: the full-bleed grounds stop at the content width, and
+   any padding above the front page shows a band of the page ground through the
+   transparent header. Scoped by :has() to wrappers that actually hold a piece of
+   this design, so the rest of the site's Elementor content is untouched. */
+:is(.elementor,
+    .elementor-location-single,
+    .elementor-section,
+    .elementor-column,
+    .elementor-widget-wrap,
+    .elementor-widget,
+    .elementor-widget-html,
+    .elementor-widget-container,
+    .e-con,
+    .e-con-inner):has(:is(.capiital-part, .front, .site-header, .site-footer)){
+  padding:0!important;
+  margin:0!important;
+}
+.elementor-section:has(:is(.capiital-part, .front, .site-header, .site-footer)) > .elementor-container{
+  max-width:none!important;
+  width:100%!important;
+}
 .capiital-part{width:100%}
 """
 
