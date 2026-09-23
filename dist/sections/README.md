@@ -5,20 +5,28 @@ Paste each file into an Elementor **HTML widget**, in number order.
 | # | File | Goes in |
 | --- | --- | --- |
 | 00 | `00-styles.html` | An HTML widget at the very top |
-| 01 | `01-header.html` | Header and navigation |
-| 02 | `02-front.html` | Front page |
-| 03 | `03-engage.html` | What we engage |
-| 04 | `04-believe.html` | What we believe |
-| 05 | `05-learned.html` | What we learned |
-| 06 | `06-cases.html` | Cases |
-| 07 | `07-people.html` | Who we are |
-| 08 | `08-papers.html` | What we think |
-| 09 | `09-contact.html` | How to reach us |
-| 10 | `10-footer.html` | Footer |
-| 11 | `11-script.html` | An HTML widget at the very bottom |
+| 01 | `01-header-front.html` | Header **and** front page, together |
+| 02 | `02-engage.html` | What we engage |
+| 03 | `03-believe.html` | What we believe |
+| 04 | `04-learned.html` | What we learned |
+| 05 | `05-cases.html` | Cases |
+| 06 | `06-people.html` | Who we are |
+| 07 | `07-papers.html` | What we think |
+| 08 | `08-contact.html` | How to reach us |
+| 09 | `09-footer.html` | Footer |
+| 10 | `10-script.html` | An HTML widget at the very bottom |
 
 Two alternates are included for the cases described below:
-`00-styles-for-additional-css.css` and `11-script-oneline.html`.
+`00-styles-for-additional-css.css` and `10-script-oneline.html`.
+
+## Why the header is not its own piece
+
+The header is `position: fixed`, so it needs no layout space of its own. Given a
+separate Elementor section it gets some anyway, and three faults follow at once:
+a band of page ground above the hero, a seam between the header and the hero, and
+the navigation sitting on the eggshell instead of over the dark hero before
+anything has been scrolled. Keeping it in the same widget as the front page means
+there is no wrapper between them to add space. Do not split `01` in two.
 
 ## Read this first: the HTML widget, not the Text Editor
 
@@ -44,13 +52,13 @@ Additional CSS**, which is never run through the content filters — use
 `00-styles-for-additional-css.css` for that, which is the same CSS without the
 `<style>` tag. Either way it has to exist somewhere.
 
-**`11-script.html` releases the scroll-entry reveals.** Without it every section
+**`10-script.html` releases the scroll-entry reveals.** Without it every section
 below the front page stays at `opacity: 0` and the page looks empty past the
 hero. It also drives the header on scroll, the reading-progress hairline and the
 live navigation item.
 
 If the script comes back broken — view the page source and look for `<br />` or
-`<p>` inside the `<script>` — paste **`11-script-oneline.html`** instead. It is
+`<p>` inside the `<script>` — paste **`10-script-oneline.html`** instead. It is
 the same code on a single line, so there are no newlines for the filters to
 convert. Behaviour is identical.
 

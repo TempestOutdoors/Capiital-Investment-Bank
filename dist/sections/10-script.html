@@ -1,7 +1,10 @@
 <!-- Capiital — SCRIPT. Paste this LAST, into its own HTML widget at the very
      bottom of the page. It drives the header on scroll, the reading progress
      hairline, the live nav item and the scroll-entry reveals. Without it the
-     sections below the hero stay invisible. -->
+     sections below the hero stay invisible.
+     The .capiital-part wrapper collapses this widget's Elementor section, which
+     would otherwise leave empty padding below the footer. -->
+<div class="capiital-part">
 <script>
 /* CAP//TAL — the behaviour the design needs beyond CSS.
    Four things: the header's colour flip on scroll, the scroll-progress hairline,
@@ -138,3 +141,4 @@
   }
 })();
 </script>
+</div>

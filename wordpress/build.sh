@@ -333,23 +333,30 @@ def grab(start, end, label):
         sys.exit('snippets: could not close %s' % label)
     return html[s.start(): s.start() + e.end()].rstrip()
 
+skip   = grab(r'<a class="skip-link"', r'</a>', 'skip link')
 header = grab(r'<header class="site-header"[^>]*>', r'</header>', 'header')
 footer = grab(r'<footer class="site-footer[^>]*>', r'</footer>', 'footer')
 
 def section(sid):
     return grab(r'<section class="[^"]*"[^>]*id="%s">' % sid, r'</section>\s*(?=\n<!--|\n<footer|\Z)', sid)
 
+# The header travels WITH the front page, not in a section of its own. Given its
+# own Elementor section it would occupy layout space the fixed header does not
+# need, pushing the hero down: a band of page ground above the hero, a seam
+# between the two, and the navigation sitting on the eggshell instead of over the
+# dark hero before a single pixel has been scrolled.
+# The skip link belongs to the same piece — it is the first focusable thing on
+# the page and has to precede the navigation it skips.
 order = [
-    ('01', 'header',     'Header and navigation',  header),
-    ('02', 'front',      'Front page',             section('top')),
-    ('03', 'engage',     'What we engage',         section('services')),
-    ('04', 'believe',    'What we believe',        section('philosophy')),
-    ('05', 'learned',    'What we learned',        section('learned')),
-    ('06', 'cases',      'Cases',                  section('cases')),
-    ('07', 'people',     'Who we are',             section('people')),
-    ('08', 'papers',     'What we think',          section('papers')),
-    ('09', 'contact',    'How to reach us',        section('contact')),
-    ('10', 'footer',     'Footer',                 footer),
+    ('01', 'header-front', 'Header and front page', skip + '\n\n' + header + '\n\n' + section('top')),
+    ('02', 'engage',       'What we engage',        section('services')),
+    ('03', 'believe',      'What we believe',       section('philosophy')),
+    ('04', 'learned',      'What we learned',       section('learned')),
+    ('05', 'cases',        'Cases',                 section('cases')),
+    ('06', 'people',       'Who we are',            section('people')),
+    ('07', 'papers',       'What we think',         section('papers')),
+    ('08', 'contact',      'How to reach us',       section('contact')),
+    ('09', 'footer',       'Footer',                footer),
 ]
 
 # Elementor puts every HTML widget inside section > container > column > wrap,
@@ -400,9 +407,15 @@ if re.search(r'^\s*@import', styles, re.M):
 # sheet or the browser drops it and both faces fall back silently.
 open(os.path.join(out, '00-styles.html'), 'w').write(
     '<!-- Capiital — STYLES. Paste this FIRST, into its own HTML widget at the very\n'
-    '     top of the page. Every section below depends on it. -->\n'
+    '     top of the page. Every section below depends on it.\n'
+    '     The .capiital-part wrapper is not decoration: this widget renders nothing,\n'
+    '     but its Elementor section still carries default padding, which shows as a\n'
+    '     band of empty page ground above the header. The wrapper is what the reset\n'
+    '     at the end of the stylesheet matches on. -->\n'
+    '<div class="capiital-part">\n'
     '<style>\n' + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n'
-    + styles.lstrip() + '\n' + COMPAT + '</style>\n')
+    + styles.lstrip() + '\n' + COMPAT + '</style>\n'
+    '</div>\n')
 
 for num, slug, title, markup in order:
     body = '\n'.join('  ' + l if l.strip() else l for l in markup.split('\n'))
@@ -419,12 +432,16 @@ open(os.path.join(out, '00-styles-for-additional-css.css'), 'w').write(
     '   No <style> tag: that box expects bare CSS. */\n\n'
     + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n' + styles.lstrip() + '\n' + COMPAT)
 
-open(os.path.join(out, '11-script.html'), 'w').write(
+open(os.path.join(out, '10-script.html'), 'w').write(
     '<!-- Capiital — SCRIPT. Paste this LAST, into its own HTML widget at the very\n'
     '     bottom of the page. It drives the header on scroll, the reading progress\n'
     '     hairline, the live nav item and the scroll-entry reveals. Without it the\n'
-    '     sections below the hero stay invisible. -->\n'
-    '<script>\n' + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>\n')
+    '     sections below the hero stay invisible.\n'
+    '     The .capiital-part wrapper collapses this widget\'s Elementor section, which\n'
+    '     would otherwise leave empty padding below the footer. -->\n'
+    '<div class="capiital-part">\n'
+    '<script>\n' + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>\n'
+    '</div>\n')
 
 README = """# Capiital — section snippets
 
@@ -433,20 +450,28 @@ Paste each file into an Elementor **HTML widget**, in number order.
 | # | File | Goes in |
 | --- | --- | --- |
 | 00 | `00-styles.html` | An HTML widget at the very top |
-| 01 | `01-header.html` | Header and navigation |
-| 02 | `02-front.html` | Front page |
-| 03 | `03-engage.html` | What we engage |
-| 04 | `04-believe.html` | What we believe |
-| 05 | `05-learned.html` | What we learned |
-| 06 | `06-cases.html` | Cases |
-| 07 | `07-people.html` | Who we are |
-| 08 | `08-papers.html` | What we think |
-| 09 | `09-contact.html` | How to reach us |
-| 10 | `10-footer.html` | Footer |
-| 11 | `11-script.html` | An HTML widget at the very bottom |
+| 01 | `01-header-front.html` | Header **and** front page, together |
+| 02 | `02-engage.html` | What we engage |
+| 03 | `03-believe.html` | What we believe |
+| 04 | `04-learned.html` | What we learned |
+| 05 | `05-cases.html` | Cases |
+| 06 | `06-people.html` | Who we are |
+| 07 | `07-papers.html` | What we think |
+| 08 | `08-contact.html` | How to reach us |
+| 09 | `09-footer.html` | Footer |
+| 10 | `10-script.html` | An HTML widget at the very bottom |
 
 Two alternates are included for the cases described below:
-`00-styles-for-additional-css.css` and `11-script-oneline.html`.
+`00-styles-for-additional-css.css` and `10-script-oneline.html`.
+
+## Why the header is not its own piece
+
+The header is `position: fixed`, so it needs no layout space of its own. Given a
+separate Elementor section it gets some anyway, and three faults follow at once:
+a band of page ground above the hero, a seam between the header and the hero, and
+the navigation sitting on the eggshell instead of over the dark hero before
+anything has been scrolled. Keeping it in the same widget as the front page means
+there is no wrapper between them to add space. Do not split `01` in two.
 
 ## Read this first: the HTML widget, not the Text Editor
 
@@ -472,13 +497,13 @@ Additional CSS**, which is never run through the content filters — use
 `00-styles-for-additional-css.css` for that, which is the same CSS without the
 `<style>` tag. Either way it has to exist somewhere.
 
-**`11-script.html` releases the scroll-entry reveals.** Without it every section
+**`10-script.html` releases the scroll-entry reveals.** Without it every section
 below the front page stays at `opacity: 0` and the page looks empty past the
 hero. It also drives the header on scroll, the reading-progress hairline and the
 live navigation item.
 
 If the script comes back broken — view the page source and look for `<br />` or
-`<p>` inside the `<script>` — paste **`11-script-oneline.html`** instead. It is
+`<p>` inside the `<script>` — paste **`10-script-oneline.html`** instead. It is
 the same code on a single line, so there are no newlines for the filters to
 convert. Behaviour is identical.
 
@@ -520,7 +545,7 @@ PY
 # copy is always written, and this one is skipped with a warning if the minifier
 # is unavailable rather than failing the build.
 if [ -f "$repo/node_modules/terser/package.json" ] || command -v terser >/dev/null 2>&1; then
-  node - "$repo" <<'NODE' || echo "build: minifier failed — 11-script-oneline.html not written" >&2
+  node - "$repo" <<'NODE' || echo "build: minifier failed — 10-script-oneline.html not written" >&2
 const path = require('path');
 const fs = require('fs');
 const repo = process.argv[2];
@@ -532,17 +557,17 @@ catch (e) { ({ minify } = require('terser')); }
   const r = await minify(src, { format: { comments: false }, compress: true, mangle: true });
   if (r.error) throw r.error;
   if (r.code.includes('\n')) throw new Error('minified output still contains a newline');
-  fs.writeFileSync(path.join(repo, 'dist/sections/11-script-oneline.html'),
-    '<!-- Capiital — SCRIPT, on one line. Identical behaviour to 11-script.html.\n'
+  fs.writeFileSync(path.join(repo, 'dist/sections/10-script-oneline.html'),
+    '<!-- Capiital — SCRIPT, on one line. Identical behaviour to 10-script.html.\n'
   + '     Use this one if the readable copy comes back broken: WordPress turns\n'
   + '     newlines inside a pasted <script> into <br /> tags, and a file with no\n'
   + '     newlines has nothing for it to break. -->\n'
-  + '<script>' + r.code + '</script>\n');
-  console.log('build: wrote dist/sections/11-script-oneline.html');
+  + '<div class="capiital-part">\n<script>' + r.code + '</script>\n</div>\n');
+  console.log('build: wrote dist/sections/10-script-oneline.html');
 })();
 NODE
 else
-  echo "build: terser not installed — skipping 11-script-oneline.html" >&2
+  echo "build: terser not installed — skipping 10-script-oneline.html" >&2
 fi
 
 # Packed last, so everything generated above is inside it.
