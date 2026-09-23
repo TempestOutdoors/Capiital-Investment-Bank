@@ -72,6 +72,13 @@ approximations to be tidied up:
   never drawn as artwork.
 - **Emphasis by withdrawal.** Section 02's hovered quadrant does not grow — the
   other three recede to 42%. The system forbids hover-scaling.
+- **The Solomon knot draws once and holds.** At the centre of section 02, on its
+  own clock when half of it is in view — scroll speed and direction play no part,
+  and it never un-draws. Each crossing is *ploughed*: a `--bone` blade runs ahead
+  of the over-strand's own ink, both dash-drawn along the strand in its direction
+  of travel, so the under-strand is whole until the blade reaches it and cut the
+  instant it passes. If section 02 ever changes ground, the blade must follow or
+  the crossings show as stripes.
 - **Section marks are scaffolding.** `[ 02 — What we engage ]` renders at 34% of
   the accent so the build can be followed against the section list. Remove the
   `<i class="ref">` wrapper to restore a permanent eyebrow.

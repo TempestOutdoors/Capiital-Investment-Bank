@@ -391,15 +391,29 @@ body:has(.front) .site-header[data-scrolled="false"] .scroll-progress__bar{backg
 .quadrant:hover .quadrant__line,
 .quadrant:focus-visible .quadrant__line{opacity:1;transform:none}
 
+/* No frame: the 1px border around this cell was removed. The cell and its 22rem
+   minimum height stay, so nothing around it moves. */
 .quadrant-centre{
   grid-column:2;grid-row:1 / span 2;align-self:stretch;
-  min-height:22rem;border:1px solid var(--border);
+  min-height:22rem;
   display:grid;place-items:center;
 }
-.quadrant-centre span{
-  font-size:var(--text-2xs);text-transform:uppercase;
-  letter-spacing:var(--tracking-caps);color:#C0392B;
+
+/* The Solomon knot. Stroke weights are the mark's own and are not a style
+   choice: 7.6 for the ink, 12.4 for the ground-coloured blade that ploughs each
+   crossing. Lightening the ink was tried and measurably damaged the figure at
+   small sizes. */
+.knot{width:62%;max-width:12rem;height:auto;display:block}
+.knot__strand,
+.knot__ink{
+  fill:none;stroke:var(--ink);stroke-width:7.6;
+  stroke-linejoin:miter;stroke-miterlimit:6;
 }
+.knot__strand{stroke-linecap:butt}
+/* Square so the patch fuses with the strand it sits on. */
+.knot__ink{stroke-linecap:square}
+/* Butt so the gap stays exactly the width it was computed to be. */
+.knot__blade{fill:none;stroke:var(--bone);stroke-width:12.4;stroke-linecap:butt}
 
 /* ── 03 What we believe ───────────────────────────────────────────────────── */
 /* The statement pins and holds while the four positions pass it, so each is read
@@ -668,8 +682,6 @@ body:has(.front) .site-header[data-scrolled="false"] .scroll-progress__bar{backg
   .quadrant__line{opacity:1;transform:none}
   .quadrants:has(.quadrant:hover) .quadrant:not(:hover){opacity:1}
 
-  .case-grid{grid-template-columns:1fr}
-  .case-cell__body{opacity:1}
 
   .people-grid{grid-template-columns:repeat(2,1fr)}
   .site-footer__grid{grid-template-columns:repeat(3,1fr)}
@@ -687,6 +699,14 @@ body:has(.front) .site-header[data-scrolled="false"] .scroll-progress__bar{backg
   .observation p{grid-column:2}
 
   .pullquote blockquote{font-size:var(--text-4xl)}
+}
+
+/* Cases stack at 900px, per the design source, with equal rows so all three
+   cells stay the same size at every width. Below this there is no hover, so the
+   accounts have to be visible by default or they cannot be reached at all. */
+@media (max-width:900px){
+  .case-grid{grid-template-columns:1fr;grid-auto-rows:1fr}
+  .case-cell__body{opacity:1}
 }
 
 @media (max-width:860px){

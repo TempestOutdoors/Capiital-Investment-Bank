@@ -119,6 +119,114 @@
     else wide.addListener(onWide);
   }
 
+  /* ── The Solomon knot in section 02 ────────────────────────────────────
+     Draws once on its own clock when half of it is in view, then holds. Scroll
+     speed and direction play no part, and it never un-draws — a scroll-linked
+     draw that follows the scrollbar was tried and declined, because motion here
+     fires once and never reverses.
+
+     Only KNOT is Solomon's; the drawing below is generic, so swapping the mark
+     means swapping the data and the paths in the markup, nothing else. */
+  var KNOT = {
+    D: 1900,          // each strand's own draw
+    total: 2120,      // the whole figure, including the lying loop's offset
+    sd: [0, 0, 220, 220],   // the second loop starts 220ms behind the first
+    // Each crossing is ploughed by the over-strand `s`, between the two
+    // fractions of that strand's run at which the blade enters and leaves.
+    cas: [
+      { s: 3, e0: 0.0797, e1: 0.1894 },
+      { s: 0, e0: 0.3206, e1: 0.4302 },
+      { s: 1, e0: 0.5698, e1: 0.6794 },
+      { s: 2, e0: 0.8106, e1: 0.9203 }
+    ]
+  };
+
+  /* cubic-bezier(.15,.12,.85,.88), solved both ways: `ease` for the pen's
+     position at a moment, `timeAt` for the moment it reaches a position. The
+     curve matters — an earlier one measured a 3.78:1 speed ratio between its
+     slowest and fastest points, which read as the pen stalling. This one is
+     1.29:1. */
+  function knotBezier(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+    var cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    var X = function (s) { return ((ax * s + bx) * s + cx) * s; };
+    var Y = function (s) { return ((ay * s + by) * s + cy) * s; };
+    var solve = function (f, v) {
+      var lo = 0, hi = 1, s = v;
+      for (var i = 0; i < 32; i++) { s = (lo + hi) / 2; if (f(s) < v) lo = s; else hi = s; }
+      return s;
+    };
+    return {
+      ease: function (x) { return Y(solve(X, x)); },
+      timeAt: function (y) { return X(solve(Y, y)); }
+    };
+  }
+
+  var clamp01 = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+
+  Array.prototype.forEach.call(document.querySelectorAll("[data-knot]"), function (root) {
+    var bez = knotBezier(0.15, 0.12, 0.85, 0.88);
+
+    var strands = Array.prototype.map.call(
+      root.querySelectorAll("[data-strand]"),
+      function (el) { return { el: el, L: el.getTotalLength() }; }
+    );
+
+    var casings = KNOT.cas.map(function (c, i) {
+      var paths = Array.prototype.map.call(
+        root.querySelectorAll('[data-cas="' + i + '"]'),
+        function (el) { return { el: el, L: el.getTotalLength() }; }
+      );
+      return {
+        a: KNOT.sd[c.s] + bez.timeAt(c.e0) * KNOT.D,
+        b: KNOT.sd[c.s] + bez.timeAt(c.e1) * KNOT.D,
+        paths: paths
+      };
+    });
+
+    // Hide every line by pushing its dash off its own length.
+    strands.concat(casings.reduce(function (a, c) { return a.concat(c.paths); }, []))
+      .forEach(function (o) {
+        o.el.style.strokeDasharray = o.L;
+        o.el.style.strokeDashoffset = o.L;
+      });
+
+    var paint = function (p) {
+      var t = p * KNOT.total;
+      strands.forEach(function (o, i) {
+        o.el.style.strokeDashoffset =
+          o.L * (1 - bez.ease(clamp01((t - KNOT.sd[i]) / KNOT.D)));
+      });
+      casings.forEach(function (c) {
+        var f = clamp01((t - c.a) / (c.b - c.a));
+        c.paths.forEach(function (o) { o.el.style.strokeDashoffset = o.L * (1 - f); });
+      });
+    };
+
+    if (reduced) { paint(1); return; }
+
+    var play = function () {
+      var t0 = null;
+      var step = function (now) {
+        if (t0 === null) t0 = now;
+        var p = clamp01((now - t0) / KNOT.total);
+        paint(p);
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    if (!("IntersectionObserver" in window)) { paint(1); return; }
+
+    var knotObserver = new IntersectionObserver(function (entries) {
+      if (entries.some(function (e) { return e.isIntersecting; })) {
+        knotObserver.disconnect();   // fires once; nothing un-draws it
+        play();
+      }
+    }, { threshold: 0.5 });
+    knotObserver.observe(root);
+  });
+
   /* ── Contact form ──────────────────────────────────────────────────────
      There is no endpoint to post to yet, so the form acknowledges in place
      rather than navigating away and losing what was typed. */

@@ -40,8 +40,35 @@
           <p class="quadrant__line">The close, the team, the systems. Unremarkable work, done precisely.</p>
         </div>
 
-        <!-- the centre object — a placeholder until the real artwork arrives -->
-        <div class="quadrant-centre"><span>Placeholder</span></div>
+        <!-- The centre object: the Solomon knot. Drawn once on its own clock when
+             half of it is in view, then held — scroll speed and direction play no
+             part, and it never un-draws.
+
+             Each crossing is PLOUGHED, not patched: a ground-coloured blade runs
+             ahead of the over-strand's own ink, both dash-drawn along the strand in
+             its direction of travel, so the under-strand is whole until the blade
+             reaches it and cut the instant it passes. Switching a casing on at the
+             crossing's centre was tried instead and reads as a flicker.
+
+             The blade is --bone, section 02's ground. If this section ever changes
+             ground, the blade must follow or the crossings show as stripes. -->
+        <div class="quadrant-centre">
+          <svg class="knot" data-knot viewBox="0 0 100 100" aria-hidden="true">
+            <path class="knot__strand" data-strand d="M51.2,94 L35,94 L35,6 L51.2,6"></path>
+            <path class="knot__strand" data-strand d="M48.8,94 L65,94 L65,6 L48.8,6"></path>
+            <path class="knot__strand" data-strand d="M51.2,65 L6,65 L6,35 L51.2,35"></path>
+            <path class="knot__strand" data-strand d="M48.8,65 L94,65 L94,35 L48.8,35"></path>
+
+            <g><path class="knot__blade" data-cas="0" d="M58.4,65 L71.6,65"></path>
+               <path class="knot__ink"   data-cas="0" d="M58.4,65 L71.6,65"></path></g>
+            <g><path class="knot__blade" data-cas="1" d="M35,71.6 L35,58.4"></path>
+               <path class="knot__ink"   data-cas="1" d="M35,71.6 L35,58.4"></path></g>
+            <g><path class="knot__blade" data-cas="2" d="M65,41.6 L65,28.4"></path>
+               <path class="knot__ink"   data-cas="2" d="M65,41.6 L65,28.4"></path></g>
+            <g><path class="knot__blade" data-cas="3" d="M28.4,35 L41.6,35"></path>
+               <path class="knot__ink"   data-cas="3" d="M28.4,35 L41.6,35"></path></g>
+          </svg>
+        </div>
       </div>
     </div>
   </section>
