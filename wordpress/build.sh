@@ -21,7 +21,7 @@ rm -rf "$theme"
 mkdir -p "$theme/assets/css" "$theme/assets/js" "$theme/template-parts"
 
 python3 - "$repo" "$theme" "$src" <<'PY'
-import re, sys, os
+import re, sys, os, base64
 
 repo, theme, src = sys.argv[1], sys.argv[2], sys.argv[3]
 html = open(os.path.join(repo, 'index.html')).read()
@@ -149,7 +149,37 @@ open(os.path.join(paste, '2-additional-css.css'), 'w').write(
     + tokens.rstrip() + '\n\n' + styles.lstrip()
 )
 
-print('build: theme templates, assets and paste/ generated')
+# --- distributable copies of the site itself ---------------------------------
+# capiital-website.html inlines the two stylesheets and the script into one file
+# that opens straight from disk; the fonts stay on the CDN, as the design source
+# specifies. index.html is the source of truth for both, so they are generated
+# rather than hand-kept.
+dist = os.path.join(repo, 'dist')
+os.makedirs(dist, exist_ok=True)
+
+single = html
+single = single.replace(
+    '<link rel="stylesheet" href="assets/css/styles.css">',
+    '<style>\n' + tokens.rstrip() + '\n\n' + styles.lstrip() + '\n</style>',
+)
+single = single.replace(
+    '<script src="assets/js/main.js" defer></script>',
+    '<script>\n' + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>',
+)
+# The favicon is the only remaining external reference; inline it so the file is
+# genuinely self-contained apart from the webfonts.
+favicon = open(os.path.join(repo, 'assets/favicon.svg')).read()
+single = single.replace(
+    '<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">',
+    '<link rel="icon" href="data:image/svg+xml;base64,'
+    + base64.b64encode(favicon.encode()).decode() + '">',
+)
+for leftover in ('assets/css/', 'assets/js/', 'assets/favicon'):
+    if leftover in single:
+        sys.exit('build: %s survived in the single-file export' % leftover)
+open(os.path.join(dist, 'capiital-website.html'), 'w').write(single)
+
+print('build: theme templates, assets, paste/ and dist/ generated')
 PY
 
 if command -v php >/dev/null; then
@@ -178,3 +208,10 @@ find "$theme" -exec touch -t 202001010000.00 {} +
   && find captal-onepage -type f ! -name '.DS_Store' | LC_ALL=C sort \
      | zip -qX captal-onepage.zip -@ )
 echo "build: wrote wordpress/captal-onepage.zip"
+
+rm -f "$repo/dist/capiital-website.zip"
+find "$repo/index.html" "$repo/assets" -exec touch -t 202001010000.00 {} +
+( cd "$repo" \
+  && find index.html assets -type f ! -name '.DS_Store' | LC_ALL=C sort \
+     | zip -qX dist/capiital-website.zip -@ )
+echo "build: wrote dist/capiital-website.zip"
