@@ -1,0 +1,55 @@
+/*
+Theme Name: Capiital Blank
+Theme URI: https://github.com/TempestOutdoors/Capiital-Investment-Bank
+Author: Capiital
+Description: A deliberately empty theme. It renders no header, no navigation, no footer and no styling of its own — only the document scaffolding WordPress and Elementor need, with the page's own content in between. Use it when the design lives entirely in the page (an Elementor layout, or pasted markup) and the theme should stay out of its way. Elementor-compatible: page, single and archive templates all render through the_content(), and Elementor Pro Theme Builder locations are registered.
+Version: 1.0.0
+Requires at least: 5.5
+Tested up to: 6.6
+Requires PHP: 7.0
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: capiital-blank
+Tags: one-column, full-width-template, block-patterns, translation-ready
+*/
+
+/* ============================================================================
+   The entire stylesheet.
+
+   Everything here is a browser default that would otherwise damage a full-bleed
+   design; nothing here is a style choice. No fonts, no colours, no typography,
+   no spacing. If you find yourself wanting to add a rule to this file, it almost
+   certainly belongs in the page's own stylesheet instead.
+   ========================================================================== */
+
+/* The browser's default 8px body margin puts a white border around any
+   edge-to-edge layout. */
+html, body { margin: 0; padding: 0; }
+
+/* Assumed by essentially every modern layout, including the page designs this
+   theme is built to host. */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* Stops media overflowing its container and forcing a horizontal scrollbar. */
+img, video, iframe, embed, object { max-width: 100%; }
+img, video { height: auto; }
+
+/* WordPress core and many plugins emit this class for text meant only for
+   screen readers. Without it, that text is rendered visibly on the page. */
+.screen-reader-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	clip-path: inset(50%);
+	white-space: nowrap;
+	word-wrap: normal;
+}
+.screen-reader-text:focus {
+	position: static;
+	width: auto;
+	height: auto;
+	clip: auto;
+	clip-path: none;
+}

@@ -700,3 +700,13 @@ find "$repo/dist/sections-grouped" -exec touch -t 202001010000.00 {} +
   && find sections-grouped -type f ! -name '.DS_Store' | LC_ALL=C sort \
      | zip -qX capiital-sections-grouped.zip -@ )
 echo "build: wrote dist/capiital-sections-grouped.zip"
+
+# The blank theme is hand-written source, not generated from index.html — it has
+# no design in it to keep in sync. The build only packs it, on the same
+# deterministic terms as everything else.
+rm -f "$repo/dist/capiital-blank-theme.zip"
+find "$repo/wordpress/capiital-blank" -exec touch -t 202001010000.00 {} +
+( cd "$repo/wordpress" \
+  && find capiital-blank -type f ! -name '.DS_Store' | LC_ALL=C sort \
+     | zip -qX "$repo/dist/capiital-blank-theme.zip" -@ )
+echo "build: wrote dist/capiital-blank-theme.zip"

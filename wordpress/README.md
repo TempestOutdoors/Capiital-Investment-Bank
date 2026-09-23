@@ -1,5 +1,15 @@
 # Capiital for WordPress
 
+This folder holds **two themes**. Install exactly one.
+
+- **`capiital-blank/`** — an empty theme that renders nothing of its own. Use it
+  when the design lives in the page, built in Elementor from `dist/sections/` or
+  `dist/sections-grouped/`. See its own README.
+- **`captal-onepage/`** — the v3 site packaged as a theme: it renders the design
+  itself, header and footer included, with no page building required.
+
+Installing both gives you the design twice.
+
 `captal-onepage/` is the v3 site packaged as an installable WordPress theme.
 
 It is **generated** from `index.html` and `assets/` at the repository root. Edit
