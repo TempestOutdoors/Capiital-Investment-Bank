@@ -1,0 +1,26 @@
+:root{
+  /* Corners: the brand is square. Every radius token is 0 by decision. */
+  --radius:0px;
+  --radius-sm:0px;
+  --radius-md:0px;
+  --radius-lg:0px;
+  --radius-xl:0px;
+  --radius-pill:9999px; /* switch/radio dots only */
+
+  /* Borders */
+  --border-width:1px;
+  --rule:1px solid var(--border);
+  --rule-inverse:1px solid var(--rule-on-ink);
+
+  /* Shadows — deliberately near-flat; structure comes from hairlines */
+  --shadow-none:none;
+  --shadow-xs:0 1px 2px 0 oklch(0.22 0.018 240 / 0.05);
+  --shadow-sm:0 1px 3px 0 oklch(0.22 0.018 240 / 0.07), 0 1px 2px -1px oklch(0.22 0.018 240 / 0.07);
+  --shadow-md:0 4px 6px -1px oklch(0.22 0.018 240 / 0.08), 0 2px 4px -2px oklch(0.22 0.018 240 / 0.08);
+  --shadow-lg:0 10px 15px -3px oklch(0.22 0.018 240 / 0.09), 0 4px 6px -4px oklch(0.22 0.018 240 / 0.09);
+
+  --ring-width:1px;
+  --ring-color:var(--ring);
+  --backdrop-blur:12px;   /* nav on scroll: bg 95% + blur */
+  --scrim:oklch(0 0 0 / 0.8); /* dialog overlay */
+}

@@ -1,0 +1,31 @@
+:root{
+  --ease-rise:cubic-bezier(0.2, 0.7, 0.2, 1); /* @kind other */
+  --ease-standard:cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --duration-fast:200ms; /* @kind other */
+  --duration-nav:500ms; /* @kind other */
+  --duration-rise:1.1s; /* @kind other */
+  --duration-marquee:40s; /* @kind other */
+  --stagger:0.15s; /* @kind other */
+  --duration-settle:900ms; /* @kind other */
+  --duration-draw:1200ms; /* @kind other */
+  --stagger-row:90ms; /* @kind other */
+}
+
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.animate-rise{animation:rise var(--duration-rise) var(--ease-rise) both}
+.delay-1{animation-delay:0.15s}.delay-2{animation-delay:0.3s}.delay-3{animation-delay:0.45s}.delay-4{animation-delay:0.6s}
+.animate-marquee{animation:marquee var(--duration-marquee) linear infinite}
+@media (prefers-reduced-motion:reduce){.animate-rise,.animate-marquee{animation:none}}
+
+/* Scroll-entry set. Three motions only, all one-way, all colour- and opacity-quiet.
+   settle: 14px up + fade — headings, rows, cards.
+   veil:   opacity only — long-form prose, the quietest of the three.
+   draw:   a hairline drawing from its left edge — section rules and row dividers.
+   Elements start hidden and are released by adding .is-in (IntersectionObserver). */
+[data-reveal]{will-change:opacity,transform}
+[data-reveal="settle"]{opacity:0;transform:translateY(14px);transition:opacity var(--duration-settle) var(--ease-rise),transform var(--duration-settle) var(--ease-rise)}
+[data-reveal="veil"]{opacity:0;transition:opacity var(--duration-settle) var(--ease-standard)}
+[data-reveal="draw"]{transform:scaleX(0);transform-origin:left center;transition:transform var(--duration-draw) var(--ease-rise)}
+[data-reveal].is-in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){[data-reveal]{opacity:1!important;transform:none!important;transition:none!important}}

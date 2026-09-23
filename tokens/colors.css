@@ -1,0 +1,93 @@
+/* CAP//TAL palette — derived from the web design PDF (InDesign, July 2026).
+   Two colours are carried verbatim from the artwork: the eggshell page ground #EBE8DF
+   and the signature green #5A8281. Every chromatic token in this build takes that green
+   and rotates its OKLCH hue 34° toward blue (190 → 224) at identical lightness and
+   chroma. The first build rotated 12° (to 202); in September 2026 the client moved it a
+   further 22°, chosen as step 02 of guidelines/wash-blue-steps.html, because the ground
+   still read green. Lightness, chroma and every gradient stop are unchanged.
+   Distribution stays 60/30/10: a light white/eggshell field, deep sea carrying structure,
+   the signature marking only what matters. Never two accents at once. */
+:root{
+  --sea-ink:oklch(0.25 0.018 227);    /* Darkest ground and all body text — near-black, blue-cast */
+  --sea-deep:oklch(0.33 0.026 225);   /* The logo banner ground; full-bleed dark sections */
+  --sea:oklch(0.552 0.031 224);       /* Signature accent — the PDF green, rotated to blue (#5A8281 → hue 224) */
+  --sea-light:oklch(0.68 0.028 224);  /* Quiet accent on light grounds, charts, hover washes */
+  --mist:oklch(0.79 0.020 224);       /* The accent on dark grounds — headings colour-play */
+  --haze:oklch(0.90 0.012 224);       /* Cool tint for blurred grounds and shaded table heads */
+
+  --eggshell:#EBE8DF;   /* Verbatim from the artwork — the warm surface */
+  --cream:#F7F5F0;      /* Near-white warm page ground */
+  --sand:#C3BCB1;       /* Warm neutral — dividers, hairlines */
+  --sand-dark:#A49C94;  /* Verbatim from the artwork — the warm neutral one step down, for meta text */
+  --brown:#88766C;      /* Verbatim from the artwork — grounding warm brown, earthiness and reliability */
+  --brown-ink:color-mix(in oklab, #88766C 45%, var(--sea-ink)); /* The brown carried down into the ink, for meta text that must hold 4.5:1 on eggshell */
+  --stone:#8A8079;      /* Grounding warm grey — meta text on eggshell */
+  --white:#FFFFFF;
+
+  /* Structural aliases. Every component is authored against these five names,
+     so re-pointing them re-skins the whole library. */
+  --ink:var(--sea-ink);
+  --taupe:var(--sea);        /* the one accent on light grounds */
+  --taupe-soft:var(--mist);  /* the one accent on deep grounds */
+  --bone:var(--eggshell);
+
+  /* Semantic aliases */
+  --background:var(--cream);
+  --foreground:var(--ink);
+  --card:var(--white);
+  --card-foreground:var(--ink);
+  --popover:var(--white);
+  --popover-foreground:var(--ink);
+  --primary:var(--ink);
+  --primary-foreground:var(--cream);
+  --secondary:var(--sea-deep);
+  --secondary-foreground:var(--white);
+  --muted:var(--eggshell);
+  --muted-foreground:#6B7B7F;
+  --accent:var(--sea);
+  --accent-foreground:var(--white);
+  --destructive:#8C3A2E;
+  --destructive-foreground:var(--white);
+  --border:color-mix(in oklab, var(--sand) 55%, var(--white));
+  --input:color-mix(in oklab, var(--sand) 55%, var(--white));
+  --ring:var(--sea);
+
+  /* Text tints (color-mix over the ground rather than separate greys) */
+  --text-body:color-mix(in oklab, var(--ink) 78%, transparent);
+  --text-body-strong:color-mix(in oklab, var(--ink) 88%, transparent);
+  --text-quiet:var(--muted-foreground);
+  --on-ink-body:color-mix(in oklab, var(--cream) 82%, transparent);
+  --on-ink-quiet:color-mix(in oklab, var(--cream) 66%, transparent);
+  --on-ink-faint:color-mix(in oklab, var(--cream) 55%, transparent);
+  --rule-on-ink:color-mix(in oklab, var(--mist) 28%, transparent);
+
+  /* Surfaces */
+  --surface-page:var(--cream);
+  --surface-band:var(--eggshell);
+  --surface-card:var(--white);
+  --surface-inverse:var(--ink);
+
+  /* The two atmospheric grounds lifted from the artwork: a blurred sea field and a
+     blurred eggshell field. Used full-bleed behind the front page and section covers. */
+  --wash-sea:linear-gradient(140deg, var(--sea-deep) 0%, color-mix(in oklab, var(--sea) 70%, var(--sea-deep)) 45%, var(--sea-ink) 100%);
+  --wash-eggshell:linear-gradient(140deg, var(--white) 0%, var(--eggshell) 55%, color-mix(in oklab, var(--eggshell) 80%, var(--sand)) 100%);
+}
+
+/* Inverse scope: deep-sea sections (front page, covers, contact, footer) */
+.on-ink{
+  --background:var(--sea-deep);
+  --foreground:var(--cream);
+  --border:var(--rule-on-ink);
+  --accent:var(--mist);
+  background:var(--sea-deep);
+  color:var(--cream);
+}
+
+/* Warm scope: eggshell bands — the method, the thesis, field notes */
+.on-sand{
+  --background:var(--eggshell);
+  --foreground:var(--ink);
+  --border:color-mix(in oklab, var(--sand) 70%, transparent);
+  background:var(--eggshell);
+  color:var(--ink);
+}
