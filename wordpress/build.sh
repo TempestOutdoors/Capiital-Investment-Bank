@@ -21,7 +21,7 @@ rm -rf "$theme"
 mkdir -p "$theme/assets/css" "$theme/assets/js" "$theme/template-parts"
 
 python3 - "$repo" "$theme" "$src" <<'PY'
-import re, sys, os, base64
+import re, sys, os, base64, json
 
 repo, theme, src = sys.argv[1], sys.argv[2], sys.argv[3]
 html = open(os.path.join(repo, 'index.html')).read()
@@ -178,6 +178,73 @@ for leftover in ('assets/css/', 'assets/js/', 'assets/favicon'):
     if leftover in single:
         sys.exit('build: %s survived in the single-file export' % leftover)
 open(os.path.join(dist, 'capiital-website.html'), 'w').write(single)
+
+# --- Elementor template ------------------------------------------------------
+# One importable file for Elementor: Templates > Saved Templates > Import.
+# The whole page rides in a single HTML widget, because the design is authored as
+# one document with its own header, footer and full-bleed sections — rebuilding
+# it as Elementor sections and columns would hand the layout to Elementor's grid
+# and lose the hairline construction the design is built from.
+# The page is set to Elementor Canvas so the active theme wraps nothing around it.
+els = []
+def eid(seed):
+    """Elementor wants a short unique hex id per element."""
+    import hashlib
+    return hashlib.sha1(seed.encode()).hexdigest()[:7]
+
+# The webfonts arrive by @import rather than a <link>, which must be the first
+# rule in the sheet — hence its position at the very top of the style block.
+font_import = "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');"
+
+widget_html = (
+    '<style>\n' + font_import + '\n\n' + tokens.rstrip() + '\n\n' + styles.lstrip() + '\n</style>\n\n'
+    + body + '\n\n<script>\n'
+    + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>\n'
+)
+
+template = {
+    "version": "0.4",
+    "title": "Capiital Website",
+    "type": "page",
+    "page_settings": {
+        # Canvas: no theme header, footer or content wrapper. The design supplies
+        # all three itself.
+        "template": "elementor_canvas",
+    },
+    "content": [{
+        "id": eid("section"),
+        "elType": "section",
+        "settings": {
+            "layout": "full_width",
+            "gap": "no",
+            "content_width": {"unit": "px", "size": "", "sizes": []},
+            "padding": {"unit": "px", "top": "0", "right": "0", "bottom": "0", "left": "0", "isLinked": True},
+            "margin": {"unit": "px", "top": "0", "right": "0", "bottom": "0", "left": "0", "isLinked": True},
+        },
+        "elements": [{
+            "id": eid("column"),
+            "elType": "column",
+            "settings": {
+                "_column_size": 100,
+                "_inline_size": None,
+                "padding": {"unit": "px", "top": "0", "right": "0", "bottom": "0", "left": "0", "isLinked": True},
+            },
+            "elements": [{
+                "id": eid("widget"),
+                "elType": "widget",
+                "widgetType": "html",
+                "settings": {"html": widget_html},
+                "elements": [],
+                "isInner": False,
+            }],
+            "isInner": False,
+        }],
+        "isInner": False,
+    }],
+}
+
+with open(os.path.join(dist, 'capiital-elementor-template.json'), 'w') as fh:
+    json.dump(template, fh, ensure_ascii=False, separators=(',', ':'))
 
 print('build: theme templates, assets, paste/ and dist/ generated')
 PY
