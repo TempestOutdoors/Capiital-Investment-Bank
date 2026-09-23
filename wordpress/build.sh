@@ -167,6 +167,14 @@ for required in page.php single.php; do
 done
 echo "build: the_content() present in page.php and single.php"
 
+# Deterministic archive. A plain `zip -r` stores each file's mtime and walks the
+# directory in filesystem order, so rebuilding from unchanged sources produced a
+# byte-different zip every time — a tracked binary that showed up as a spurious
+# diff on every build. Fixing the mtimes, sorting the entry list and dropping the
+# extra attribute fields (-X) makes identical inputs give identical bytes.
 rm -f "$repo/wordpress/captal-onepage.zip"
-( cd "$repo/wordpress" && zip -rq captal-onepage.zip captal-onepage -x '*.DS_Store' )
+find "$theme" -exec touch -t 202001010000.00 {} +
+( cd "$repo/wordpress" \
+  && find captal-onepage -type f ! -name '.DS_Store' | LC_ALL=C sort \
+     | zip -qX captal-onepage.zip -@ )
 echo "build: wrote wordpress/captal-onepage.zip"
