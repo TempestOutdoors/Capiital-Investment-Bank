@@ -12,6 +12,32 @@ Open `index.html`, or serve the folder:
 python3 -m http.server 8000
 ```
 
+## What is in this repository
+
+Two things live here, and they are not the same kind of thing.
+
+**`Capiital Website Design/`** is the upstream design project, as exported from
+Claude Design. It is the source of truth for the design and it is not built from
+anything in this repository:
+
+```
+Capiital Website Design/
+  CLAUDE-CODE-BRIEF.md      what changed since the first handoff, and what it obliges
+  project-log.md            the reasoning behind the decisions, and the traps
+  copy-register.md          the house voice; read before writing any copy
+  sections.jsx              the reference for layout and copy
+  CAPIITAL Website v3.html  the whole site as one file — the intended result
+  tokens/                   the only source of colour, type, spacing and motion
+  components/               the shared building blocks, by category
+```
+
+**Everything else is the WordPress implementation** — the static site built from
+that design, and the two themes and paste-ready snippets generated from it.
+`index.html` is its source of truth; `wordpress/build.sh` generates the rest.
+
+Editing a file under `Capiital Website Design/` changes the design record.
+Editing `index.html` changes what ships. They are kept apart deliberately.
+
 ## Structure
 
 ```
