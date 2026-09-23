@@ -1,0 +1,2 @@
+# Build-time only: terser, used to emit the newline-free script snippet.
+node_modules/
