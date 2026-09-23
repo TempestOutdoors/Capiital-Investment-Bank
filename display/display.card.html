@@ -1,0 +1,25 @@
+<!-- @dsCard group="Components" viewport="700x371" name="Display" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;padding:20px;background:var(--surface-page);font-family:var(--font-sans)}.grp{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px}.cap{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-foreground);width:100%;margin-bottom:-4px}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script><script src="../../ds-ns.js"></script></head><body><div id="root"></div>
+<script type="text/babel">const { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Badge, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Separator, Progress, Avatar, Skeleton, Alert, Tooltip } = window.DS;
+
+function Demo(){return(<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
+<div>
+<Card><CardHeader><CardTitle>Mandate summary</CardTitle><CardDescription>Sell-side M&amp;A · Industrials</CardDescription></CardHeader><CardContent style={{fontSize:14,color:'var(--text-body)'}}>Divestiture of a European industrial platform to a global strategic acquirer.</CardContent><CardFooter><Badge>Signed</Badge><Badge variant="secondary">Industrials</Badge><Badge variant="outline">2026</Badge></CardFooter></Card>
+<div style={{marginTop:14,display:'flex',gap:12,alignItems:'center'}}><Avatar initials="EW"/><Avatar initials="HC"/><Tooltip label="Joint global coordinator"><span style={{fontSize:13,borderBottom:'1px dotted var(--border)'}}>JGC</span></Tooltip></div>
+</div>
+<div style={{display:'grid',gap:12,alignContent:'start'}}>
+<Table><TableHeader><TableRow><TableHead>Value</TableHead><TableHead>Type</TableHead><TableHead>Year</TableHead></TableRow></TableHeader><TableBody>
+<TableRow><TableCell style={{fontFamily:'var(--font-display)',fontSize:18}}>$4.2B</TableCell><TableCell>Sell-side M&amp;A</TableCell><TableCell>2026</TableCell></TableRow>
+<TableRow><TableCell style={{fontFamily:'var(--font-display)',fontSize:18}}>$1.8B</TableCell><TableCell>Senior Notes</TableCell><TableCell>2026</TableCell></TableRow></TableBody></Table>
+<Separator/>
+<Progress value={62}/>
+<Skeleton style={{height:14,width:220}}/>
+<Alert title="Regulatory notice">Authorised and regulated in each jurisdiction of operation.</Alert>
+</div></div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);</script><script src="../../back-to-hub.js"></script>
+</body></html>

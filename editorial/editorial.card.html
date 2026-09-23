@@ -1,0 +1,29 @@
+<!-- @dsCard group="Components" viewport="900x751" name="Editorial" subtitle="Service, method step, phase, field note, insight, person" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;padding:20px;background:var(--surface-page);font-family:var(--font-sans)}.cap{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-foreground)}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script><script src="../../ds-ns.js"></script></head><body><div id="root"></div>
+<script type="text/babel">const { ServiceCard, MethodStep, IndexRow, PublicationRow, FieldNote, InsightCard, PersonCard, PullQuote, TransactionRow, OfficeCard } = window.DS;
+function Demo(){return(<div style={{display:'grid',gap:18}}>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:1,background:'var(--rule-on-ink)'}}>
+<ServiceCard icon="gauge" title="Performance Visibility" body="KPI architecture, management reporting and the dashboards your investors actually read." quote="We finally agreed what to count." style={{padding:'var(--space-6)'}}/>
+<ServiceCard icon="network" title="Transactions" body="Diligence, modelling and the work that follows the signature." quote="The questions the buyer would ask were on the table before the buyer was." style={{padding:'var(--space-6)'}}/></div>
+<div><IndexRow index="01" title="Before a transaction" body="What reported performance does, and does not, say about the business beneath it."/><IndexRow index="02" title="During ownership" body="Where complexity has outgrown the instruments used to observe it."/></div>
+<div><PublicationRow kind="Market letter" date="Q2 · 2025" title="Rates, Rotation & the Return of Strategic Capital" read="12 min"/><PublicationRow kind="Sector note" date="Q1 · 2026" title="Energy Transition: Capital Stacks for the Next Decade" read="9 min"/></div>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:1,background:'color-mix(in oklab, var(--sand) 70%, transparent)'}}>
+<MethodStep numeral="I" step="Step 01" icon="search" title="Diagnose" body="Agree what to count, then count it honestly." style={{padding:'var(--space-6)'}}/>
+<MethodStep numeral="IV" step="Step 04" icon="atom" title="Empower" body="Hand back a finance function the leadership trusts." style={{padding:'var(--space-6)'}}/></div>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:1,background:'var(--border)'}}>
+<FieldNote memo="Memo · 014" title="The board pack is a tell" body="Show me a company's monthly reporting and I'll show you the next two years of performance." style={{padding:'var(--space-6)'}}/>
+<InsightCard kind="Market letter" date="Q2 · 2025" title="Rates, Rotation & the Return of Strategic Capital" read="12 min" style={{padding:'var(--space-6)'}}/></div>
+<div style={{display:'grid',gridTemplateColumns:'160px 160px 1fr',gap:20,alignItems:'start'}}>
+<PersonCard photo="../../assets/people/person-01.png" name="Christian Tange" role="CEO" phone="M: +45 29 48 84 17" email="christian.tange@capiital.eu"/>
+<PersonCard photo="" note="The photographer is on her way" name="David Phillip" role="Financial Advisor"/>
+<div style={{display:'grid',gap:14}}><PullQuote style={{maxWidth:'100%'}} accent="judgment cannot be franchised" attribution="Christian Tange" title="Chief Executive">The firm is built on the conviction that</PullQuote>
+<OfficeCard role="Head office" city="Copenhagen" addr="Bredgade 25" style={{padding:0}}/></div></div>
+<div style={{borderTop:'1px solid var(--border)'}}><TransactionRow value="€42M" sub="Sell-side" desc="Adviser to a Nordic industrial group on the divestment of a non-core division." sector="Industrials" year="2026" style={{padding:'var(--space-6) 0',margin:0}}/></div>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);</script><script src="../../back-to-hub.js"></script>
+</body></html>

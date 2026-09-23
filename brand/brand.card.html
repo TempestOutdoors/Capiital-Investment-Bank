@@ -1,0 +1,19 @@
+<!-- @dsCard group="Components" viewport="700x411" name="Brand" subtitle="Wordmark, icons, eyebrow, section heading, stats" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;padding:20px;background:var(--surface-page);font-family:var(--font-sans)}.cap{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-foreground)}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script><script src="../../ds-ns.js"></script></head><body><div id="root"></div>
+<script type="text/babel">const { Logo, Icon, Eyebrow, ArrowLink, SectionHeading, StatBlock } = window.DS;
+function Demo(){return(<div style={{display:'grid',gap:20}}>
+<div style={{display:'flex',alignItems:'center',gap:28,flexWrap:'wrap'}}><Logo size={20}/><Logo size={20} accent/><span className="on-ink" style={{padding:'10px 16px'}}><Logo tone="cream" size={20}/></span><Logo banner size={15} tone="cream"/></div>
+<div style={{display:'flex',gap:26,alignItems:'center',color:'var(--sea)'}}>{['search','blocks','refresh-cw','atom','gauge','chart-line','network','cog','lightbulb','mail'].map(n=><Icon key={n} name={n} size={26}/>)}</div>
+<div style={{display:'grid',gridTemplateColumns:'1.1fr 1fr',gap:24,alignItems:'end'}}>
+<SectionHeading size="md" eyebrow="01 — Where we engage" lines={["Across the"]} accentLine="capital cycle."/>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,borderTop:'1px solid var(--border)',paddingTop:16}}>
+<StatBlock size="sm" value="10%" label="Visible to the market"/><StatBlock size="sm" value="90%" label="Below the waterline"/></div></div>
+<div><ArrowLink href="#">What we learned</ArrowLink></div>
+</div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);</script><script src="../../back-to-hub.js"></script>
+</body></html>
