@@ -415,12 +415,15 @@ order = [
     ('09', 'footer',       'Footer',                footer),
 ]
 
-for num, slug, title, markup in order:
+def write_part(folder, name, title, markup):
     body = '\n'.join('  ' + l if l.strip() else l for l in markup.split('\n'))
-    open(os.path.join(out, '%s-%s.html' % (num, slug)), 'w').write(
+    open(os.path.join(folder, name), 'w').write(
         '<!-- Capiital — %s. One HTML widget, in its own full-width Elementor\n'
         '     section with zero padding. -->\n'
         '<div class="capiital-part">\n%s\n</div>\n' % (title, body))
+
+for num, slug, title, markup in order:
+    write_part(out, '%s-%s.html' % (num, slug), title, markup)
 
 # The stylesheet again as bare CSS, for Appearance > Customize > Additional CSS.
 # That box is never run through the content filters, so it is the one place the
@@ -443,6 +446,110 @@ open(os.path.join(out, '10-script.html'), 'w').write(
     '<div class="capiital-part">\n'
     '<script>\n' + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>\n'
     '</div>\n')
+
+# --- grouped alternative -----------------------------------------------------
+# The same page in four widgets instead of ten, for building it by hand without
+# nine internal seams to keep flush. The split follows the design's own grounds:
+# dark front page, eggshell middle, dark tail. Contact travels with the footer
+# because that is how the design was drawn — they share the --wash-sea ground and
+# were one component in the source, contact running into the footer rather than
+# sitting above a separate thing.
+grouped_out = os.path.join(repo, 'dist', 'sections-grouped')
+shutil.rmtree(grouped_out, ignore_errors=True)
+os.makedirs(grouped_out)
+
+middle = '\n\n'.join(section(i) for i in
+                     ('services', 'philosophy', 'learned', 'cases', 'people', 'papers'))
+
+grouped = [
+    ('1', 'styles-header-front', 'Stylesheet, header and front page',
+     STYLESHEET + '\n\n' + skip + '\n\n' + header + '\n\n' + section('top')),
+    ('2', 'middle', 'What we engage, believe, learned, cases, who we are, what we think',
+     middle),
+    ('3', 'contact-footer', 'How to reach us, and the footer',
+     section('contact') + '\n\n' + footer),
+]
+for num, slug, title, markup in grouped:
+    write_part(grouped_out, '%s-%s.html' % (num, slug), title, markup)
+
+open(os.path.join(grouped_out, '4-script.html'), 'w').write(
+    open(os.path.join(out, '10-script.html')).read())
+
+open(os.path.join(grouped_out, 'optional-styles-for-additional-css.css'), 'w').write(
+    open(os.path.join(out, 'optional-styles-for-additional-css.css')).read()
+        .replace('01-header-front.html', '1-styles-header-front.html'))
+
+GROUPED_README = """# Capiital — grouped snippets
+
+The same page as `sections/`, in four Elementor **HTML widgets** instead of ten.
+
+| # | File | Contains |
+| --- | --- | --- |
+| 1 | `1-styles-header-front.html` | Stylesheet, header, front page |
+| 2 | `2-middle.html` | What we engage, believe, learned, cases, who we are, what we think |
+| 3 | `3-contact-footer.html` | How to reach us, and the footer |
+| 4 | `4-script.html` | The script |
+
+`4-script-oneline.html` and `optional-styles-for-additional-css.css` are
+alternates, described below.
+
+## Why these four
+
+Every widget boundary is a wrapper that can introduce padding, so ten pieces mean
+nine internal seams to keep flush and four mean two. The split follows the
+design's own grounds — dark front page, eggshell middle, dark tail — so each file
+is one continuous surface.
+
+Contact travels with the footer because that is how the design was drawn. They
+share the same deep ground and were a single component in the source, contact
+running *into* the footer rather than sitting above a separate thing. Splitting
+between them would cut the dark block in a place it was never drawn to be cut.
+
+The stylesheet opens file 1 rather than occupying a widget of its own: a widget
+holding only a `<style>` renders nothing but still takes its section's padding,
+which shows as a band of empty page ground above the header.
+
+**What you give up:** reordering sections by dragging. Moving *cases* above
+*learned* means editing HTML inside file 2 rather than moving a block. If that
+matters, use `sections/` instead — both are generated from the same source, so
+you can switch at any time.
+
+## Settings for each section
+
+For every Elementor section holding one of these widgets:
+
+- **Layout > Content Width: Full Width**
+- **Layout > Columns Gap: No Gap**
+- **Advanced > Padding: 0** on all four sides
+
+The stylesheet also neutralises Elementor's own wrappers, scoped to
+`.capiital-part` so nothing else on the site is affected.
+
+## Use the HTML widget, not the Text Editor
+
+The Text Editor widget runs WordPress's content filters, which strip `<br>`, the
+empty `<span>`s that draw the wordmark's two bars, and `<span>`/`<p>` wrappers —
+and turn every newline inside a `<script>` into `<br />`, which destroys it. The
+HTML widget does none of that.
+
+If the script comes back broken — view source and look for `<br />` or `<p>`
+inside the `<script>` — paste `4-script-oneline.html` instead. Same code on one
+line, so there are no newlines to convert.
+
+## The stylesheet's other home
+
+To keep the CSS in **Appearance > Customize > Additional CSS** instead, delete
+the `<style>` block from the top of file 1 and paste
+`optional-styles-for-additional-css.css` there. One or the other, never both:
+pasting both loads the stylesheet twice.
+
+## Regenerating
+
+Generated from `index.html` by `wordpress/build.sh`.
+"""
+open(os.path.join(grouped_out, 'README.md'), 'w').write(GROUPED_README)
+
+print('build: wrote dist/sections-grouped/ (%d files)' % (len(grouped) + 3))
 
 README = """# Capiital — section snippets
 
@@ -564,13 +671,15 @@ catch (e) { ({ minify } = require('terser')); }
   const r = await minify(src, { format: { comments: false }, compress: true, mangle: true });
   if (r.error) throw r.error;
   if (r.code.includes('\n')) throw new Error('minified output still contains a newline');
-  fs.writeFileSync(path.join(repo, 'dist/sections/10-script-oneline.html'),
-    '<!-- Capiital — SCRIPT, on one line. Identical behaviour to 10-script.html.\n'
+  const oneline = (readable) =>
+    '<!-- Capiital — SCRIPT, on one line. Identical behaviour to ' + readable + '.\n'
   + '     Use this one if the readable copy comes back broken: WordPress turns\n'
   + '     newlines inside a pasted <script> into <br /> tags, and a file with no\n'
   + '     newlines has nothing for it to break. -->\n'
-  + '<div class="capiital-part">\n<script>' + r.code + '</script>\n</div>\n');
-  console.log('build: wrote dist/sections/10-script-oneline.html');
+  + '<div class="capiital-part">\n<script>' + r.code + '</script>\n</div>\n';
+  fs.writeFileSync(path.join(repo, 'dist/sections/10-script-oneline.html'), oneline('10-script.html'));
+  fs.writeFileSync(path.join(repo, 'dist/sections-grouped/4-script-oneline.html'), oneline('4-script.html'));
+  console.log('build: wrote both one-line script snippets');
 })();
 NODE
 else
@@ -584,3 +693,10 @@ find "$repo/dist/sections" -exec touch -t 202001010000.00 {} +
   && find sections -type f ! -name '.DS_Store' | LC_ALL=C sort \
      | zip -qX capiital-sections.zip -@ )
 echo "build: wrote dist/capiital-sections.zip"
+
+rm -f "$repo/dist/capiital-sections-grouped.zip"
+find "$repo/dist/sections-grouped" -exec touch -t 202001010000.00 {} +
+( cd "$repo/dist" \
+  && find sections-grouped -type f ! -name '.DS_Store' | LC_ALL=C sort \
+     | zip -qX capiital-sections-grouped.zip -@ )
+echo "build: wrote dist/capiital-sections-grouped.zip"

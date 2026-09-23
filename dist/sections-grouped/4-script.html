@@ -1,0 +1,144 @@
+<!-- Capiital — SCRIPT. Paste this LAST, into its own HTML widget at the very
+     bottom of the page. It drives the header on scroll, the reading progress
+     hairline, the live nav item and the scroll-entry reveals. Without it the
+     sections below the hero stay invisible.
+     The .capiital-part wrapper collapses this widget's Elementor section, which
+     would otherwise leave empty padding below the footer. -->
+<div class="capiital-part">
+<script>
+/* CAP//TAL — the behaviour the design needs beyond CSS.
+   Four things: the header's colour flip on scroll, the scroll-progress hairline,
+   the live nav item, and the scroll-entry reveals. Hover and the front-page wash
+   are handled entirely in the stylesheet. */
+
+(function () {
+  "use strict";
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ── Scroll-entry reveals ───────────────────────────────────────────────
+     One observer, fired once per element, never reversed — the page settles as
+     it is read and then stays put. Without IntersectionObserver everything is
+     released immediately rather than left invisible. */
+  var revealables = document.querySelectorAll("[data-reveal]");
+
+  if (!("IntersectionObserver" in window) || reduced) {
+    Array.prototype.forEach.call(revealables, function (el) { el.classList.add("is-in"); });
+  } else {
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        // `boundingClientRect.top < 0` catches anything already scrolled past.
+        // A fast fling can carry an element from below the viewport to above it
+        // between two observer samples, and without this it would never report
+        // as intersecting again — leaving it stuck at opacity 0 for good.
+        if (e.isIntersecting || e.boundingClientRect.top < 0) {
+          e.target.classList.add("is-in");
+          revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -12% 0px" });
+
+    Array.prototype.forEach.call(revealables, function (el) { revealObserver.observe(el); });
+  }
+
+  /* ── Header state and scroll progress ──────────────────────────────────
+     Both read the same scroll event. The header is transparent over the hero
+     and takes its ground, blur and rule only once past it. */
+  var header = document.querySelector(".site-header");
+  var progressBar = document.querySelector(".scroll-progress__bar");
+
+  function onScroll() {
+    if (header) header.dataset.scrolled = window.scrollY > 40 ? "true" : "false";
+
+    if (progressBar) {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var p = h > 0 ? Math.min(1, window.scrollY / h) : 0;
+      progressBar.style.width = (p * 100).toFixed(2) + "%";
+    }
+  }
+
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+
+  /* ── The live nav item ─────────────────────────────────────────────────
+     Whichever section owns the middle of the viewport marks its nav link. The
+     margins deliberately ignore the top 40% and bottom 50% so the active item
+     changes when a section is being read, not when it first appears. */
+  var navLinks = document.querySelectorAll(".site-nav a[href^='#']");
+
+  if ("IntersectionObserver" in window && navLinks.length) {
+    var byId = {};
+    var watched = [];
+
+    Array.prototype.forEach.call(navLinks, function (link) {
+      var id = link.getAttribute("href").slice(1);
+      var section = document.getElementById(id);
+      if (!section) return;
+      byId[id] = link;
+      watched.push(section);
+    });
+
+    var sectionObserver = new IntersectionObserver(function (entries) {
+      var visible = entries
+        .filter(function (e) { return e.isIntersecting; })
+        .sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; })[0];
+      if (!visible) return;
+
+      Array.prototype.forEach.call(navLinks, function (l) { l.removeAttribute("aria-current"); });
+      var live = byId[visible.target.id];
+      if (live) live.setAttribute("aria-current", "true");
+    }, { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.2, 0.6] });
+
+    watched.forEach(function (s) { sectionObserver.observe(s); });
+  }
+
+  /* ── Mobile navigation ─────────────────────────────────────────────────── */
+  var toggle = document.querySelector(".nav-toggle");
+  var nav = document.getElementById("site-nav");
+
+  if (toggle && nav) {
+    var setOpen = function (open) {
+      nav.dataset.open = open ? "true" : "false";
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.textContent = open ? "Close" : "Menu";
+    };
+
+    toggle.addEventListener("click", function () {
+      setOpen(nav.dataset.open !== "true");
+    });
+
+    nav.addEventListener("click", function (e) {
+      if (e.target.closest("a")) setOpen(false);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.dataset.open === "true") {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // The sheet is a mobile affordance only — leaving that range resets it so it
+    // can never be left stranded open over the desktop layout.
+    var wide = window.matchMedia("(min-width: 861px)");
+    var onWide = function (e) { if (e.matches) setOpen(false); };
+    if (wide.addEventListener) wide.addEventListener("change", onWide);
+    else wide.addListener(onWide);
+  }
+
+  /* ── Contact form ──────────────────────────────────────────────────────
+     There is no endpoint to post to yet, so the form acknowledges in place
+     rather than navigating away and losing what was typed. */
+  var form = document.querySelector(".contact__form");
+  var terms = document.querySelector("[data-terms]");
+
+  if (form && terms) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      terms.textContent = "Received. A principal will reply.";
+    });
+  }
+})();
+</script>
+</div>
