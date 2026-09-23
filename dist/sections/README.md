@@ -4,8 +4,7 @@ Paste each file into an Elementor **HTML widget**, in number order.
 
 | # | File | Goes in |
 | --- | --- | --- |
-| 00 | `00-styles.html` | An HTML widget at the very top |
-| 01 | `01-header-front.html` | Header **and** front page, together |
+| 01 | `01-header-front.html` | Stylesheet, header **and** front page, together |
 | 02 | `02-engage.html` | What we engage |
 | 03 | `03-believe.html` | What we believe |
 | 04 | `04-learned.html` | What we learned |
@@ -17,7 +16,20 @@ Paste each file into an Elementor **HTML widget**, in number order.
 | 10 | `10-script.html` | An HTML widget at the very bottom |
 
 Two alternates are included for the cases described below:
-`00-styles-for-additional-css.css` and `10-script-oneline.html`.
+`optional-styles-for-additional-css.css` and `10-script-oneline.html`.
+
+## The stylesheet lives in 01
+
+There is no separate styles widget. A widget holding only a `<style>` renders
+nothing but still occupies its Elementor section's padding — 50px of empty page
+ground above the header — and it is one more thing to keep in the right order.
+It is folded into `01` instead, ahead of the skip link. CSS is global once
+parsed, so `02` onward still see it.
+
+To move it to **Appearance > Customize > Additional CSS** instead, delete the
+`<style>` block from the top of `01` and paste
+`optional-styles-for-additional-css.css` there. Do one or the other, never both:
+pasting both loads the stylesheet twice.
 
 ## Why the header is not its own piece
 
@@ -44,13 +56,7 @@ On this design they remove:
 
 The **HTML** widget does none of this. Use it for every file here.
 
-## The two files that are not sections
-
-**`00-styles.html` carries the whole stylesheet** and everything else depends on
-it. Paste it first. The safest home is actually **Appearance > Customize >
-Additional CSS**, which is never run through the content filters — use
-`00-styles-for-additional-css.css` for that, which is the same CSS without the
-`<style>` tag. Either way it has to exist somewhere.
+## The file that is not a section
 
 **`10-script.html` releases the scroll-entry reveals.** Without it every section
 below the front page stays at `opacity: 0` and the page looks empty past the

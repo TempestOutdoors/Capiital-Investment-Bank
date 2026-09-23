@@ -340,24 +340,6 @@ footer = grab(r'<footer class="site-footer[^>]*>', r'</footer>', 'footer')
 def section(sid):
     return grab(r'<section class="[^"]*"[^>]*id="%s">' % sid, r'</section>\s*(?=\n<!--|\n<footer|\Z)', sid)
 
-# The header travels WITH the front page, not in a section of its own. Given its
-# own Elementor section it would occupy layout space the fixed header does not
-# need, pushing the hero down: a band of page ground above the hero, a seam
-# between the two, and the navigation sitting on the eggshell instead of over the
-# dark hero before a single pixel has been scrolled.
-# The skip link belongs to the same piece — it is the first focusable thing on
-# the page and has to precede the navigation it skips.
-order = [
-    ('01', 'header-front', 'Header and front page', skip + '\n\n' + header + '\n\n' + section('top')),
-    ('02', 'engage',       'What we engage',        section('services')),
-    ('03', 'believe',      'What we believe',       section('philosophy')),
-    ('04', 'learned',      'What we learned',       section('learned')),
-    ('05', 'cases',        'Cases',                 section('cases')),
-    ('06', 'people',       'Who we are',            section('people')),
-    ('07', 'papers',       'What we think',         section('papers')),
-    ('08', 'contact',      'How to reach us',       section('contact')),
-    ('09', 'footer',       'Footer',                footer),
-]
 
 # Elementor puts every HTML widget inside section > container > column > wrap,
 # each of which is width-constrained and padded by default. Left alone, the
@@ -403,19 +385,35 @@ styles = styles.replace('@import url("tokens.css");\n\n', '')
 if re.search(r'^\s*@import', styles, re.M):
     sys.exit('snippets: an @import survived in styles.css')
 
-# 00 carries the whole stylesheet. The @import has to be the first rule in the
-# sheet or the browser drops it and both faces fall back silently.
-open(os.path.join(out, '00-styles.html'), 'w').write(
-    '<!-- Capiital — STYLES. Paste this FIRST, into its own HTML widget at the very\n'
-    '     top of the page. Every section below depends on it.\n'
-    '     The .capiital-part wrapper is not decoration: this widget renders nothing,\n'
-    '     but its Elementor section still carries default padding, which shows as a\n'
-    '     band of empty page ground above the header. The wrapper is what the reset\n'
-    '     at the end of the stylesheet matches on. -->\n'
-    '<div class="capiital-part">\n'
-    '<style>\n' + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n'
-    + styles.lstrip() + '\n' + COMPAT + '</style>\n'
-    '</div>\n')
+# The stylesheet travels inside piece 01 rather than in a widget of its own. A
+# widget holding only a <style> renders nothing but still occupies its Elementor
+# section's padding — measured at 50px of empty page ground above the header —
+# and it is one more thing to keep in the right order. Folded in here it cannot
+# be misplaced, and CSS is global once parsed, so pieces 02 onward still see it.
+# The @import has to be the first rule in the sheet or the browser drops it and
+# both faces fall back silently.
+STYLESHEET = ('<style>\n' + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n'
+              + styles.lstrip() + '\n' + COMPAT + '</style>')
+
+# The header travels WITH the front page, not in a section of its own. Given its
+# own Elementor section it would occupy layout space the fixed header does not
+# need, pushing the hero down: a band of page ground above the hero, a seam
+# between the two, and the navigation sitting on the eggshell instead of over the
+# dark hero before a single pixel has been scrolled.
+# The skip link belongs to the same piece — it is the first focusable thing on
+# the page and has to precede the navigation it skips.
+order = [
+    ('01', 'header-front', 'Stylesheet, header and front page',
+     STYLESHEET + '\n\n' + skip + '\n\n' + header + '\n\n' + section('top')),
+    ('02', 'engage',       'What we engage',        section('services')),
+    ('03', 'believe',      'What we believe',       section('philosophy')),
+    ('04', 'learned',      'What we learned',       section('learned')),
+    ('05', 'cases',        'Cases',                 section('cases')),
+    ('06', 'people',       'Who we are',            section('people')),
+    ('07', 'papers',       'What we think',         section('papers')),
+    ('08', 'contact',      'How to reach us',       section('contact')),
+    ('09', 'footer',       'Footer',                footer),
+]
 
 for num, slug, title, markup in order:
     body = '\n'.join('  ' + l if l.strip() else l for l in markup.split('\n'))
@@ -427,9 +425,12 @@ for num, slug, title, markup in order:
 # The stylesheet again as bare CSS, for Appearance > Customize > Additional CSS.
 # That box is never run through the content filters, so it is the one place the
 # CSS cannot be mangled.
-open(os.path.join(out, '00-styles-for-additional-css.css'), 'w').write(
-    '/* Capiital — paste into Appearance > Customize > Additional CSS.\n'
-    '   No <style> tag: that box expects bare CSS. */\n\n'
+open(os.path.join(out, 'optional-styles-for-additional-css.css'), 'w').write(
+    '/* Capiital — OPTIONAL, and an ALTERNATIVE to the <style> block at the top of\n'
+    '   01-header-front.html, never a companion to it: pasting both loads the\n'
+    '   stylesheet twice. Use this only if you delete that block. Paste into\n'
+    '   Appearance > Customize > Additional CSS, which expects bare CSS and so\n'
+    '   carries no <style> tag. */\n\n'
     + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n' + styles.lstrip() + '\n' + COMPAT)
 
 open(os.path.join(out, '10-script.html'), 'w').write(
@@ -449,8 +450,7 @@ Paste each file into an Elementor **HTML widget**, in number order.
 
 | # | File | Goes in |
 | --- | --- | --- |
-| 00 | `00-styles.html` | An HTML widget at the very top |
-| 01 | `01-header-front.html` | Header **and** front page, together |
+| 01 | `01-header-front.html` | Stylesheet, header **and** front page, together |
 | 02 | `02-engage.html` | What we engage |
 | 03 | `03-believe.html` | What we believe |
 | 04 | `04-learned.html` | What we learned |
@@ -462,7 +462,20 @@ Paste each file into an Elementor **HTML widget**, in number order.
 | 10 | `10-script.html` | An HTML widget at the very bottom |
 
 Two alternates are included for the cases described below:
-`00-styles-for-additional-css.css` and `10-script-oneline.html`.
+`optional-styles-for-additional-css.css` and `10-script-oneline.html`.
+
+## The stylesheet lives in 01
+
+There is no separate styles widget. A widget holding only a `<style>` renders
+nothing but still occupies its Elementor section's padding — 50px of empty page
+ground above the header — and it is one more thing to keep in the right order.
+It is folded into `01` instead, ahead of the skip link. CSS is global once
+parsed, so `02` onward still see it.
+
+To move it to **Appearance > Customize > Additional CSS** instead, delete the
+`<style>` block from the top of `01` and paste
+`optional-styles-for-additional-css.css` there. Do one or the other, never both:
+pasting both loads the stylesheet twice.
 
 ## Why the header is not its own piece
 
@@ -489,13 +502,7 @@ On this design they remove:
 
 The **HTML** widget does none of this. Use it for every file here.
 
-## The two files that are not sections
-
-**`00-styles.html` carries the whole stylesheet** and everything else depends on
-it. Paste it first. The safest home is actually **Appearance > Customize >
-Additional CSS**, which is never run through the content filters — use
-`00-styles-for-additional-css.css` for that, which is the same CSS without the
-`<style>` tag. Either way it has to exist somewhere.
+## The file that is not a section
 
 **`10-script.html` releases the scroll-entry reveals.** Without it every section
 below the front page stays at `opacity: 0` and the page looks empty past the

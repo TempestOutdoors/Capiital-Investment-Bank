@@ -1,11 +1,9 @@
-<!-- Capiital — STYLES. Paste this FIRST, into its own HTML widget at the very
-     top of the page. Every section below depends on it.
-     The .capiital-part wrapper is not decoration: this widget renders nothing,
-     but its Elementor section still carries default padding, which shows as a
-     band of empty page ground above the header. The wrapper is what the reset
-     at the end of the stylesheet matches on. -->
-<div class="capiital-part">
-<style>
+/* Capiital — OPTIONAL, and an ALTERNATIVE to the <style> block at the top of
+   01-header-front.html, never a companion to it: pasting both loads the
+   stylesheet twice. Use this only if you delete that block. Paste into
+   Appearance > Customize > Additional CSS, which expects bare CSS and so
+   carries no <style> tag. */
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');
 
 /* ============================================================================
@@ -977,5 +975,3 @@ body:has(.front) .site-header[data-scrolled="false"] .scroll-progress__bar{backg
   width:100%!important;
 }
 .capiital-part{width:100%}
-</style>
-</div>
