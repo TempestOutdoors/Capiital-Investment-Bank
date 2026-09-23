@@ -1,0 +1,21 @@
+<!-- @dsCard group="Components" viewport="700x391" name="Navigation" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;padding:20px;background:var(--surface-page);font-family:var(--font-sans)}.grp{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px}.cap{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-foreground);width:100%;margin-bottom:-4px}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script><script src="../../ds-ns.js"></script></head><body><div id="root"></div>
+<script type="text/babel">const { Tabs, Accordion, Breadcrumb, Pagination, NavBar } = window.DS;
+
+function Demo(){const [p,setP]=React.useState(2);return(<div style={{display:'grid',gap:16}}>
+<div style={{border:'1px solid var(--border)',background:'var(--surface-card)'}}><NavBar solid links={[{label:'Firm',href:'#'},{label:'Advisory',href:'#'},{label:'Transactions',href:'#'},{label:'Insights',href:'#'}]} style={{position:'static'}}/></div>
+<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:20}}>
+<div style={{display:'grid',gap:12,alignContent:'start'}}>
+<Breadcrumb items={[{label:'Insights',href:'#'},{label:'Market Letter'}]}/>
+<Tabs tabs={[{value:'all',label:'All'},{value:'ma',label:'M&A'},{value:'ecm',label:'Capital Markets'}]}>{(c)=><span style={{fontSize:12,color:'var(--muted-foreground)'}}>Showing: {c}</span>}</Tabs>
+<Pagination page={p} pages={5} onChange={setP}/>
+</div>
+<Accordion defaultOpen={0} items={[{title:'How are mandates staffed?',content:'Every mandate is led, executed and concluded by a partner.'},{title:'Do you deploy balance sheet?',content:'No proprietary capital, no in-house funds, no competing interests.'}]}/>
+</div></div>);}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);</script><script src="../../back-to-hub.js"></script>
+</body></html>
