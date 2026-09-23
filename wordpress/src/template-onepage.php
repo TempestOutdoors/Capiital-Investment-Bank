@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: CAP=TAL One-Page
+ * Template Name: Capiital One-Page
  * Template Post Type: page
  *
  * Assign this from the page editor's Template dropdown to render the full

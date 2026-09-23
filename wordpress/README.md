@@ -1,6 +1,6 @@
-# CAP=TAL for WordPress
+# Capiital for WordPress
 
-`captal-onepage/` is the site packaged as an installable WordPress theme.
+`captal-onepage/` is the v3 site packaged as an installable WordPress theme.
 
 It is **generated** from `index.html` and `assets/` at the repository root. Edit
 those, then regenerate — changes made directly to the theme are overwritten on
@@ -52,7 +52,7 @@ The design is no longer the whole theme — it is a template part
 
 - **`front-page.php`** — the site's front page, used only when the assigned page
   has no content of its own. Build that page in Elementor and its content wins.
-- **`template-onepage.php`** — a "CAP=TAL One-Page" template you can assign to
+- **`template-onepage.php`** — a "Capiital One-Page" template you can assign to
   any page from the editor's Template dropdown.
 
 The sticky header and the footer moved out into `header.php` and `footer.php`,
@@ -80,10 +80,10 @@ design.
 
 ## Notes
 
-- **Fonts** load from Google Fonts, matching the design source. If the site must
-  not call out to Google, download the two families, drop the woff2 files into
-  `assets/fonts/`, and swap the `captal-fonts` enqueue for local `@font-face`
-  rules.
+- **Fonts** are Inter and Source Serif 4, loaded from Google Fonts to match the
+  design source. If the site must not call out to Google, download the two
+  families, drop the woff2 files into `assets/fonts/`, and swap the
+  `captal-fonts` enqueue for local `@font-face` rules.
 - **`tokens.css` is a dependency of `styles.css`**, declared in the enqueue
   rather than with an `@import`, so the order is guaranteed and WordPress can
   cache both normally.

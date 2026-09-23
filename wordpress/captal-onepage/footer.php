@@ -11,33 +11,33 @@
 if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_location( 'footer' ) ) :
 	?>
 <footer class="site-footer on-ink">
-  <div class="container">
-    <div class="grid-12 site-footer__grid">
+  <div class="wrap">
+    <div class="site-footer__grid">
       <div class="site-footer__brand">
-        <span class="logo logo--cream"><span>CAP</span><span class="logo__equals" aria-hidden="true"></span><span>TAL</span></span>
+        <span class="logo logo--cream" style="font-size:16px">CAP<span class="logo__bars" aria-hidden="true"><i></i><i></i></span>TAL</span>
         <p class="site-footer__blurb">
-          Independent advisory counsel since 1994. Privately held. Conflict-free
-          by design.
+          Financial excellence, quietly executed. Performance visibility for
+          companies built to be held.
         </p>
       </div>
 
       <div class="site-footer__col">
-        <div class="site-footer__heading">Practice</div>
+        <div class="site-footer__heading">What we engage</div>
         <ul class="site-footer__links">
-          <li><a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Mergers &amp; Acquisitions</a></li>
-          <li><a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Capital Markets</a></li>
-          <li><a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Restructuring</a></li>
-          <li><a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Private Capital</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Performance Visibility</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Financial Leadership</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Transactions</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Operational Finance</a></li>
         </ul>
       </div>
 
       <div class="site-footer__col">
-        <div class="site-footer__heading">Firm</div>
+        <div class="site-footer__heading">The house</div>
         <ul class="site-footer__links">
-          <li><a href="<?php echo esc_url( home_url( '/#firm' ) ); ?>">About</a></li>
-          <li><a href="<?php echo esc_url( home_url( '/#firm' ) ); ?>">Partners</a></li>
-          <li><a href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">Careers</a></li>
-          <li><a href="<?php echo esc_url( home_url( '/#insights' ) ); ?>">Press</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/#philosophy' ) ); ?>">What we believe</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/#learned' ) ); ?>">What we learned</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/#cases' ) ); ?>">Cases</a></li>
+          <li><a href="<?php echo esc_url( home_url( '/#people' ) ); ?>">Who we are</a></li>
         </ul>
       </div>
 
@@ -45,16 +45,14 @@ if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_
         <div class="site-footer__heading">Legal</div>
         <ul class="site-footer__links">
           <li><a href="#">Privacy</a></li>
-          <li><a href="#">Regulatory Disclosures</a></li>
-          <li><a href="#">Modern Slavery Statement</a></li>
-          <li><a href="#">Terms</a></li>
+          <li><a href="#">Terms of engagement</a></li>
+          <li><a href="#">Regulatory disclosures</a></li>
         </ul>
       </div>
     </div>
 
     <div class="site-footer__base">
-      <div>&copy; 2026 CAP=TAL Partners LLP &middot; Authorised and regulated</div>
-      <div>New York &middot; London &middot; Hong Kong &middot; Frankfurt &middot; Z&uuml;rich &middot; Singapore</div>
+      <div>&copy; MMXXVI Capiital &middot; Information on this site is provided for general informational purposes only and does not constitute investment, legal, tax or accounting advice.</div>
     </div>
   </div>
 </footer>

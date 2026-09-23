@@ -1,397 +1,412 @@
-<!-- CAP=TAL — paste this ENTIRE file into a Custom HTML block. -->
+<!-- Capiital — paste this ENTIRE file into a Custom HTML block. -->
 <!-- The stylesheet goes separately into Appearance > Customize > Additional CSS. -->
 
-<a class="skip-link" href="#firm">Skip to content</a>
+<a class="skip-link" href="#services">Skip to content</a>
 
 <!-- ── Header ────────────────────────────────────────────────────────────── -->
-<header class="site-header">
+<header class="site-header" data-scrolled="false">
   <div class="site-header__inner">
-    <a href="#" aria-label="CAP=TAL — home">
-      <span class="logo"><span>CAP</span><span class="logo__equals" aria-hidden="true"></span><span>TAL</span></span>
+    <a class="site-header__home" href="#top" aria-label="Capiital — home">
+      <span class="logo logo--current">CAP<span class="logo__bars" aria-hidden="true"><i></i><i></i></span>TAL</span>
     </a>
 
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
 
     <nav class="site-nav" id="site-nav" aria-label="Primary">
-      <a href="#firm">Firm</a>
-      <a href="#services">Advisory</a>
-      <a href="#transactions">Transactions</a>
-      <a href="#insights">Insights</a>
-      <a href="#contact">Contact</a>
+      <a href="#services">What we engage</a>
+      <a href="#philosophy">What we believe</a>
+      <a href="#learned">What we learned</a>
+      <a href="#cases">Cases</a>
+      <a href="#people">Who we are</a>
+      <a href="#papers">What we think</a>
+      <a href="#contact">How to reach us</a>
     </nav>
-
-    <a class="link-rule link-rule--nav site-header__portal" href="#contact">Client Portal <span aria-hidden="true">&rarr;</span></a>
   </div>
+  <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress__bar"></div></div>
 </header>
 
-<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
-<section class="hero on-ink">
-  <div class="container hero__body">
-    <div class="eyebrow animate-rise">Independent &middot; Established 1994 &middot; Global</div>
+<!-- ── 01 Front page ─────────────────────────────────────────────────────── -->
+<section class="front on-ink" id="top">
+  <div class="front-veil" aria-hidden="true"></div>
+  <div class="front__light" aria-hidden="true"></div>
 
-    <h1 class="hero__title animate-rise delay-1">
-      Counsel for the<br><span class="italic-accent">consequential</span>.
+  <div class="wrap front__body">
+    <h1 class="front__title animate-rise" style="animation-delay:0.3s">
+      Financial<br>Excellence<br>
+      <span class="heading__accent" style="color:var(--taupe-soft)">for investor-grade companies</span>
     </h1>
 
-    <p class="hero__lede animate-rise delay-2">
-      An independent advisory firm trusted by the world's leading corporations,
-      sovereigns, and private capital institutions through their most defining
-      transactions.
+    <p class="front__lede animate-rise" style="animation-delay:0.45s">
+      A trusted advisor to private equity funds, portfolio companies and ambitious
+      businesses, Capiital creates the strategic insight and performance visibility
+      required to unlock sustainable value and growth.
     </p>
 
-    <div class="hero__actions animate-rise delay-3">
-      <a class="btn-outline" href="#services">Our Practice <span aria-hidden="true">&rarr;</span></a>
-      <a class="link-rule" href="#transactions">Selected Transactions</a>
-    </div>
-  </div>
-
-  <div class="container hero__stats animate-rise delay-4">
-    <div class="stat">
-      <div class="stat__value">$420B+</div>
-      <div class="stat__label">Aggregate transaction value</div>
-    </div>
-    <div class="stat">
-      <div class="stat__value">1,200+</div>
-      <div class="stat__label">Mandates completed</div>
-    </div>
-    <div class="stat">
-      <div class="stat__value">32</div>
-      <div class="stat__label">Countries served</div>
-    </div>
-    <div class="stat">
-      <div class="stat__value">94%</div>
-      <div class="stat__label">Repeat client engagement</div>
+    <div class="front__actions animate-rise" style="animation-delay:0.6s">
+      <a class="arrow-link" href="#services">What we engage <span aria-hidden="true">&rarr;</span></a>
+      <a class="arrow-link" href="#learned">What we learned <span aria-hidden="true">&rarr;</span></a>
     </div>
   </div>
 </section>
 
-<!-- ── Client marquee ────────────────────────────────────────────────────── -->
-<!-- The track holds the client list twice; the -50% keyframe lands exactly on
-     the seam, so the loop is invisible. -->
-<section class="marquee" aria-label="Selected clients">
-  <div class="marquee__track animate-marquee">
-    <div class="marquee__row">
-      <span class="marquee__name">BERKHOLM &amp; CO.</span>
-      <span class="marquee__name">ATRIA GROUP</span>
-      <span class="marquee__name">MERIDIAN HOLDINGS</span>
-      <span class="marquee__name">VALOREN INDUSTRIES</span>
-      <span class="marquee__name">NORTHWICK CAPITAL</span>
-      <span class="marquee__name">PORTUM ENERGY</span>
-      <span class="marquee__name">KELVAR PHARMA</span>
-      <span class="marquee__name">LUMEN SOVEREIGN</span>
-    </div>
-    <div class="marquee__row" aria-hidden="true">
-      <span class="marquee__name">BERKHOLM &amp; CO.</span>
-      <span class="marquee__name">ATRIA GROUP</span>
-      <span class="marquee__name">MERIDIAN HOLDINGS</span>
-      <span class="marquee__name">VALOREN INDUSTRIES</span>
-      <span class="marquee__name">NORTHWICK CAPITAL</span>
-      <span class="marquee__name">PORTUM ENERGY</span>
-      <span class="marquee__name">KELVAR PHARMA</span>
-      <span class="marquee__name">LUMEN SOVEREIGN</span>
-    </div>
-  </div>
-</section>
-
-<!-- ── § 01 The Firm ─────────────────────────────────────────────────────── -->
-<section class="section" id="firm">
-  <div class="container grid-12 firm__grid">
-    <div class="firm__intro">
-      <div class="eyebrow">&sect; 01 &mdash; The Firm</div>
-      <h2 class="firm__title">An equation<br>of conviction<br><span class="italic-accent">and capital.</span></h2>
-    </div>
-
-    <div class="firm__prose">
-      <p>
-        Founded on a single principle: that disciplined judgment, free from
-        conflict, compounds value across generations. We work exclusively in an
-        advisory capacity &mdash; no proprietary balance sheet, no in-house funds,
-        no competing interests.
-      </p>
-      <p>
-        Our partners have advised on more than $420 billion of transactions
-        across six continents, building enduring relationships with corporate
-        boards, founding families, sovereigns, and the world's most discerning
-        institutional investors.
-      </p>
-
-      <div class="hairline" style="margin-top:var(--space-12)"></div>
-
-      <div class="firm__stats">
-        <div class="stat stat--sm">
-          <div class="stat__value">1994</div>
-          <div class="stat__label">Founded</div>
-        </div>
-        <div class="stat stat--sm">
-          <div class="stat__value">62</div>
-          <div class="stat__label">Partners</div>
-        </div>
-        <div class="stat stat--sm">
-          <div class="stat__value">9</div>
-          <div class="stat__label">Global Offices</div>
-        </div>
+<!-- ── 02 What we engage ─────────────────────────────────────────────────── -->
+<section class="section on-sand" id="services">
+  <div class="wrap">
+    <div class="engage__head">
+      <div data-reveal="settle">
+        <div class="eyebrow"><i class="ref">[ 02 — What we engage ]</i></div>
+        <h2 class="heading heading--md">Each part of the process<br><span class="heading__accent">held to one standard.</span></h2>
       </div>
+      <p class="engage__hint" data-reveal="veil" style="transition-delay:calc(1 * var(--stagger-row))">Rest on one for more</p>
+    </div>
+
+    <div class="quadrants" data-reveal="settle">
+      <div class="quadrant quadrant--left" tabindex="0">
+        <span class="quadrant__connector" aria-hidden="true"></span>
+        <span class="quadrant__numeral">I</span>
+        <h3 class="quadrant__title">Performance Visibility</h3>
+        <p class="quadrant__line">The measures a board can rely on, and reporting that holds up to scrutiny.</p>
+      </div>
+
+      <div class="quadrant quadrant--right" tabindex="0">
+        <span class="quadrant__connector" aria-hidden="true"></span>
+        <span class="quadrant__numeral">II</span>
+        <h3 class="quadrant__title">Financial Leadership</h3>
+        <p class="quadrant__line">Senior financial judgment, for as long as it is needed and no longer.</p>
+      </div>
+
+      <div class="quadrant quadrant--left" tabindex="0">
+        <span class="quadrant__connector" aria-hidden="true"></span>
+        <span class="quadrant__numeral">III</span>
+        <h3 class="quadrant__title">Transactions</h3>
+        <p class="quadrant__line">Diligence, modelling, and the questions a buyer will ask &mdash; asked earlier, by us.</p>
+      </div>
+
+      <div class="quadrant quadrant--right" tabindex="0">
+        <span class="quadrant__connector" aria-hidden="true"></span>
+        <span class="quadrant__numeral">IV</span>
+        <h3 class="quadrant__title">Operational Finance</h3>
+        <p class="quadrant__line">The close, the team, the systems. Unremarkable work, done precisely.</p>
+      </div>
+
+      <!-- the centre object — a placeholder until the real artwork arrives -->
+      <div class="quadrant-centre"><span>Placeholder</span></div>
     </div>
   </div>
 </section>
 
-<!-- ── § 02 Advisory Practice ────────────────────────────────────────────── -->
-<section class="section on-ink" id="services">
-  <div class="container">
-    <div class="section-head">
+<!-- ── 03 What we believe ────────────────────────────────────────────────── -->
+<section class="section on-sand" id="philosophy">
+  <div class="wrap believe__grid">
+    <div class="believe__pinned">
+      <div class="eyebrow"><i class="ref">[ 03 — What we believe ]</i></div>
+      <h2 class="heading heading--md">Stewardship,<br><span class="heading__accent">not sentiment.</span></h2>
+      <p class="believe__standfirst">
+        We hold that the heritage upon which a company is built is its principal
+        asset, and that legacy is a matter of stewardship rather than sentiment.
+        What we believe follows from that, and from little else.
+      </p>
+    </div>
+
+    <div class="believe__rail">
       <div>
-        <div class="eyebrow">&sect; 02 &mdash; Advisory Practice</div>
-        <h2 class="section-head__title">Four disciplines.<br><span class="italic-accent">One standard.</span></h2>
-      </div>
-      <p class="section-head__aside">
-        Integrated teams of sector and product specialists, deployed with the
-        senior attention every mandate deserves.
-      </p>
-    </div>
-
-    <div class="hairline-grid hairline-grid--on-ink hairline-grid--2">
-      <div class="service-card">
-        <div class="service-card__head">
-          <span class="service-card__number">01</span>
-          <span class="service-card__cue">Explore &rarr;</span>
+        <div class="rule" data-reveal="draw"></div>
+        <div class="tenet" data-reveal="settle">
+          <h3>Judgment is not delegable</h3>
+          <p>Every mandate is led, executed and concluded by the principal who accepted it. There is no second team.</p>
         </div>
-        <h3 class="service-card__title">Mergers &amp; Acquisitions</h3>
-        <p class="service-card__body">
-          Strategic advisory for sell-side, buy-side, and cross-border
-          transactions. Trusted counsel through every stage of negotiation and
-          execution.
-        </p>
       </div>
-
-      <div class="service-card">
-        <div class="service-card__head">
-          <span class="service-card__number">02</span>
-          <span class="service-card__cue">Explore &rarr;</span>
-        </div>
-        <h3 class="service-card__title">Capital Markets</h3>
-        <p class="service-card__body">
-          Equity and debt origination across public and private channels. IPOs,
-          follow-ons, convertibles, and bespoke structured financings.
-        </p>
-      </div>
-
-      <div class="service-card">
-        <div class="service-card__head">
-          <span class="service-card__number">03</span>
-          <span class="service-card__cue">Explore &rarr;</span>
-        </div>
-        <h3 class="service-card__title">Restructuring</h3>
-        <p class="service-card__body">
-          Liability management, recapitalisations, and Chapter 11 advisory for
-          companies, creditors, and stakeholders navigating complexity.
-        </p>
-      </div>
-
-      <div class="service-card">
-        <div class="service-card__head">
-          <span class="service-card__number">04</span>
-          <span class="service-card__cue">Explore &rarr;</span>
-        </div>
-        <h3 class="service-card__title">Private Capital</h3>
-        <p class="service-card__body">
-          Direct access to global pools of private equity, sovereign wealth, and
-          family office capital for growth and minority investments.
-        </p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── § 03 Selected Transactions ────────────────────────────────────────── -->
-<section class="section" id="transactions">
-  <div class="container">
-    <div class="section-head">
       <div>
-        <div class="eyebrow">&sect; 03 &mdash; Selected Transactions</div>
-        <h2 class="section-head__title">A record measured<br><span class="italic-accent">by outcome.</span></h2>
-      </div>
-      <a class="link-rule" href="#transactions">Full Tombstone Archive &rarr;</a>
-    </div>
-
-    <div class="ledger">
-      <div class="transaction">
-        <div class="transaction__figure">
-          <div class="transaction__value">$4.2B</div>
-          <div class="eyebrow transaction__sub">Sell-side M&amp;A</div>
+        <div class="rule" data-reveal="draw" style="transition-delay:calc(1 * var(--stagger-row))"></div>
+        <div class="tenet" data-reveal="settle" style="transition-delay:calc(1 * var(--stagger-row))">
+          <h3>The work must outlast our presence</h3>
+          <p>An engagement that leaves a dependency behind has not finished; it has paused, and at the client's expense.</p>
         </div>
-        <div class="transaction__desc">Advised a European industrial conglomerate on its divestiture to a global strategic acquirer.</div>
-        <div class="transaction__sector">Industrials</div>
-        <div class="transaction__year">2026</div>
       </div>
-
-      <div class="transaction">
-        <div class="transaction__figure">
-          <div class="transaction__value">$1.8B</div>
-          <div class="eyebrow transaction__sub">Senior Notes</div>
+      <div>
+        <div class="rule" data-reveal="draw" style="transition-delay:calc(2 * var(--stagger-row))"></div>
+        <div class="tenet" data-reveal="settle" style="transition-delay:calc(2 * var(--stagger-row))">
+          <h3>Candour is cheapest early</h3>
+          <p>The gap a buyer will find is better named by us, in a room of our choosing, long before they look for it.</p>
         </div>
-        <div class="transaction__desc">Joint bookrunner on inaugural high-yield issuance for a leading specialty chemicals platform.</div>
-        <div class="transaction__sector">Chemicals</div>
-        <div class="transaction__year">2026</div>
       </div>
-
-      <div class="transaction">
-        <div class="transaction__figure">
-          <div class="transaction__value">$950M</div>
-          <div class="eyebrow transaction__sub">Recapitalisation</div>
+      <div>
+        <div class="rule" data-reveal="draw" style="transition-delay:calc(3 * var(--stagger-row))"></div>
+        <div class="tenet" data-reveal="settle" style="transition-delay:calc(3 * var(--stagger-row))">
+          <h3>What is not counted is not governed</h3>
+          <p>Not everything that matters can be measured. Rather more of it can be measured than usually is.</p>
         </div>
-        <div class="transaction__desc">Lead advisor on out-of-court liability management for a North American consumer brand.</div>
-        <div class="transaction__sector">Consumer</div>
-        <div class="transaction__year">2025</div>
-      </div>
-
-      <div class="transaction">
-        <div class="transaction__figure">
-          <div class="transaction__value">$2.6B</div>
-          <div class="eyebrow transaction__sub">Cross-border M&amp;A</div>
-        </div>
-        <div class="transaction__desc">Exclusive financial advisor on landmark APAC-EU technology combination.</div>
-        <div class="transaction__sector">Technology</div>
-        <div class="transaction__year">2025</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── § 04 Insights ─────────────────────────────────────────────────────── -->
-<section class="section section--band" id="insights">
-  <div class="container">
-    <div class="grid-12 insights__head">
-      <div class="insights__intro">
-        <div class="eyebrow">&sect; 04 &mdash; Insights</div>
-        <h2 class="insights__title">Notes from<br>the <span class="italic-accent">desk.</span></h2>
+<!-- ── 04 What we learned ────────────────────────────────────────────────── -->
+<section class="section on-sand" id="learned">
+  <div class="wrap">
+    <div class="learned__head">
+      <div class="learned__intro" data-reveal="settle">
+        <div class="eyebrow"><i class="ref">[ 04 — What we learned ]</i></div>
+        <h2 class="heading heading--md">Having sat on<br><span class="heading__accent">both sides of the table.</span></h2>
       </div>
-      <p class="insights__aside">
-        Considered perspectives from our partners and research teams on the
-        forces shaping global capital markets.
+      <p class="learned__standfirst" data-reveal="veil" style="transition-delay:calc(1 * var(--stagger-row))">
+        We have prepared companies for scrutiny, and we have been the party applying
+        it. The same small number of things holds true on both occasions. None of
+        them is complicated, and none is ever dealt with as early as it could have been.
       </p>
     </div>
 
-    <div class="hairline-grid hairline-grid--3">
-      <article class="insight-card">
-        <div class="insight-card__head">
-          <span class="eyebrow">Market Letter</span>
-          <span class="insight-card__date">Q2 &middot; 2026</span>
+    <div class="observations">
+      <div>
+        <div class="rule" data-reveal="draw"></div>
+        <div class="observation" data-reveal="settle">
+          <span class="observation__index">01</span>
+          <h3>The monthly pack says more than the forecast</h3>
+          <p>A month's reporting describes the two years ahead more accurately than the forecast filed beside it, and at a fraction of the effort.</p>
         </div>
-        <h3 class="insight-card__title">Rates, Rotation &amp; the Return of Strategic Capital</h3>
-        <div class="insight-card__foot">
-          <span>12 min read</span>
-          <span class="insight-card__cue">Read &rarr;</span>
+      </div>
+      <div>
+        <div class="rule" data-reveal="draw" style="transition-delay:calc(1 * var(--stagger-row))"></div>
+        <div class="observation" data-reveal="settle" style="transition-delay:calc(1 * var(--stagger-row))">
+          <span class="observation__index">02</span>
+          <h3>Visibility comes before speed</h3>
+          <p>The work before an acceleration is almost always the same, and almost never discussed: settling what is to be counted, then counting it the same way twice.</p>
         </div>
-      </article>
-
-      <article class="insight-card">
-        <div class="insight-card__head">
-          <span class="eyebrow">Sector Note</span>
-          <span class="insight-card__date">May 2026</span>
+      </div>
+      <div>
+        <div class="rule" data-reveal="draw" style="transition-delay:calc(2 * var(--stagger-row))"></div>
+        <div class="observation" data-reveal="settle" style="transition-delay:calc(2 * var(--stagger-row))">
+          <span class="observation__index">03</span>
+          <h3>The quiet quarters matter most</h3>
+          <p>Value accrues in the seasons when no one is watching. What held in the second quarter is what makes the fourth defensible.</p>
         </div>
-        <h3 class="insight-card__title">Energy Transition: Capital Stacks for the Next Decade</h3>
-        <div class="insight-card__foot">
-          <span>9 min read</span>
-          <span class="insight-card__cue">Read &rarr;</span>
+      </div>
+      <div>
+        <div class="rule" data-reveal="draw" style="transition-delay:calc(3 * var(--stagger-row))"></div>
+        <div class="observation" data-reveal="settle" style="transition-delay:calc(3 * var(--stagger-row))">
+          <span class="observation__index">04</span>
+          <h3>Complexity outgrows its instruments</h3>
+          <p>A company seldom loses control of its business. It loses sight of it, which arrives at the same place by a longer and more expensive road.</p>
         </div>
-      </article>
-
-      <article class="insight-card">
-        <div class="insight-card__head">
-          <span class="eyebrow">Quarterly Review</span>
-          <span class="insight-card__date">Q1 &middot; 2026</span>
-        </div>
-        <h3 class="insight-card__title">Sponsor Activity &amp; the Resurgence of Take-Privates</h3>
-        <div class="insight-card__foot">
-          <span>15 min read</span>
-          <span class="insight-card__cue">Read &rarr;</span>
-        </div>
-      </article>
+      </div>
+      <div class="rule"></div>
     </div>
   </div>
 </section>
 
-<!-- ── § 05 Offices ──────────────────────────────────────────────────────── -->
-<section class="section on-ink" id="contact">
-  <div class="container">
-    <div class="grid-12 contact__head">
-      <div class="contact__intro">
-        <div class="eyebrow">&sect; 05 &mdash; Offices</div>
-        <h2 class="section-head__title">A global firm,<br><span class="italic-accent">locally rooted.</span></h2>
+<!-- ── 05 Cases ──────────────────────────────────────────────────────────── -->
+<section class="section on-sand" id="cases">
+  <div class="wrap">
+    <div class="cases__head">
+      <div data-reveal="settle">
+        <div class="eyebrow"><i class="ref">[ 05 — Cases ]</i></div>
+        <h2 class="heading heading--md">Three situations,<br><span class="heading__accent">told without names.</span></h2>
       </div>
-      <div class="contact__aside">
-        <p>
-          For new business enquiries, media, or careers, our partners welcome
-          direct correspondence.
-        </p>
-        <a class="contact__email" href="mailto:partners@captal.com">partners@captal.com <span aria-hidden="true">&rarr;</span></a>
-      </div>
+      <p class="cases__note" data-reveal="veil" style="transition-delay:calc(1 * var(--stagger-row))">
+        The affairs of those we advise are their own. Identifying detail has been set
+        aside; the situation, the finding and the remedy stand as they were.
+      </p>
     </div>
 
-    <div class="hairline-grid hairline-grid--on-ink hairline-grid--3">
-      <div class="office-card">
-        <div class="office-card__role">Global Headquarters</div>
-        <div class="office-card__city">New York</div>
-        <div class="office-card__addr">535 Madison Avenue</div>
+    <div class="case-grid">
+      <div class="case-cell" data-reveal="settle" tabindex="0">
+        <span class="case-cell__ref">Case 01</span>
+        <h3>Industrial manufacturing</h3>
+        <div class="case-cell__body">
+          <p>A second-generation manufacturer, profitable and reputable, weighing a sale the family had not yet resolved upon. The usual course would have been to tidy the accounts and accept the discount a purchaser applies to reporting of that kind. We read it the other way round: the reporting was not the weakness but the place the value lay hidden. Margin, restated by product line, showed a business worth more than its owners believed; they went to market a year later knowing what they held.</p>
+        </div>
       </div>
-      <div class="office-card">
-        <div class="office-card__role">EMEA</div>
-        <div class="office-card__city">London</div>
-        <div class="office-card__addr">20 Berkeley Square</div>
+
+      <div class="case-cell" data-reveal="settle" style="transition-delay:calc(1 * var(--stagger-row))" tabindex="0">
+        <span class="case-cell__ref">Case 02</span>
+        <h3>Sponsor-backed services</h3>
+        <div class="case-cell__body">
+          <p>A services platform ten weeks into its first institutional ownership, with a sound plan and a newly seated board. The customary answer to a plan slipping is more reporting. We did the opposite, and removed two of the three sets of figures in circulation, keeping the one the board and the operators could both read. The plan was revised twice in its first year, each time on evidence rather than instinct.</p>
+        </div>
       </div>
-      <div class="office-card">
-        <div class="office-card__role">Asia Pacific</div>
-        <div class="office-card__city">Hong Kong</div>
-        <div class="office-card__addr">Two IFC, Central</div>
-      </div>
-      <div class="office-card">
-        <div class="office-card__role">DACH</div>
-        <div class="office-card__city">Frankfurt</div>
-        <div class="office-card__addr">Opernturm, Bockenheimer Landstra&szlig;e</div>
-      </div>
-      <div class="office-card">
-        <div class="office-card__role">Wealth &amp; Private Capital</div>
-        <div class="office-card__city">Z&uuml;rich</div>
-        <div class="office-card__addr">Bahnhofstrasse 45</div>
-      </div>
-      <div class="office-card">
-        <div class="office-card__role">Southeast Asia</div>
-        <div class="office-card__city">Singapore</div>
-        <div class="office-card__addr">Marina Bay Financial Centre</div>
+
+      <div class="case-cell" data-reveal="settle" style="transition-delay:calc(2 * var(--stagger-row))" tabindex="0">
+        <span class="case-cell__ref">Case 03</span>
+        <h3>Life sciences</h3>
+        <div class="case-cell__body">
+          <p>A research-led company nine months from a raise, trusted for its science and doubted for its accounts. Convention would have deferred the round until a finance function had been built. We held the date and looked instead at how the company was owned: the legal and financial ownership of its intellectual property was rearranged, which settled its tax position and made it eligible for funding it had been told was out of reach. The round closed well above the range the founder had thought realistic.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── Footer ────────────────────────────────────────────────────────────── -->
+<!-- ── 06 Who we are ─────────────────────────────────────────────────────── -->
+<section class="section on-sand" id="people">
+  <div class="wrap">
+    <div class="people__head">
+      <div class="people__intro" data-reveal="settle">
+        <div class="eyebrow"><i class="ref">[ 06 — Who we are ]</i></div>
+        <h2 class="heading heading--lg">A house of conviction<br><span class="heading__accent">and capital.</span></h2>
+      </div>
+      <div class="people__prose">
+        <p data-reveal="veil">Capiital was founded on a single principle: that disciplined judgment, free of conflict, compounds across generations.</p>
+        <p data-reveal="veil" style="transition-delay:calc(1 * var(--stagger-row))">Value seldom sits within one function. It emerges between them &mdash; in what sales promises, what production can hold, what procurement concedes, and what the balance sheet is left to record.</p>
+      </div>
+    </div>
+
+    <div class="people__roster">
+      <div class="rule rule--ink" data-reveal="draw"></div>
+      <div class="people-grid">
+        <div class="person" data-reveal="settle">
+          <h3>C.H. Tange</h3>
+          <span class="person__role">Chief Executive</span>
+          <span class="person__phone">M: +45 29 48 84 17</span>
+          <a class="person__email" href="mailto:christian.tange@capiital.eu">christian.tange@capiital.eu</a>
+        </div>
+        <div class="person" data-reveal="settle" style="transition-delay:calc(1 * var(--stagger-row))">
+          <h3>M.F. Madsen</h3>
+          <span class="person__role">Analyst</span>
+          <span class="person__phone">M: +45 60 54 41 10</span>
+          <a class="person__email" href="mailto:mathias.madsen@capiital.eu">mathias.madsen@capiital.eu</a>
+        </div>
+        <div class="person" data-reveal="settle" style="transition-delay:calc(2 * var(--stagger-row))">
+          <h3>J.S. Wiese</h3>
+          <span class="person__role">Associate</span>
+          <span class="person__phone">M: +45 22 33 44 55</span>
+          <a class="person__email" href="mailto:jonathan.wiese@capiital.eu">jonathan.wiese@capiital.eu</a>
+        </div>
+        <div class="person" data-reveal="settle" style="transition-delay:calc(3 * var(--stagger-row))">
+          <h3>A.S. Trats</h3>
+          <span class="person__role">Senior Analyst</span>
+          <span class="person__phone">M: +45 53 80 84 17</span>
+          <a class="person__email" href="mailto:anastasia.trats@capiital.eu">anastasia.trats@capiital.eu</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pullquote" data-reveal="settle">
+      <blockquote>
+        &ldquo;The firm is built on the conviction that <span class="pullquote__accent">judgment is not delegable</span>&rdquo;
+      </blockquote>
+      <div class="pullquote__attrib">
+        <div class="hairline"></div>
+        <div class="pullquote__name">C.H. Tange</div>
+        <div class="pullquote__title">Chief Executive</div>
+      </div>
+      <p class="pullquote__coda">Every mandate is led, executed and concluded by the principal who accepted it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 07 What we think ──────────────────────────────────────────────────── -->
+<section class="section on-sand" id="papers">
+  <div class="wrap">
+    <div class="papers__head">
+      <div class="papers__intro" data-reveal="settle">
+        <div class="eyebrow"><i class="ref">[ 07 — What we think ]</i></div>
+        <h2 class="heading heading--md">Notes from<br><span class="heading__accent">the desk.</span></h2>
+      </div>
+      <p class="papers__standfirst" data-reveal="veil" style="transition-delay:calc(1 * var(--stagger-row))">
+        Considered views on the forces at work in the capital markets, written when
+        there is something worth saying.
+      </p>
+    </div>
+
+    <div class="papers__list">
+      <a class="publication" href="#papers" data-reveal="settle">
+        <span class="publication__kind">Market letter</span>
+        <span class="publication__date">Q2 &middot; 2025</span>
+        <span class="publication__title">Rates, Rotation and the Return of Strategic Capital</span>
+        <span class="publication__read">12 min</span>
+        <span class="publication__cue">Read &rarr;</span>
+      </a>
+      <a class="publication" href="#papers" data-reveal="settle" style="transition-delay:calc(1 * var(--stagger-row))">
+        <span class="publication__kind">Sector note</span>
+        <span class="publication__date">Q1 &middot; 2026</span>
+        <span class="publication__title">The Energy Transition and the Capital It Will Require</span>
+        <span class="publication__read">9 min</span>
+        <span class="publication__cue">Read &rarr;</span>
+      </a>
+      <a class="publication" href="#papers" data-reveal="settle" style="transition-delay:calc(2 * var(--stagger-row))">
+        <span class="publication__kind">Quarterly review</span>
+        <span class="publication__date">June 2026</span>
+        <span class="publication__title">Sponsor Activity and the Return of the Private Company</span>
+        <span class="publication__read">18 min</span>
+        <span class="publication__cue">Read &rarr;</span>
+      </a>
+      <a class="publication" href="#papers" data-reveal="settle" style="transition-delay:calc(3 * var(--stagger-row))">
+        <span class="publication__kind">Owner's letter</span>
+        <span class="publication__date">March 2026</span>
+        <span class="publication__title">On Selling a Business One Did Not Intend to Sell</span>
+        <span class="publication__read">11 min</span>
+        <span class="publication__cue">Read &rarr;</span>
+      </a>
+    </div>
+
+    <div data-reveal="veil" style="margin-top:var(--space-10)">
+      <a class="arrow-link" href="#papers">All publications <span aria-hidden="true">&rarr;</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ── 08 How to reach us ────────────────────────────────────────────────── -->
+<section class="section on-ink contact" id="contact">
+  <div class="wrap contact__grid">
+    <div class="contact__intro" data-reveal="settle">
+      <div class="eyebrow"><i class="ref">[ 08 — How to reach us ]</i></div>
+      <h2 class="heading heading--xl">The next word<br><span class="heading__accent">is yours.</span></h2>
+      <p class="contact__lede">
+        We accept a small number of engagements each year, by introduction and by
+        fit. If you are weighing a transaction, a recovery or a transformation, we
+        would be glad to hear of it.
+      </p>
+      <a class="contact__email" href="mailto:hello@capiital.eu">hello@capiital.eu <span aria-hidden="true">&rarr;</span></a>
+    </div>
+
+    <form class="contact__form" data-reveal="settle" style="transition-delay:calc(1 * var(--stagger-row))">
+      <div>
+        <label class="field-label" for="contact-brief">What you are weighing</label>
+        <textarea class="field-textarea" id="contact-brief" name="brief" rows="4"
+          placeholder="A transaction, a recovery, a transformation" style="margin-top:8px"></textarea>
+      </div>
+      <div>
+        <label class="field-label" for="contact-email">Where we reply</label>
+        <input class="field-input" id="contact-email" name="email" type="email"
+          placeholder="name@company.eu" style="margin-top:8px">
+      </div>
+      <div class="contact__foot">
+        <span class="contact__terms" data-terms>All engagements are governed by separate written terms.</span>
+        <button class="btn-editorial" type="submit">Message <span aria-hidden="true">&rarr;</span></button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- ── Footer ──────────────────────────────────────────────────────────── -->
 <footer class="site-footer on-ink">
-  <div class="container">
-    <div class="grid-12 site-footer__grid">
+  <div class="wrap">
+    <div class="site-footer__grid">
       <div class="site-footer__brand">
-        <span class="logo logo--cream"><span>CAP</span><span class="logo__equals" aria-hidden="true"></span><span>TAL</span></span>
+        <span class="logo logo--cream" style="font-size:16px">CAP<span class="logo__bars" aria-hidden="true"><i></i><i></i></span>TAL</span>
         <p class="site-footer__blurb">
-          Independent advisory counsel since 1994. Privately held. Conflict-free
-          by design.
+          Financial excellence, quietly executed. Performance visibility for
+          companies built to be held.
         </p>
       </div>
 
       <div class="site-footer__col">
-        <div class="site-footer__heading">Practice</div>
+        <div class="site-footer__heading">What we engage</div>
         <ul class="site-footer__links">
-          <li><a href="#services">Mergers &amp; Acquisitions</a></li>
-          <li><a href="#services">Capital Markets</a></li>
-          <li><a href="#services">Restructuring</a></li>
-          <li><a href="#services">Private Capital</a></li>
+          <li><a href="#services">Performance Visibility</a></li>
+          <li><a href="#services">Financial Leadership</a></li>
+          <li><a href="#services">Transactions</a></li>
+          <li><a href="#services">Operational Finance</a></li>
         </ul>
       </div>
 
       <div class="site-footer__col">
-        <div class="site-footer__heading">Firm</div>
+        <div class="site-footer__heading">The house</div>
         <ul class="site-footer__links">
-          <li><a href="#firm">About</a></li>
-          <li><a href="#firm">Partners</a></li>
-          <li><a href="#contact">Careers</a></li>
-          <li><a href="#insights">Press</a></li>
+          <li><a href="#philosophy">What we believe</a></li>
+          <li><a href="#learned">What we learned</a></li>
+          <li><a href="#cases">Cases</a></li>
+          <li><a href="#people">Who we are</a></li>
         </ul>
       </div>
 
@@ -399,61 +414,151 @@
         <div class="site-footer__heading">Legal</div>
         <ul class="site-footer__links">
           <li><a href="#">Privacy</a></li>
-          <li><a href="#">Regulatory Disclosures</a></li>
-          <li><a href="#">Modern Slavery Statement</a></li>
-          <li><a href="#">Terms</a></li>
+          <li><a href="#">Terms of engagement</a></li>
+          <li><a href="#">Regulatory disclosures</a></li>
         </ul>
       </div>
     </div>
 
     <div class="site-footer__base">
-      <div>&copy; 2026 CAP=TAL Partners LLP &middot; Authorised and regulated</div>
-      <div>New York &middot; London &middot; Hong Kong &middot; Frankfurt &middot; Z&uuml;rich &middot; Singapore</div>
+      <div>&copy; MMXXVI Capiital &middot; Information on this site is provided for general informational purposes only and does not constitute investment, legal, tax or accounting advice.</div>
     </div>
   </div>
 </footer>
 
 <script>
-/* CAP=TAL — the only behaviour the design needs beyond CSS.
-   Hover, scroll and the marquee are all handled in the stylesheet. */
+/* CAP//TAL — the behaviour the design needs beyond CSS.
+   Four things: the header's colour flip on scroll, the scroll-progress hairline,
+   the live nav item, and the scroll-entry reveals. Hover and the front-page wash
+   are handled entirely in the stylesheet. */
 
 (function () {
   "use strict";
 
-  var toggle = document.querySelector(".nav-toggle");
-  var nav = document.getElementById("site-nav");
-  if (!toggle || !nav) return;
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function setOpen(open) {
-    nav.dataset.open = open ? "true" : "false";
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    toggle.textContent = open ? "Close" : "Menu";
+  /* ── Scroll-entry reveals ───────────────────────────────────────────────
+     One observer, fired once per element, never reversed — the page settles as
+     it is read and then stays put. Without IntersectionObserver everything is
+     released immediately rather than left invisible. */
+  var revealables = document.querySelectorAll("[data-reveal]");
+
+  if (!("IntersectionObserver" in window) || reduced) {
+    Array.prototype.forEach.call(revealables, function (el) { el.classList.add("is-in"); });
+  } else {
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        // `boundingClientRect.top < 0` catches anything already scrolled past.
+        // A fast fling can carry an element from below the viewport to above it
+        // between two observer samples, and without this it would never report
+        // as intersecting again — leaving it stuck at opacity 0 for good.
+        if (e.isIntersecting || e.boundingClientRect.top < 0) {
+          e.target.classList.add("is-in");
+          revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: "0px 0px -12% 0px" });
+
+    Array.prototype.forEach.call(revealables, function (el) { revealObserver.observe(el); });
   }
 
-  toggle.addEventListener("click", function () {
-    setOpen(nav.dataset.open !== "true");
-  });
+  /* ── Header state and scroll progress ──────────────────────────────────
+     Both read the same scroll event. The header is transparent over the hero
+     and takes its ground, blur and rule only once past it. */
+  var header = document.querySelector(".site-header");
+  var progressBar = document.querySelector(".scroll-progress__bar");
 
-  // Following a link closes the sheet; the target section is already in view
-  // by the time it animates away.
-  nav.addEventListener("click", function (e) {
-    if (e.target.closest("a")) setOpen(false);
-  });
+  function onScroll() {
+    if (header) header.dataset.scrolled = window.scrollY > 40 ? "true" : "false";
 
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && nav.dataset.open === "true") {
-      setOpen(false);
-      toggle.focus();
+    if (progressBar) {
+      var h = document.documentElement.scrollHeight - window.innerHeight;
+      var p = h > 0 ? Math.min(1, window.scrollY / h) : 0;
+      progressBar.style.width = (p * 100).toFixed(2) + "%";
     }
-  });
+  }
 
-  // The sheet is a mobile affordance only — leaving that range resets it so it
-  // can never be left stranded open over the desktop layout.
-  var wide = window.matchMedia("(min-width: 861px)");
-  var onChange = function (e) {
-    if (e.matches) setOpen(false);
-  };
-  if (wide.addEventListener) wide.addEventListener("change", onChange);
-  else wide.addListener(onChange);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+
+  /* ── The live nav item ─────────────────────────────────────────────────
+     Whichever section owns the middle of the viewport marks its nav link. The
+     margins deliberately ignore the top 40% and bottom 50% so the active item
+     changes when a section is being read, not when it first appears. */
+  var navLinks = document.querySelectorAll(".site-nav a[href^='#']");
+
+  if ("IntersectionObserver" in window && navLinks.length) {
+    var byId = {};
+    var watched = [];
+
+    Array.prototype.forEach.call(navLinks, function (link) {
+      var id = link.getAttribute("href").slice(1);
+      var section = document.getElementById(id);
+      if (!section) return;
+      byId[id] = link;
+      watched.push(section);
+    });
+
+    var sectionObserver = new IntersectionObserver(function (entries) {
+      var visible = entries
+        .filter(function (e) { return e.isIntersecting; })
+        .sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; })[0];
+      if (!visible) return;
+
+      Array.prototype.forEach.call(navLinks, function (l) { l.removeAttribute("aria-current"); });
+      var live = byId[visible.target.id];
+      if (live) live.setAttribute("aria-current", "true");
+    }, { rootMargin: "-40% 0px -50% 0px", threshold: [0, 0.2, 0.6] });
+
+    watched.forEach(function (s) { sectionObserver.observe(s); });
+  }
+
+  /* ── Mobile navigation ─────────────────────────────────────────────────── */
+  var toggle = document.querySelector(".nav-toggle");
+  var nav = document.getElementById("site-nav");
+
+  if (toggle && nav) {
+    var setOpen = function (open) {
+      nav.dataset.open = open ? "true" : "false";
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      toggle.textContent = open ? "Close" : "Menu";
+    };
+
+    toggle.addEventListener("click", function () {
+      setOpen(nav.dataset.open !== "true");
+    });
+
+    nav.addEventListener("click", function (e) {
+      if (e.target.closest("a")) setOpen(false);
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.dataset.open === "true") {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+
+    // The sheet is a mobile affordance only — leaving that range resets it so it
+    // can never be left stranded open over the desktop layout.
+    var wide = window.matchMedia("(min-width: 861px)");
+    var onWide = function (e) { if (e.matches) setOpen(false); };
+    if (wide.addEventListener) wide.addEventListener("change", onWide);
+    else wide.addListener(onWide);
+  }
+
+  /* ── Contact form ──────────────────────────────────────────────────────
+     There is no endpoint to post to yet, so the form acknowledges in place
+     rather than navigating away and losing what was typed. */
+  var form = document.querySelector(".contact__form");
+  var terms = document.querySelector("[data-terms]");
+
+  if (form && terms) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      terms.textContent = "Received. A principal will reply.";
+    });
+  }
 })();
 </script>

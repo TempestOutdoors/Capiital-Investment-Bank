@@ -35,9 +35,9 @@ def slice_between(start_pat, end_pat, label):
         sys.exit('build: could not locate the %s region in index.html' % label)
     return html[s.start():e.end()].rstrip()
 
-site_header = slice_between(r'<header class="site-header">', r'</header>', 'site header')
+site_header = slice_between(r'<header class="site-header"[^>]*>', r'</header>', 'site header')
 site_footer = slice_between(r'<footer class="site-footer', r'</footer>', 'site footer')
-sections    = slice_between(r'<!-- ── Hero', r'</section>\s*(?=\n<!-- ── Footer)', 'page sections')
+sections    = slice_between(r'<!-- ── 01 Front page', r'</section>\s*(?=\n<!-- ── Footer)', 'page sections')
 
 # Anchor links in the chrome must work from a sub-page too, where a bare
 # "#firm" resolves against the wrong document.
@@ -54,10 +54,10 @@ site_footer = absolutise(site_footer)
 # The wordmark links to the top of a one-pager, which is only the right target
 # when the one-pager IS the current document. Point it at the site root so it
 # still works from a sub-page or an Elementor-built page.
-site_header = site_header.replace(
-    '<a href="#" aria-label="CAP=TAL — home">',
-    '<a href="<?php echo esc_url( home_url( \'/\' ) ); ?>" aria-label="CAP=TAL — home">',
-    1,
+site_header = re.sub(
+    r'<a class="site-header__home" href="#top"',
+    '<a class="site-header__home" href="<?php echo esc_url( home_url( \'/\' ) ); ?>"',
+    site_header, count=1,
 )
 
 # The hardcoded nav becomes a real WordPress menu, falling back to the design's
@@ -135,7 +135,7 @@ os.makedirs(paste, exist_ok=True)
 
 js = open(os.path.join(repo, 'assets/js/main.js')).read().strip()
 open(os.path.join(paste, '1-custom-html-block.html'), 'w').write(
-    '<!-- CAP=TAL — paste this ENTIRE file into a Custom HTML block. -->\n'
+    '<!-- Capiital — paste this ENTIRE file into a Custom HTML block. -->\n'
     '<!-- The stylesheet goes separately into Appearance > Customize > Additional CSS. -->\n\n'
     + body + '\n\n<script>\n' + js + '\n</script>\n'
 )
@@ -143,7 +143,7 @@ open(os.path.join(paste, '1-custom-html-block.html'), 'w').write(
 # Additional CSS cannot resolve a relative @import, so the sheets are merged
 # here in dependency order instead.
 open(os.path.join(paste, '2-additional-css.css'), 'w').write(
-    '/* CAP=TAL — paste this ENTIRE file into Appearance > Customize > Additional CSS.\n'
+    '/* Capiital — paste this ENTIRE file into Appearance > Customize > Additional CSS.\n'
     '   tokens.css and styles.css are already merged here in the required order;\n'
     '   the @import has been removed because Additional CSS cannot resolve it. */\n\n'
     + tokens.rstrip() + '\n\n' + styles.lstrip()

@@ -27,10 +27,10 @@
 // the design's own header renders.
 if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_location( 'header' ) ) :
 	?>
-<header class="site-header">
+<header class="site-header" data-scrolled="false">
   <div class="site-header__inner">
-    <a href="<?php echo esc_url( home_url( '/' ) ); ?>" aria-label="CAP=TAL — home">
-      <span class="logo"><span>CAP</span><span class="logo__equals" aria-hidden="true"></span><span>TAL</span></span>
+    <a class="site-header__home" href="<?php echo esc_url( home_url( '/#top' ) ); ?>" aria-label="Capiital — home">
+      <span class="logo logo--current">CAP<span class="logo__bars" aria-hidden="true"><i></i><i></i></span>TAL</span>
     </a>
 
     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
@@ -48,17 +48,18 @@ if ( ! function_exists( 'elementor_theme_do_location' ) || ! elementor_theme_do_
     	);
     else :
     	?>
-      <a href="<?php echo esc_url( home_url( '/#firm' ) ); ?>">Firm</a>
-      <a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">Advisory</a>
-      <a href="<?php echo esc_url( home_url( '/#transactions' ) ); ?>">Transactions</a>
-      <a href="<?php echo esc_url( home_url( '/#insights' ) ); ?>">Insights</a>
-      <a href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">Contact</a>
+      <a href="<?php echo esc_url( home_url( '/#services' ) ); ?>">What we engage</a>
+      <a href="<?php echo esc_url( home_url( '/#philosophy' ) ); ?>">What we believe</a>
+      <a href="<?php echo esc_url( home_url( '/#learned' ) ); ?>">What we learned</a>
+      <a href="<?php echo esc_url( home_url( '/#cases' ) ); ?>">Cases</a>
+      <a href="<?php echo esc_url( home_url( '/#people' ) ); ?>">Who we are</a>
+      <a href="<?php echo esc_url( home_url( '/#papers' ) ); ?>">What we think</a>
+      <a href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">How to reach us</a>
     	<?php
     endif;
     ?>
     </nav>
-
-    <a class="link-rule link-rule--nav site-header__portal" href="<?php echo esc_url( home_url( '/#contact' ) ); ?>">Client Portal <span aria-hidden="true">&rarr;</span></a>
   </div>
+  <div class="scroll-progress" aria-hidden="true"><div class="scroll-progress__bar"></div></div>
 </header>
 <?php endif; ?>

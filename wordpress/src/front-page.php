@@ -2,7 +2,7 @@
 /**
  * Front page.
  *
- * Renders the CAP=TAL one-page layout — unless a static front page has been
+ * Renders the Capiital one-page layout — unless a static front page has been
  * assigned in Settings > Reading and built with Elementor or the block editor,
  * in which case that page's own content wins and this template gets out of the
  * way by handing off to page.php.
