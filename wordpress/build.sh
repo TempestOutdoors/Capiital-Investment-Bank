@@ -282,3 +282,162 @@ find "$repo/index.html" "$repo/assets" -exec touch -t 202001010000.00 {} +
   && find index.html assets -type f ! -name '.DS_Store' | LC_ALL=C sort \
      | zip -qX dist/capiital-website.zip -@ )
 echo "build: wrote dist/capiital-website.zip"
+
+# --- per-section snippets ----------------------------------------------------
+# One file per Elementor HTML widget, for building the page by hand rather than
+# importing it whole.
+python3 - "$repo" <<'PY'
+import re, sys, os, shutil
+
+repo = sys.argv[1]
+html = open(os.path.join(repo, 'index.html')).read()
+out  = os.path.join(repo, 'dist', 'sections')
+shutil.rmtree(out, ignore_errors=True)
+os.makedirs(out)
+
+def grab(start, end, label):
+    s = re.search(start, html)
+    if not s:
+        sys.exit('snippets: could not find %s' % label)
+    e = re.search(end, html[s.start():])
+    if not e:
+        sys.exit('snippets: could not close %s' % label)
+    return html[s.start(): s.start() + e.end()].rstrip()
+
+header = grab(r'<header class="site-header"[^>]*>', r'</header>', 'header')
+footer = grab(r'<footer class="site-footer[^>]*>', r'</footer>', 'footer')
+
+def section(sid):
+    return grab(r'<section class="[^"]*"[^>]*id="%s">' % sid, r'</section>\s*(?=\n<!--|\n<footer|\Z)', sid)
+
+order = [
+    ('01', 'header',     'Header and navigation',  header),
+    ('02', 'front',      'Front page',             section('top')),
+    ('03', 'engage',     'What we engage',         section('services')),
+    ('04', 'believe',    'What we believe',        section('philosophy')),
+    ('05', 'learned',    'What we learned',        section('learned')),
+    ('06', 'cases',      'Cases',                  section('cases')),
+    ('07', 'people',     'Who we are',             section('people')),
+    ('08', 'papers',     'What we think',          section('papers')),
+    ('09', 'contact',    'How to reach us',        section('contact')),
+    ('10', 'footer',     'Footer',                 footer),
+]
+
+# Elementor puts every HTML widget inside section > container > column > wrap,
+# each of which is width-constrained and padded by default. Left alone, the
+# full-bleed grounds stop at the content width and the hairline grids inherit
+# padding they were never drawn with. Scoping the reset to .capiital-part means
+# it only ever touches wrappers holding a piece of this design, so the rest of
+# the site's Elementor content is untouched.
+COMPAT = """
+/* ── Elementor wrappers ──────────────────────────────────────────────────── */
+.elementor-widget-container:has(> .capiital-part),
+.elementor-widget-html:has(.capiital-part){padding:0!important;margin:0!important}
+.elementor-section:has(.capiital-part) > .elementor-container{max-width:none!important;width:100%!important}
+.elementor-section:has(.capiital-part),
+.elementor-section:has(.capiital-part) > .elementor-container > .elementor-column,
+.elementor-section:has(.capiital-part) .elementor-widget-wrap{padding:0!important;margin:0!important}
+.capiital-part{width:100%}
+"""
+
+FONT_IMPORT = ("@import url('https://fonts.googleapis.com/css2?"
+               "family=Inter:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@"
+               "0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');")
+
+tokens = open(os.path.join(repo, 'assets/css/tokens.css')).read()
+styles = open(os.path.join(repo, 'assets/css/styles.css')).read()
+styles = styles.replace('@import url("tokens.css");\n\n', '')
+if re.search(r'^\s*@import', styles, re.M):
+    sys.exit('snippets: an @import survived in styles.css')
+
+# 00 carries the whole stylesheet. The @import has to be the first rule in the
+# sheet or the browser drops it and both faces fall back silently.
+open(os.path.join(out, '00-styles.html'), 'w').write(
+    '<!-- Capiital — STYLES. Paste this FIRST, into its own HTML widget at the very\n'
+    '     top of the page. Every section below depends on it. -->\n'
+    '<style>\n' + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n'
+    + styles.lstrip() + '\n' + COMPAT + '</style>\n')
+
+for num, slug, title, markup in order:
+    body = '\n'.join('  ' + l if l.strip() else l for l in markup.split('\n'))
+    open(os.path.join(out, '%s-%s.html' % (num, slug)), 'w').write(
+        '<!-- Capiital — %s. One HTML widget, in its own full-width Elementor\n'
+        '     section with zero padding. -->\n'
+        '<div class="capiital-part">\n%s\n</div>\n' % (title, body))
+
+open(os.path.join(out, '11-script.html'), 'w').write(
+    '<!-- Capiital — SCRIPT. Paste this LAST, into its own HTML widget at the very\n'
+    '     bottom of the page. It drives the header on scroll, the reading progress\n'
+    '     hairline, the live nav item and the scroll-entry reveals. Without it the\n'
+    '     sections below the hero stay invisible. -->\n'
+    '<script>\n' + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>\n')
+
+README = """# Capiital — section snippets
+
+Twelve files, pasted in order into twelve Elementor **HTML widgets** on one page.
+
+| # | File | Goes in |
+| --- | --- | --- |
+| 00 | `00-styles.html` | An HTML widget at the very top |
+| 01 | `01-header.html` | Header and navigation |
+| 02 | `02-front.html` | Front page |
+| 03 | `03-engage.html` | What we engage |
+| 04 | `04-believe.html` | What we believe |
+| 05 | `05-learned.html` | What we learned |
+| 06 | `06-cases.html` | Cases |
+| 07 | `07-people.html` | Who we are |
+| 08 | `08-papers.html` | What we think |
+| 09 | `09-contact.html` | How to reach us |
+| 10 | `10-footer.html` | Footer |
+| 11 | `11-script.html` | An HTML widget at the very bottom |
+
+## Two of these are not sections
+
+**`00-styles.html` carries the entire stylesheet** and every other file depends on
+it. Paste it first. If you would rather keep it out of the page, drop the contents
+of its `<style>` tag (without the tag itself) into **Appearance > Customize >
+Additional CSS** instead — either works, but it has to exist somewhere.
+
+**`11-script.html` drives the header on scroll, the reading-progress hairline, the
+live navigation item and the scroll-entry reveals.** Without it every section below
+the front page stays invisible, because they start at `opacity: 0` and are released
+by script. Paste it last.
+
+## Settings for each section
+
+For every Elementor section holding one of these widgets:
+
+- **Layout > Content Width: Full Width**
+- **Layout > Columns Gap: No Gap**
+- **Advanced > Padding: 0** on all four sides
+
+The stylesheet also neutralises Elementor's own wrappers, scoped to
+`.capiital-part` so nothing else on the site is affected — but setting the three
+above keeps the editor preview honest.
+
+## Editing
+
+Each file is one HTML widget's contents, wrapped in `<div class="capiital-part">`.
+That wrapper is what the Elementor reset targets; keep it. Everything inside is
+ordinary markup, so copy lives where you can see it.
+
+The section marks — `[ 02 — What we engage ]` — are scaffolding, deliberately set
+at 34% of the accent. Delete the `<i class="ref">` wrapper to turn one into a
+permanent eyebrow, or delete the line to remove it.
+
+## Regenerating
+
+These files are generated from `index.html` by `wordpress/build.sh`. Edit that and
+re-run, or edit these directly and accept that the next build overwrites them.
+"""
+open(os.path.join(out, 'README.md'), 'w').write(README)
+
+print('build: wrote dist/sections/ (%d files)' % (len(order) + 3))
+PY
+
+rm -f "$repo/dist/capiital-sections.zip"
+find "$repo/dist/sections" -exec touch -t 202001010000.00 {} +
+( cd "$repo/dist" \
+  && find sections -type f ! -name '.DS_Store' | LC_ALL=C sort \
+     | zip -qX capiital-sections.zip -@ )
+echo "build: wrote dist/capiital-sections.zip"
