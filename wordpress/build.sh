@@ -403,8 +403,8 @@ STYLESHEET = ('<style>\n' + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n'
 # The skip link belongs to the same piece — it is the first focusable thing on
 # the page and has to precede the navigation it skips.
 order = [
-    ('01', 'header-front', 'Stylesheet, header and front page',
-     STYLESHEET + '\n\n' + skip + '\n\n' + header + '\n\n' + section('top')),
+    ('01', 'header-front', 'Header and front page',
+     skip + '\n\n' + header + '\n\n' + section('top')),
     ('02', 'engage',       'What we engage',        section('services')),
     ('03', 'believe',      'What we believe',       section('philosophy')),
     ('04', 'learned',      'What we learned',       section('learned')),
@@ -428,12 +428,21 @@ for num, slug, title, markup in order:
 # The stylesheet again as bare CSS, for Appearance > Customize > Additional CSS.
 # That box is never run through the content filters, so it is the one place the
 # CSS cannot be mangled.
-open(os.path.join(out, 'optional-styles-for-additional-css.css'), 'w').write(
-    '/* Capiital — OPTIONAL, and an ALTERNATIVE to the <style> block at the top of\n'
-    '   01-header-front.html, never a companion to it: pasting both loads the\n'
-    '   stylesheet twice. Use this only if you delete that block. Paste into\n'
-    '   Appearance > Customize > Additional CSS, which expects bare CSS and so\n'
-    '   carries no <style> tag. */\n\n'
+# The stylesheet goes in FIRST and it does not go in a widget. A <style> tag
+# pasted into an Elementor widget is stripped by WordPress's content filters in
+# most configurations, and when it goes the whole design goes with it: the page
+# renders as unstyled markup. Appearance > Customize > Additional CSS is never
+# filtered, so that is where it belongs. No <style> tag — that box expects bare CSS.
+open(os.path.join(out, '00-stylesheet.css'), 'w').write(
+    '/* Capiital — STEP ONE, and not a widget.\n'
+    '\n'
+    '   Paste this whole file into Appearance > Customize > Additional CSS,\n'
+    '   then Publish. Every other file depends on it.\n'
+    '\n'
+    '   It does NOT go in an Elementor HTML widget. A <style> tag pasted into a\n'
+    '   widget is stripped by WordPress in most configurations, and the page then\n'
+    '   renders as unstyled markup — headings in browser defaults, links blue, the\n'
+    '   wordmark without its bars. The Customizer box is never filtered. */\n\n'
     + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n' + styles.lstrip() + '\n' + COMPAT)
 
 open(os.path.join(out, '10-script.html'), 'w').write(
@@ -462,8 +471,8 @@ middle = '\n\n'.join(section(i) for i in
                      ('services', 'philosophy', 'learned', 'cases', 'people', 'papers'))
 
 grouped = [
-    ('1', 'styles-header-front', 'Stylesheet, header and front page',
-     STYLESHEET + '\n\n' + skip + '\n\n' + header + '\n\n' + section('top')),
+    ('1', 'header-front', 'Header and front page',
+     skip + '\n\n' + header + '\n\n' + section('top')),
     ('2', 'middle', 'What we engage, believe, learned, cases, who we are, what we think',
      middle),
     ('3', 'contact-footer', 'How to reach us, and the footer',
@@ -475,23 +484,26 @@ for num, slug, title, markup in grouped:
 open(os.path.join(grouped_out, '4-script.html'), 'w').write(
     open(os.path.join(out, '10-script.html')).read())
 
-open(os.path.join(grouped_out, 'optional-styles-for-additional-css.css'), 'w').write(
-    open(os.path.join(out, 'optional-styles-for-additional-css.css')).read()
-        .replace('01-header-front.html', '1-styles-header-front.html'))
+open(os.path.join(grouped_out, '00-stylesheet.css'), 'w').write(
+    open(os.path.join(out, '00-stylesheet.css')).read())
 
 GROUPED_README = """# Capiital — grouped snippets
 
 The same page as `sections/`, in four Elementor **HTML widgets** instead of ten.
 
+**Step one is not a widget.** `00-stylesheet.css` goes into
+**Appearance > Customize > Additional CSS**, and everything else depends on it.
+Skip it and the page renders as unstyled markup.
+
 | # | File | Contains |
 | --- | --- | --- |
-| 1 | `1-styles-header-front.html` | Stylesheet, header, front page |
+| 0 | `00-stylesheet.css` | **Appearance > Customize > Additional CSS**, then Publish |
+| 1 | `1-header-front.html` | Header, front page |
 | 2 | `2-middle.html` | What we engage, believe, learned, cases, who we are, what we think |
 | 3 | `3-contact-footer.html` | How to reach us, and the footer |
 | 4 | `4-script.html` | The script |
 
-`4-script-oneline.html` and `optional-styles-for-additional-css.css` are
-alternates, described below.
+`4-script-oneline.html` is an alternate, described below.
 
 ## Why these four
 
@@ -505,9 +517,10 @@ share the same deep ground and were a single component in the source, contact
 running *into* the footer rather than sitting above a separate thing. Splitting
 between them would cut the dark block in a place it was never drawn to be cut.
 
-The stylesheet opens file 1 rather than occupying a widget of its own: a widget
-holding only a `<style>` renders nothing but still takes its section's padding,
-which shows as a band of empty page ground above the header.
+The stylesheet is not in a widget at all. It was once folded into file 1, and
+that build rendered as unstyled markup, because WordPress strips `<style>` from
+widget content in most configurations. The Customizer's Additional CSS box is
+never filtered, so the stylesheet lives there and every widget still sees it.
 
 **What you give up:** reordering sections by dragging. Moving *cases* above
 *learned* means editing HTML inside file 2 rather than moving a block. If that
@@ -536,12 +549,11 @@ If the script comes back broken — view source and look for `<br />` or `<p>`
 inside the `<script>` — paste `4-script-oneline.html` instead. Same code on one
 line, so there are no newlines to convert.
 
-## The stylesheet's other home
+## If the design renders as plain text
 
-To keep the CSS in **Appearance > Customize > Additional CSS** instead, delete
-the `<style>` block from the top of file 1 and paste
-`optional-styles-for-additional-css.css` there. One or the other, never both:
-pasting both loads the stylesheet twice.
+View the page source and search for `--sea-ink`. If it is not there, the
+stylesheet did not load: `00-stylesheet.css` has not been pasted into Additional
+CSS, or it was pasted and not published.
 
 ## Regenerating
 
@@ -555,9 +567,14 @@ README = """# Capiital — section snippets
 
 Paste each file into an Elementor **HTML widget**, in number order.
 
+**Step one is not a widget.** `00-stylesheet.css` goes into
+**Appearance > Customize > Additional CSS**, and everything else depends on it.
+Skip it and the page renders as unstyled markup.
+
 | # | File | Goes in |
 | --- | --- | --- |
-| 01 | `01-header-front.html` | Stylesheet, header **and** front page, together |
+| 00 | `00-stylesheet.css` | **Appearance > Customize > Additional CSS**, then Publish |
+| 01 | `01-header-front.html` | Header **and** front page, together |
 | 02 | `02-engage.html` | What we engage |
 | 03 | `03-believe.html` | What we believe |
 | 04 | `04-learned.html` | What we learned |
@@ -568,21 +585,24 @@ Paste each file into an Elementor **HTML widget**, in number order.
 | 09 | `09-footer.html` | Footer |
 | 10 | `10-script.html` | An HTML widget at the very bottom |
 
-Two alternates are included for the cases described below:
-`optional-styles-for-additional-css.css` and `10-script-oneline.html`.
+`10-script-oneline.html` is an alternate, described below.
 
-## The stylesheet lives in 01
+## Why the stylesheet is not in a widget
 
-There is no separate styles widget. A widget holding only a `<style>` renders
-nothing but still occupies its Elementor section's padding — 50px of empty page
-ground above the header — and it is one more thing to keep in the right order.
-It is folded into `01` instead, ahead of the skip link. CSS is global once
-parsed, so `02` onward still see it.
+It was, once, folded into the top of `01`. That build rendered as unstyled
+markup: browser-default headings, blue underlined links, the wordmark without its
+two bars, every section visible at once because the rule that hides them until
+they are scrolled to had gone too.
 
-To move it to **Appearance > Customize > Additional CSS** instead, delete the
-`<style>` block from the top of `01` and paste
-`optional-styles-for-additional-css.css` there. Do one or the other, never both:
-pasting both loads the stylesheet twice.
+The cause is that WordPress strips `<style>` from widget content in most
+configurations, and 42KB of stylesheet goes with it. **Appearance > Customize >
+Additional CSS is never run through those filters**, so that is where it belongs.
+Nothing is lost by the move: CSS from the Customizer is global, so every widget
+on the page still sees it.
+
+If the design ever renders as plain text, this is the first thing to check ---
+view the page source and search for `--sea-ink`. If it is not there, the
+stylesheet did not load.
 
 ## Why the header is not its own piece
 

@@ -2,15 +2,19 @@
 
 The same page as `sections/`, in four Elementor **HTML widgets** instead of ten.
 
+**Step one is not a widget.** `00-stylesheet.css` goes into
+**Appearance > Customize > Additional CSS**, and everything else depends on it.
+Skip it and the page renders as unstyled markup.
+
 | # | File | Contains |
 | --- | --- | --- |
-| 1 | `1-styles-header-front.html` | Stylesheet, header, front page |
+| 0 | `00-stylesheet.css` | **Appearance > Customize > Additional CSS**, then Publish |
+| 1 | `1-header-front.html` | Header, front page |
 | 2 | `2-middle.html` | What we engage, believe, learned, cases, who we are, what we think |
 | 3 | `3-contact-footer.html` | How to reach us, and the footer |
 | 4 | `4-script.html` | The script |
 
-`4-script-oneline.html` and `optional-styles-for-additional-css.css` are
-alternates, described below.
+`4-script-oneline.html` is an alternate, described below.
 
 ## Why these four
 
@@ -24,9 +28,10 @@ share the same deep ground and were a single component in the source, contact
 running *into* the footer rather than sitting above a separate thing. Splitting
 between them would cut the dark block in a place it was never drawn to be cut.
 
-The stylesheet opens file 1 rather than occupying a widget of its own: a widget
-holding only a `<style>` renders nothing but still takes its section's padding,
-which shows as a band of empty page ground above the header.
+The stylesheet is not in a widget at all. It was once folded into file 1, and
+that build rendered as unstyled markup, because WordPress strips `<style>` from
+widget content in most configurations. The Customizer's Additional CSS box is
+never filtered, so the stylesheet lives there and every widget still sees it.
 
 **What you give up:** reordering sections by dragging. Moving *cases* above
 *learned* means editing HTML inside file 2 rather than moving a block. If that
@@ -55,12 +60,11 @@ If the script comes back broken — view source and look for `<br />` or `<p>`
 inside the `<script>` — paste `4-script-oneline.html` instead. Same code on one
 line, so there are no newlines to convert.
 
-## The stylesheet's other home
+## If the design renders as plain text
 
-To keep the CSS in **Appearance > Customize > Additional CSS** instead, delete
-the `<style>` block from the top of file 1 and paste
-`optional-styles-for-additional-css.css` there. One or the other, never both:
-pasting both loads the stylesheet twice.
+View the page source and search for `--sea-ink`. If it is not there, the
+stylesheet did not load: `00-stylesheet.css` has not been pasted into Additional
+CSS, or it was pasted and not published.
 
 ## Regenerating
 

@@ -2,9 +2,14 @@
 
 Paste each file into an Elementor **HTML widget**, in number order.
 
+**Step one is not a widget.** `00-stylesheet.css` goes into
+**Appearance > Customize > Additional CSS**, and everything else depends on it.
+Skip it and the page renders as unstyled markup.
+
 | # | File | Goes in |
 | --- | --- | --- |
-| 01 | `01-header-front.html` | Stylesheet, header **and** front page, together |
+| 00 | `00-stylesheet.css` | **Appearance > Customize > Additional CSS**, then Publish |
+| 01 | `01-header-front.html` | Header **and** front page, together |
 | 02 | `02-engage.html` | What we engage |
 | 03 | `03-believe.html` | What we believe |
 | 04 | `04-learned.html` | What we learned |
@@ -15,21 +20,24 @@ Paste each file into an Elementor **HTML widget**, in number order.
 | 09 | `09-footer.html` | Footer |
 | 10 | `10-script.html` | An HTML widget at the very bottom |
 
-Two alternates are included for the cases described below:
-`optional-styles-for-additional-css.css` and `10-script-oneline.html`.
+`10-script-oneline.html` is an alternate, described below.
 
-## The stylesheet lives in 01
+## Why the stylesheet is not in a widget
 
-There is no separate styles widget. A widget holding only a `<style>` renders
-nothing but still occupies its Elementor section's padding — 50px of empty page
-ground above the header — and it is one more thing to keep in the right order.
-It is folded into `01` instead, ahead of the skip link. CSS is global once
-parsed, so `02` onward still see it.
+It was, once, folded into the top of `01`. That build rendered as unstyled
+markup: browser-default headings, blue underlined links, the wordmark without its
+two bars, every section visible at once because the rule that hides them until
+they are scrolled to had gone too.
 
-To move it to **Appearance > Customize > Additional CSS** instead, delete the
-`<style>` block from the top of `01` and paste
-`optional-styles-for-additional-css.css` there. Do one or the other, never both:
-pasting both loads the stylesheet twice.
+The cause is that WordPress strips `<style>` from widget content in most
+configurations, and 42KB of stylesheet goes with it. **Appearance > Customize >
+Additional CSS is never run through those filters**, so that is where it belongs.
+Nothing is lost by the move: CSS from the Customizer is global, so every widget
+on the page still sees it.
+
+If the design ever renders as plain text, this is the first thing to check ---
+view the page source and search for `--sea-ink`. If it is not there, the
+stylesheet did not load.
 
 ## Why the header is not its own piece
 
