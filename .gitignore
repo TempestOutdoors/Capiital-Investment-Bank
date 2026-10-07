@@ -1,2 +1,2 @@
-# Build-time only: terser, used to emit the newline-free script snippet.
+# Build-time only: terser and playwright-core, used by wordpress/build.sh and the probes.
 node_modules/

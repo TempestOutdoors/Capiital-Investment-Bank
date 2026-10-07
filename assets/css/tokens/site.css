@@ -1,0 +1,16 @@
+/* The site's own overrides on the five token files, which are carried verbatim from v3 and
+   shared with the older generations. Only two values differ, both from HEADER_CSS in
+   reference/source/sections.jsx and from elementor.md §4:
+
+   --nav-height  The token file sets 5rem, which v1 still uses. The live site's bar is 64px, and
+                 56px on phones (spec/01). The Logo Border takes its height from this, so the
+                 header's two heights are set here and nowhere else.
+   --logo-border-h  One pixel taller than the bar, so the shape covers the bar's bottom hairline.
+                 Earlier builds left a gap under it; spec/01 lists that among its traps. */
+:root{
+  --nav-height:4rem;
+  --logo-border-h:calc(var(--nav-height) + 1px);
+}
+@media (max-width:640px){
+  :root{--nav-height:3.5rem}
+}

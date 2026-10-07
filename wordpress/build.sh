@@ -1,732 +1,300 @@
 #!/usr/bin/env bash
 #
-# Regenerate the WordPress theme from the source site at the repository root.
+# Assemble everything that gets installed or pasted, from the sources at the repository
+# root. index.html is the single source of truth for markup, assets/ for the tokens, the
+# typefaces, the styles, the behaviour and the three images.
 #
-# index.html is the single source of truth for markup and assets/ for CSS and
-# JS; wordpress/src/ holds the PHP templates. Edit those, run this, commit the
-# result. Editing the generated theme directly means the next run silently
-# discards your changes.
+# Edit the sources, run this, commit the result. Editing a generated file directly means
+# the next run discards the change without saying so.
+#
+# What it writes:
+#   wordpress/capiital/            the Hello Elementor child theme: tokens, fonts, styles, JS
+#   dist/capiital-child-theme.zip  the same, ready for Appearance → Themes → Add New → Upload
+#   dist/sections/                 the front page as paste-able pieces, markup only
+#   dist/sections-grouped/         the same in three pieces
+#   dist/capiital-website.html     one self-contained file, nothing loaded from anywhere
+#   dist/capiital-website.zip      the site as separate files, for a static host
+#
+# What it refuses to write: anything that contacts a third party, and any paste-able piece
+# carrying a <style> or a <script>. Both have cost this build a working site once already.
 #
 # Usage:  wordpress/build.sh
-
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-theme="$repo/wordpress/captal-onepage"
-src="$repo/wordpress/src"
+cd "$repo"
 
-command -v python3 >/dev/null || { echo "build: python3 is required" >&2; exit 1; }
-
-rm -rf "$theme"
-mkdir -p "$theme/assets/css" "$theme/assets/js" "$theme/template-parts"
-
-python3 - "$repo" "$theme" "$src" <<'PY'
-import re, sys, os, base64, json
-
-repo, theme, src = sys.argv[1], sys.argv[2], sys.argv[3]
-html = open(os.path.join(repo, 'index.html')).read()
-
-def slice_between(start_pat, end_pat, label):
-    """Pull one region out of index.html, failing loudly rather than silently
-    emitting a half-built theme if the markup is restructured."""
-    s = re.search(start_pat, html)
-    e = re.search(end_pat, html)
-    if not s or not e or e.start() < s.start():
-        sys.exit('build: could not locate the %s region in index.html' % label)
-    return html[s.start():e.end()].rstrip()
-
-site_header = slice_between(r'<header class="site-header"[^>]*>', r'</header>', 'site header')
-site_footer = slice_between(r'<footer class="site-footer', r'</footer>', 'site footer')
-sections    = slice_between(r'<!-- ── 01 Front page', r'</section>\s*(?=\n<!-- ── Footer)', 'page sections')
-
-# Anchor links in the chrome must work from a sub-page too, where a bare
-# "#firm" resolves against the wrong document.
-def absolutise(markup):
-    return re.sub(
-        r'href="#([a-z][a-z0-9-]*)"',
-        lambda m: 'href="<?php echo esc_url( home_url( \'/#%s\' ) ); ?>"' % m.group(1),
-        markup,
-    )
-
-site_header = absolutise(site_header)
-site_footer = absolutise(site_footer)
-
-# The wordmark links to the top of a one-pager, which is only the right target
-# when the one-pager IS the current document. Point it at the site root so it
-# still works from a sub-page or an Elementor-built page.
-site_header = re.sub(
-    r'<a class="site-header__home" href="#top"',
-    '<a class="site-header__home" href="<?php echo esc_url( home_url( \'/\' ) ); ?>"',
-    site_header, count=1,
-)
-
-# The hardcoded nav becomes a real WordPress menu, falling back to the design's
-# own links until one is assigned under Appearance > Menus.
-nav_re = re.compile(r'( *)<nav class="site-nav" id="site-nav" aria-label="Primary">\n(.*?)\n *</nav>', re.S)
-m = nav_re.search(site_header)
-if not m:
-    sys.exit('build: could not locate the primary nav in the site header')
-indent, links = m.group(1), m.group(2)
-site_header = site_header[:m.start()] + (
-    '{i}<nav class="site-nav" id="site-nav" aria-label="<?php esc_attr_e( \'Primary\', \'captal-onepage\' ); ?>">\n'
-    '{i}<?php\n'
-    '{i}if ( has_nav_menu( \'primary\' ) ) :\n'
-    '{i}\twp_nav_menu(\n'
-    '{i}\t\tarray(\n'
-    '{i}\t\t\t\'theme_location\' => \'primary\',\n'
-    '{i}\t\t\t\'container\'      => false,\n'
-    '{i}\t\t\t\'depth\'          => 1,\n'
-    '{i}\t\t\t\'fallback_cb\'    => false,\n'
-    '{i}\t\t)\n'
-    '{i}\t);\n'
-    '{i}else :\n'
-    '{i}\t?>\n'
-    '{links}\n'
-    '{i}\t<?php\n'
-    '{i}endif;\n'
-    '{i}?>\n'
-    '{i}</nav>'
-).format(i=indent, links=links) + site_header[m.end():]
-
-def build(name, out_name, **subs):
-    text = open(os.path.join(src, name)).read()
-    for key, value in subs.items():
-        token = '{{%s}}' % key
-        if token not in text:
-            sys.exit('build: %s has no %s placeholder' % (name, token))
-        text = text.replace(token, value)
-    open(os.path.join(theme, out_name), 'w').write(text)
-
-build('header.php', 'header.php', SITE_HEADER=site_header)
-build('footer.php', 'footer.php', SITE_FOOTER=site_footer)
-build('template-parts-onepage.php', 'template-parts/onepage.php', SECTIONS=sections)
-
-# Templates that need no markup injection are copied verbatim.
-for name in ('functions.php', 'style.css', 'index.php', 'page.php', 'single.php',
-             'front-page.php', 'template-onepage.php', '404.php', 'search.php'):
-    open(os.path.join(theme, name), 'w').write(open(os.path.join(src, name)).read())
-
-# --- stylesheets and scripts ----------------------------------------------
-tokens = open(os.path.join(repo, 'assets/css/tokens.css')).read()
-open(os.path.join(theme, 'assets/css/tokens.css'), 'w').write(tokens)
-
-styles = open(os.path.join(repo, 'assets/css/styles.css')).read()
-styles = styles.replace('@import url("tokens.css");\n\n', '')
-if re.search(r'^\s*@import', styles, re.M):
-    sys.exit('build: an @import survived in styles.css — the enqueue order would break')
-open(os.path.join(theme, 'assets/css/styles.css'), 'w').write(styles)
-
-open(os.path.join(theme, 'assets/css/wordpress.css'), 'w').write(
-    open(os.path.join(src, 'wordpress.css')).read()
-)
-
-for name in ('assets/js/main.js', 'assets/favicon.svg'):
-    open(os.path.join(theme, name), 'w').write(open(os.path.join(repo, name)).read())
-
-# --- paste route -----------------------------------------------------------
-# For dropping the site into an existing page rather than installing the theme.
-body = re.search(r'<body>\n(.*)\n<script src=', html, re.S)
-if not body:
-    sys.exit('build: could not locate the body markup in index.html')
-body = body.group(1).rstrip()
-
-paste = os.path.join(repo, 'wordpress', 'paste')
-os.makedirs(paste, exist_ok=True)
-
-js = open(os.path.join(repo, 'assets/js/main.js')).read().strip()
-open(os.path.join(paste, '1-custom-html-block.html'), 'w').write(
-    '<!-- Capiital — paste this ENTIRE file into a Custom HTML block. -->\n'
-    '<!-- The stylesheet goes separately into Appearance > Customize > Additional CSS. -->\n\n'
-    + body + '\n\n<script>\n' + js + '\n</script>\n'
-)
-
-# Additional CSS cannot resolve a relative @import, so the sheets are merged
-# here in dependency order instead.
-open(os.path.join(paste, '2-additional-css.css'), 'w').write(
-    '/* Capiital — paste this ENTIRE file into Appearance > Customize > Additional CSS.\n'
-    '   tokens.css and styles.css are already merged here in the required order;\n'
-    '   the @import has been removed because Additional CSS cannot resolve it. */\n\n'
-    + tokens.rstrip() + '\n\n' + styles.lstrip()
-)
-
-# --- distributable copies of the site itself ---------------------------------
-# capiital-website.html inlines the two stylesheets and the script into one file
-# that opens straight from disk; the fonts stay on the CDN, as the design source
-# specifies. index.html is the source of truth for both, so they are generated
-# rather than hand-kept.
-dist = os.path.join(repo, 'dist')
-os.makedirs(dist, exist_ok=True)
-
-single = html
-single = single.replace(
-    '<link rel="stylesheet" href="assets/css/styles.css">',
-    '<style>\n' + tokens.rstrip() + '\n\n' + styles.lstrip() + '\n</style>',
-)
-single = single.replace(
-    '<script src="assets/js/main.js" defer></script>',
-    '<script>\n' + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>',
-)
-# The favicon is the only remaining external reference; inline it so the file is
-# genuinely self-contained apart from the webfonts.
-favicon = open(os.path.join(repo, 'assets/favicon.svg')).read()
-single = single.replace(
-    '<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">',
-    '<link rel="icon" href="data:image/svg+xml;base64,'
-    + base64.b64encode(favicon.encode()).decode() + '">',
-)
-for leftover in ('assets/css/', 'assets/js/', 'assets/favicon'):
-    if leftover in single:
-        sys.exit('build: %s survived in the single-file export' % leftover)
-open(os.path.join(dist, 'capiital-website.html'), 'w').write(single)
-
-ELEMENTOR_COMPAT = """
-/* ── Elementor wrappers ──────────────────────────────────────────────────── */
-/* Elementor drops every HTML widget inside section > container > column > wrap,
-   each of which is width-constrained and padded by default. Two things go wrong
-   if they are left alone: the full-bleed grounds stop at the content width, and
-   any padding above the front page shows a band of the page ground through the
-   transparent header. Scoped by :has() to wrappers that actually hold a piece of
-   this design, so the rest of the site's Elementor content is untouched. */
-:is(.elementor,
-    .elementor-location-single,
-    .elementor-section,
-    .elementor-column,
-    .elementor-widget-wrap,
-    .elementor-widget,
-    .elementor-widget-html,
-    .elementor-widget-container,
-    .e-con,
-    .e-con-inner):has(:is(.capiital-part, .front, .site-header, .site-footer)){
-  padding:0!important;
-  margin:0!important;
-}
-.elementor-section:has(:is(.capiital-part, .front, .site-header, .site-footer)) > .elementor-container{
-  max-width:none!important;
-  width:100%!important;
-}
-.capiital-part{width:100%}
-"""
-
-# --- Elementor template ------------------------------------------------------
-# One importable file for Elementor: Templates > Saved Templates > Import.
-# The whole page rides in a single HTML widget, because the design is authored as
-# one document with its own header, footer and full-bleed sections — rebuilding
-# it as Elementor sections and columns would hand the layout to Elementor's grid
-# and lose the hairline construction the design is built from.
-# The page is set to Elementor Canvas so the active theme wraps nothing around it.
-els = []
-def eid(seed):
-    """Elementor wants a short unique hex id per element."""
-    import hashlib
-    return hashlib.sha1(seed.encode()).hexdigest()[:7]
-
-# The webfonts arrive by @import rather than a <link>, which must be the first
-# rule in the sheet — hence its position at the very top of the style block.
-font_import = "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');"
-
-widget_html = (
-    '<style>\n' + font_import + '\n\n' + tokens.rstrip() + '\n\n' + styles.lstrip()
-    + '\n' + ELEMENTOR_COMPAT + '</style>\n\n'
-    + body + '\n\n<script>\n'
-    + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>\n'
-)
-
-template = {
-    "version": "0.4",
-    "title": "Capiital Website",
-    "type": "page",
-    "page_settings": {
-        # Canvas: no theme header, footer or content wrapper. The design supplies
-        # all three itself.
-        "template": "elementor_canvas",
-    },
-    "content": [{
-        "id": eid("section"),
-        "elType": "section",
-        "settings": {
-            "layout": "full_width",
-            "gap": "no",
-            "content_width": {"unit": "px", "size": "", "sizes": []},
-            "padding": {"unit": "px", "top": "0", "right": "0", "bottom": "0", "left": "0", "isLinked": True},
-            "margin": {"unit": "px", "top": "0", "right": "0", "bottom": "0", "left": "0", "isLinked": True},
-        },
-        "elements": [{
-            "id": eid("column"),
-            "elType": "column",
-            "settings": {
-                "_column_size": 100,
-                "_inline_size": None,
-                "padding": {"unit": "px", "top": "0", "right": "0", "bottom": "0", "left": "0", "isLinked": True},
-            },
-            "elements": [{
-                "id": eid("widget"),
-                "elType": "widget",
-                "widgetType": "html",
-                "settings": {"html": widget_html},
-                "elements": [],
-                "isInner": False,
-            }],
-            "isInner": False,
-        }],
-        "isInner": False,
-    }],
-}
-
-with open(os.path.join(dist, 'capiital-elementor-template.json'), 'w') as fh:
-    json.dump(template, fh, ensure_ascii=False, separators=(',', ':'))
-
-print('build: theme templates, assets, paste/ and dist/ generated')
-PY
-
-if command -v php >/dev/null; then
-  find "$theme" -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
-  echo "build: php syntax ok"
-else
-  echo "build: php not found — skipping syntax check" >&2
-fi
-
-# the_content() is what Elementor requires; losing it silently breaks the
-# builder, so the build refuses to ship a theme without it.
-for required in page.php single.php; do
-  grep -q 'the_content()' "$theme/$required" \
-    || { echo "build: $required does not call the_content() — Elementor would not render" >&2; exit 1; }
+for f in index.html assets/css/tokens.css assets/css/fonts.css assets/css/styles.css assets/js/main.js; do
+  [ -f "$f" ] || { echo "build: missing $f" >&2; exit 1; }
 done
-echo "build: the_content() present in page.php and single.php"
 
-# Deterministic archive. A plain `zip -r` stores each file's mtime and walks the
-# directory in filesystem order, so rebuilding from unchanged sources produced a
-# byte-different zip every time — a tracked binary that showed up as a spurious
-# diff on every build. Fixing the mtimes, sorting the entry list and dropping the
-# extra attribute fields (-X) makes identical inputs give identical bytes.
-rm -f "$repo/wordpress/captal-onepage.zip"
-find "$theme" -exec touch -t 202001010000.00 {} +
-( cd "$repo/wordpress" \
-  && find captal-onepage -type f ! -name '.DS_Store' | LC_ALL=C sort \
-     | zip -qX captal-onepage.zip -@ )
-echo "build: wrote wordpress/captal-onepage.zip"
+# ── the child theme ───────────────────────────────────────────────────────────
+# The theme is styling and behaviour only. It renders no content: Elementor owns every
+# page, which is the whole reason the last theme was replaced.
+theme="wordpress/capiital"
+rm -rf "$theme/assets" "$theme/fonts"
+mkdir -p "$theme/assets/css/tokens" "$theme/assets/js" "$theme/assets/img" "$theme/assets/fonts"
 
-rm -f "$repo/dist/capiital-website.zip"
-find "$repo/index.html" "$repo/assets" -exec touch -t 202001010000.00 {} +
-( cd "$repo" \
-  && find index.html assets -type f ! -name '.DS_Store' | LC_ALL=C sort \
-     | zip -qX dist/capiital-website.zip -@ )
-echo "build: wrote dist/capiital-website.zip"
+# tokens.css is a concatenation of the parts, so regenerate it rather than trust the copy.
+{
+  cat <<'HDR'
+/* ───────────────────────────────────────────────────────────────────────────────
+   Capiital · tokens
+   Generated by wordpress/build.sh from assets/css/tokens/*.css. Do not edit this file;
+   edit the parts. colors, typography, spacing, elevation and motion are carried verbatim
+   from wordpress-elementor-v3-2026-10-06/tokens/, byte for byte, so the design folder stays
+   the single master; site.css holds the only two values this site changes.
+   ─────────────────────────────────────────────────────────────────────────────── */
 
-# --- per-section snippets ----------------------------------------------------
-# One file per Elementor HTML widget, for building the page by hand rather than
-# importing it whole.
+HDR
+  for part in colors typography spacing elevation motion site; do
+    printf '/* ── %s.css ───────────────────────────────────────────────────────────────── */\n' "$part"
+    cat "assets/css/tokens/$part.css"
+    printf '\n'
+  done
+} > assets/css/tokens.css
+
+cp assets/css/tokens.css assets/css/fonts.css assets/css/styles.css "$theme/assets/css/"
+cp assets/css/tokens/*.css "$theme/assets/css/tokens/"
+cp assets/js/main.js "$theme/assets/js/"
+cp assets/img/*.jpg assets/img/*.png "$theme/assets/img/"
+cp assets/fonts/*.woff2 "$theme/assets/fonts/"
+
+# ── nothing may be fetched from a third party ─────────────────────────────────
+# spec/70 and checklist.md both require it, and the legal page's cookie paragraph states
+# it as a fact. A single reinstated @import would make that paragraph untrue.
+# The pattern requires the `//` of a real URL, so the guard in functions.php — which exists
+# precisely to refuse such a request — and the prose explaining it do not trip it.
+EXTERNAL='//(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.|cdnjs\.|unpkg\.com|ajax\.googleapis\.com)'
+if grep -rInE "$EXTERNAL" index.html assets wordpress/capiital >/dev/null 2>&1; then
+  echo "build: a third-party request survives in the sources —" >&2
+  grep -rInE "$EXTERNAL" index.html assets wordpress/capiital >&2
+  exit 1
+fi
+echo "build: no third-party requests in the sources"
+
 python3 - "$repo" <<'PY'
-import re, sys, os, shutil
+import base64, mimetypes, os, re, shutil, sys
 
 repo = sys.argv[1]
-html = open(os.path.join(repo, 'index.html')).read()
-out  = os.path.join(repo, 'dist', 'sections')
-shutil.rmtree(out, ignore_errors=True)
-os.makedirs(out)
+html = open(os.path.join(repo, 'index.html'), encoding='utf-8').read()
 
-def grab(start, end, label):
-    s = re.search(start, html)
-    if not s:
-        sys.exit('snippets: could not find %s' % label)
-    e = re.search(end, html[s.start():])
-    if not e:
-        sys.exit('snippets: could not close %s' % label)
-    return html[s.start(): s.start() + e.end()].rstrip()
 
-skip   = grab(r'<a class="skip-link"', r'</a>', 'skip link')
-header = grab(r'<header class="site-header"[^>]*>', r'</header>', 'header')
-footer = grab(r'<footer class="site-footer[^>]*>', r'</footer>', 'footer')
+def grab(pattern, closing, label):
+    """The span from the first match of `pattern` to the end of the first `closing`."""
+    start = re.search(pattern, html)
+    if not start:
+        sys.exit('build: could not find %s' % label)
+    end = re.search(closing, html[start.start():])
+    if not end:
+        sys.exit('build: could not close %s' % label)
+    return html[start.start(): start.start() + end.end()].rstrip()
+
+
+SECTION_END = r'</section>\s*(?=\n*<!--|\n*</main|\n*<footer|\Z)'
+
+skip = grab(r'<a class="skip-link"', r'</a>', 'the skip link')
+header = grab(r'<header class="site-header"[^>]*>', r'</header>', 'the header')
+footer = grab(r'<footer class="capiital-part site-footer[^>]*>', r'</footer>', 'the footer')
+
 
 def section(sid):
-    return grab(r'<section class="[^"]*"[^>]*id="%s">' % sid, r'</section>\s*(?=\n<!--|\n<footer|\Z)', sid)
+    return grab(r'<section class="[^"]*"[^>]*id="%s">' % sid, SECTION_END, '#' + sid)
 
 
-# Elementor puts every HTML widget inside section > container > column > wrap,
-# each of which is width-constrained and padded by default. Left alone, the
-# full-bleed grounds stop at the content width and the hairline grids inherit
-# padding they were never drawn with. Scoping the reset to .capiital-part means
-# it only ever touches wrappers holding a piece of this design, so the rest of
-# the site's Elementor content is untouched.
-COMPAT = """
-/* ── Elementor wrappers ──────────────────────────────────────────────────── */
-/* Elementor drops every HTML widget inside section > container > column > wrap,
-   each of which is width-constrained and padded by default. Two things go wrong
-   if they are left alone: the full-bleed grounds stop at the content width, and
-   any padding above the front page shows a band of the page ground through the
-   transparent header. Scoped by :has() to wrappers that actually hold a piece of
-   this design, so the rest of the site's Elementor content is untouched. */
-:is(.elementor,
-    .elementor-location-single,
-    .elementor-section,
-    .elementor-column,
-    .elementor-widget-wrap,
-    .elementor-widget,
-    .elementor-widget-html,
-    .elementor-widget-container,
-    .e-con,
-    .e-con-inner):has(:is(.capiital-part, .front, .site-header, .site-footer)){
-  padding:0!important;
-  margin:0!important;
-}
-.elementor-section:has(:is(.capiital-part, .front, .site-header, .site-footer)) > .elementor-container{
-  max-width:none!important;
-  width:100%!important;
-}
-.capiital-part{width:100%}
-"""
+quote = grab(r'<section class="capiital-part quote-sec[^"]*">', SECTION_END, 'the quote')
 
-FONT_IMPORT = ("@import url('https://fonts.googleapis.com/css2?"
-               "family=Inter:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@"
-               "0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap');")
+front = section('top')
+engage = section('services')
+learned = section('learned')
+cases = section('cases')
+people = section('people')
+papers = section('papers')
 
-tokens = open(os.path.join(repo, 'assets/css/tokens.css')).read()
-styles = open(os.path.join(repo, 'assets/css/styles.css')).read()
-styles = styles.replace('@import url("tokens.css");\n\n', '')
-if re.search(r'^\s*@import', styles, re.M):
-    sys.exit('snippets: an @import survived in styles.css')
-
-# The stylesheet travels inside piece 01 rather than in a widget of its own. A
-# widget holding only a <style> renders nothing but still occupies its Elementor
-# section's padding — measured at 50px of empty page ground above the header —
-# and it is one more thing to keep in the right order. Folded in here it cannot
-# be misplaced, and CSS is global once parsed, so pieces 02 onward still see it.
-# The @import has to be the first rule in the sheet or the browser drops it and
-# both faces fall back silently.
-STYLESHEET = ('<style>\n' + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n'
-              + styles.lstrip() + '\n' + COMPAT + '</style>')
-
-# The header travels WITH the front page, not in a section of its own. Given its
-# own Elementor section it would occupy layout space the fixed header does not
-# need, pushing the hero down: a band of page ground above the hero, a seam
-# between the two, and the navigation sitting on the eggshell instead of over the
-# dark hero before a single pixel has been scrolled.
-# The skip link belongs to the same piece — it is the first focusable thing on
-# the page and has to precede the navigation it skips.
-order = [
-    ('01', 'header-front', 'Header and front page',
-     skip + '\n\n' + header + '\n\n' + section('top')),
-    ('02', 'engage',       'What we engage',        section('services')),
-    ('03', 'believe',      'What we believe',       section('philosophy')),
-    ('04', 'learned',      'What we learned',       section('learned')),
-    ('05', 'cases',        'Cases',                 section('cases')),
-    ('06', 'people',       'Who we are',            section('people')),
-    ('07', 'papers',       'What we think',         section('papers')),
-    ('08', 'contact',      'How to reach us',       section('contact')),
-    ('09', 'footer',       'Footer',                footer),
+# ── the pieces ────────────────────────────────────────────────────────────────
+# Markup only. The tokens, the typefaces, the styles and the behaviour all come from the
+# child theme, so no piece carries a <style> or a <script> — WordPress strips the first
+# from widget content, and wpautop mangles the second.
+#
+# Piece 01 carries the skip link, the header and the front page together. The header is
+# position:fixed and needs no layout space; in a widget of its own, its Elementor section
+# would still occupy some, pushing the hero down and showing a band of page ground through
+# the transparent bar.
+#
+# Piece 03 carries What we learned and the quote together, and must. While the section is
+# staged its own bottom padding and the quote's top padding are both zeroed, through
+# `#learned.is-staged + .quote-sec` — an adjacent-sibling selector. Split into two widgets
+# they stop being siblings, the selector stops matching, and an eggshell strip opens
+# between them on release.
+PIECES = [
+    ('01-header-front.html', 'The skip link, the header and the front page',
+     skip + '\n\n' + header + '\n\n' + front),
+    ('02-engage.html', 'Where we engage', engage),
+    ('03-learned-quote.html', 'What we learned, and the quote — one piece on purpose',
+     learned + '\n\n' + quote),
+    ('04-cases.html', 'Cases', cases),
+    ('05-people.html', 'Who we are', people),
+    ('06-papers.html', 'What we think', papers),
+    ('07-footer-contact.html', 'How to reach us, and the footer', footer),
 ]
 
-def write_part(folder, name, title, markup):
-    body = '\n'.join('  ' + l if l.strip() else l for l in markup.split('\n'))
-    open(os.path.join(folder, name), 'w').write(
-        '<!-- Capiital — %s. One HTML widget, in its own full-width Elementor\n'
-        '     section with zero padding. -->\n'
-        '<div class="capiital-part">\n%s\n</div>\n' % (title, body))
-
-for num, slug, title, markup in order:
-    write_part(out, '%s-%s.html' % (num, slug), title, markup)
-
-# The stylesheet again as bare CSS, for Appearance > Customize > Additional CSS.
-# That box is never run through the content filters, so it is the one place the
-# CSS cannot be mangled.
-# The stylesheet goes in FIRST and it does not go in a widget. A <style> tag
-# pasted into an Elementor widget is stripped by WordPress's content filters in
-# most configurations, and when it goes the whole design goes with it: the page
-# renders as unstyled markup. Appearance > Customize > Additional CSS is never
-# filtered, so that is where it belongs. No <style> tag — that box expects bare CSS.
-open(os.path.join(out, '00-stylesheet.css'), 'w').write(
-    '/* Capiital — STEP ONE, and not a widget.\n'
-    '\n'
-    '   Paste this whole file into Appearance > Customize > Additional CSS,\n'
-    '   then Publish. Every other file depends on it.\n'
-    '\n'
-    '   It does NOT go in an Elementor HTML widget. A <style> tag pasted into a\n'
-    '   widget is stripped by WordPress in most configurations, and the page then\n'
-    '   renders as unstyled markup — headings in browser defaults, links blue, the\n'
-    '   wordmark without its bars. The Customizer box is never filtered. */\n\n'
-    + FONT_IMPORT + '\n\n' + tokens.rstrip() + '\n\n' + styles.lstrip() + '\n' + COMPAT)
-
-open(os.path.join(out, '10-script.html'), 'w').write(
-    '<!-- Capiital — SCRIPT. Paste this LAST, into its own HTML widget at the very\n'
-    '     bottom of the page. It drives the header on scroll, the reading progress\n'
-    '     hairline, the live nav item and the scroll-entry reveals. Without it the\n'
-    '     sections below the hero stay invisible.\n'
-    '     The .capiital-part wrapper collapses this widget\'s Elementor section, which\n'
-    '     would otherwise leave empty padding below the footer. -->\n'
-    '<div class="capiital-part">\n'
-    '<script>\n' + open(os.path.join(repo, 'assets/js/main.js')).read().strip() + '\n</script>\n'
-    '</div>\n')
-
-# --- grouped alternative -----------------------------------------------------
-# The same page in four widgets instead of ten, for building it by hand without
-# nine internal seams to keep flush. The split follows the design's own grounds:
-# dark front page, eggshell middle, dark tail. Contact travels with the footer
-# because that is how the design was drawn — they share the --wash-sea ground and
-# were one component in the source, contact running into the footer rather than
-# sitting above a separate thing.
-grouped_out = os.path.join(repo, 'dist', 'sections-grouped')
-shutil.rmtree(grouped_out, ignore_errors=True)
-os.makedirs(grouped_out)
-
-middle = '\n\n'.join(section(i) for i in
-                     ('services', 'philosophy', 'learned', 'cases', 'people', 'papers'))
-
-grouped = [
-    ('1', 'header-front', 'Header and front page',
-     skip + '\n\n' + header + '\n\n' + section('top')),
-    ('2', 'middle', 'What we engage, believe, learned, cases, who we are, what we think',
-     middle),
-    ('3', 'contact-footer', 'How to reach us, and the footer',
-     section('contact') + '\n\n' + footer),
+GROUPED = [
+    ('1-header-front.html', 'The skip link, the header and the front page',
+     skip + '\n\n' + header + '\n\n' + front),
+    ('2-middle.html', 'Everything between the front page and the footer',
+     '\n\n'.join([engage, learned, quote, cases, people, papers])),
+    ('3-footer-contact.html', 'How to reach us, and the footer', footer),
 ]
-for num, slug, title, markup in grouped:
-    write_part(grouped_out, '%s-%s.html' % (num, slug), title, markup)
 
-open(os.path.join(grouped_out, '4-script.html'), 'w').write(
-    open(os.path.join(out, '10-script.html')).read())
 
-open(os.path.join(grouped_out, '00-stylesheet.css'), 'w').write(
-    open(os.path.join(out, '00-stylesheet.css')).read())
+def write_set(folder, pieces, readme):
+    out = os.path.join(repo, 'dist', folder)
+    shutil.rmtree(out, ignore_errors=True)
+    os.makedirs(out)
+    for name, _label, body in pieces:
+        if '<style' in body or '<script' in body:
+            sys.exit('build: %s carries a <style> or a <script>; both are filtered '
+                     'out of widget content' % name)
+        open(os.path.join(out, name), 'w', encoding='utf-8').write(body.strip() + '\n')
+    open(os.path.join(out, 'README.md'), 'w', encoding='utf-8').write(readme)
+    return out
 
-GROUPED_README = """# Capiital — grouped snippets
 
-The same page as `sections/`, in four Elementor **HTML widgets** instead of ten.
+HOW = """\
+## Before the first paste
 
-**Step one is not a widget.** `00-stylesheet.css` goes into
-**Appearance > Customize > Additional CSS**, and everything else depends on it.
-Skip it and the page renders as unstyled markup.
+**Install and activate the theme.** `dist/capiital-child-theme.zip`, under
+Appearance → Themes → Add New → Upload, with Hello Elementor installed as its parent. The
+theme carries the colours, the two typefaces, every style and all of the behaviour.
 
-| # | File | Contains |
-| --- | --- | --- |
-| 0 | `00-stylesheet.css` | **Appearance > Customize > Additional CSS**, then Publish |
-| 1 | `1-header-front.html` | Header, front page |
-| 2 | `2-middle.html` | What we engage, believe, learned, cases, who we are, what we think |
-| 3 | `3-contact-footer.html` | How to reach us, and the footer |
-| 4 | `4-script.html` | The script |
+Nothing below contains any CSS or any JavaScript, and nothing should ever have any added to
+it. WordPress strips `<style>` out of widget content; the whole stylesheet disappeared that
+way once and the site rendered as unstyled markup. There is no Additional CSS to paste
+either — the theme loads it all.
 
-`4-script-oneline.html` is an alternate, described below.
+**In Elementor's settings, before building:** Flexbox Container on, Grid Container on,
+Google Fonts off, Load Font Awesome off, Disable Default Colours on, Disable Default Fonts
+on, content width 1400, container padding 0, default gap 0, border-radius 0 under Theme
+Style. Leave every widget's *Motion Effects* empty: the site's own motion is in the theme,
+and Elementor's would fight it.
 
-## Why these four
+## The pieces
 
-Every widget boundary is a wrapper that can introduce padding, so ten pieces mean
-nine internal seams to keep flush and four mean two. The split follows the
-design's own grounds — dark front page, eggshell middle, dark tail — so each file
-is one continuous surface.
+Add an **HTML widget** for each file, in this order, and paste the file whole:
 
-Contact travels with the footer because that is how the design was drawn. They
-share the same deep ground and were a single component in the source, contact
-running *into* the footer rather than sitting above a separate thing. Splitting
-between them would cut the dark block in a place it was never drawn to be cut.
-
-The stylesheet is not in a widget at all. It was once folded into file 1, and
-that build rendered as unstyled markup, because WordPress strips `<style>` from
-widget content in most configurations. The Customizer's Additional CSS box is
-never filtered, so the stylesheet lives there and every widget still sees it.
-
-**What you give up:** reordering sections by dragging. Moving *cases* above
-*learned* means editing HTML inside file 2 rather than moving a block. If that
-matters, use `sections/` instead — both are generated from the same source, so
-you can switch at any time.
-
-## Settings for each section
-
-For every Elementor section holding one of these widgets:
-
-- **Layout > Content Width: Full Width**
-- **Layout > Columns Gap: No Gap**
-- **Advanced > Padding: 0** on all four sides
-
-The stylesheet also neutralises Elementor's own wrappers, scoped to
-`.capiital-part` so nothing else on the site is affected.
-
-## Use the HTML widget, not the Text Editor
-
-The Text Editor widget runs WordPress's content filters, which strip `<br>`, the
-empty `<span>`s that draw the wordmark's two bars, and `<span>`/`<p>` wrappers —
-and turn every newline inside a `<script>` into `<br />`, which destroys it. The
-HTML widget does none of that.
-
-If the script comes back broken — view source and look for `<br />` or `<p>`
-inside the `<script>` — paste `4-script-oneline.html` instead. Same code on one
-line, so there are no newlines to convert.
-
-## If the design renders as plain text
-
-View the page source and search for `--sea-ink`. If it is not there, the
-stylesheet did not load: `00-stylesheet.css` has not been pasted into Additional
-CSS, or it was pasted and not published.
-
-## Regenerating
-
-Generated from `index.html` by `wordpress/build.sh`.
 """
-open(os.path.join(grouped_out, 'README.md'), 'w').write(GROUPED_README)
 
-print('build: wrote dist/sections-grouped/ (%d files)' % (len(grouped) + 3))
+FOOT = """
+## Then
 
-README = """# Capiital — section snippets
-
-Paste each file into an Elementor **HTML widget**, in number order.
-
-**Step one is not a widget.** `00-stylesheet.css` goes into
-**Appearance > Customize > Additional CSS**, and everything else depends on it.
-Skip it and the page renders as unstyled markup.
-
-| # | File | Goes in |
-| --- | --- | --- |
-| 00 | `00-stylesheet.css` | **Appearance > Customize > Additional CSS**, then Publish |
-| 01 | `01-header-front.html` | Header **and** front page, together |
-| 02 | `02-engage.html` | What we engage |
-| 03 | `03-believe.html` | What we believe |
-| 04 | `04-learned.html` | What we learned |
-| 05 | `05-cases.html` | Cases |
-| 06 | `06-people.html` | Who we are |
-| 07 | `07-papers.html` | What we think |
-| 08 | `08-contact.html` | How to reach us |
-| 09 | `09-footer.html` | Footer |
-| 10 | `10-script.html` | An HTML widget at the very bottom |
-
-`10-script-oneline.html` is an alternate, described below.
-
-## Why the stylesheet is not in a widget
-
-It was, once, folded into the top of `01`. That build rendered as unstyled
-markup: browser-default headings, blue underlined links, the wordmark without its
-two bars, every section visible at once because the rule that hides them until
-they are scrolled to had gone too.
-
-The cause is that WordPress strips `<style>` from widget content in most
-configurations, and 42KB of stylesheet goes with it. **Appearance > Customize >
-Additional CSS is never run through those filters**, so that is where it belongs.
-Nothing is lost by the move: CSS from the Customizer is global, so every widget
-on the page still sees it.
-
-If the design ever renders as plain text, this is the first thing to check ---
-view the page source and search for `--sea-ink`. If it is not there, the
-stylesheet did not load.
-
-## Why the header is not its own piece
-
-The header is `position: fixed`, so it needs no layout space of its own. Given a
-separate Elementor section it gets some anyway, and three faults follow at once:
-a band of page ground above the hero, a seam between the header and the hero, and
-the navigation sitting on the eggshell instead of over the dark hero before
-anything has been scrolled. Keeping it in the same widget as the front page means
-there is no wrapper between them to add space. Do not split `01` in two.
-
-## Read this first: the HTML widget, not the Text Editor
-
-Elementor's **Text Editor** widget runs WordPress's content filters. Those
-filters silently delete markup they consider unnecessary and rewrite newlines.
-On this design they remove:
-
-- **every `<br>`**, so multi-line headings collapse into one line;
-- **the empty `<span>`s inside the wordmark**, so `CAP//TAL` loses its two
-  skewed bars and renders as literal text;
-- **`<span>` and `<p>` wrappers** inside cards and prose, so the type that
-  depends on them falls back to the default size and colour;
-- **every newline inside a `<script>`**, replacing them with `<br />` and `<p>`
-  tags, which destroys the JavaScript completely.
-
-The **HTML** widget does none of this. Use it for every file here.
-
-## The file that is not a section
-
-**`10-script.html` releases the scroll-entry reveals.** Without it every section
-below the front page stays at `opacity: 0` and the page looks empty past the
-hero. It also drives the header on scroll, the reading-progress hairline and the
-live navigation item.
-
-If the script comes back broken — view the page source and look for `<br />` or
-`<p>` inside the `<script>` — paste **`10-script-oneline.html`** instead. It is
-the same code on a single line, so there are no newlines for the filters to
-convert. Behaviour is identical.
-
-## Settings for each section
-
-For every Elementor section holding one of these widgets:
-
-- **Layout > Content Width: Full Width**
-- **Layout > Columns Gap: No Gap**
-- **Advanced > Padding: 0** on all four sides
-
-The stylesheet also neutralises Elementor's own wrappers, scoped to
-`.capiital-part` so nothing else on the site is affected — but setting the three
-above keeps the editor preview honest.
-
-## Editing
-
-Each file is one widget's contents, wrapped in `<div class="capiital-part">`.
-That wrapper is what the Elementor reset targets; keep it.
-
-The section marks — `[ 02 — What we engage ]` — are scaffolding, deliberately set
-at 34% of the accent. Delete the `<i class="ref">` wrapper to turn one into a
-permanent eyebrow, or delete the line to remove it.
-
-## Regenerating
-
-Generated from `index.html` by `wordpress/build.sh`. Edit that and re-run, or
-edit these directly and accept that the next build overwrites them.
+- The page template should be **Elementor Canvas**, so the theme wraps nothing around it.
+- Check at 1440, 1024 and 390px wide, in both languages, with and without reduced motion.
+  `checklist.md` in the design folder is the list to work through.
+- The ledger under *What we think* is four fixed rows here. It becomes a Loop Grid of the
+  latest four Publication posts when that post type exists, and then it can never disagree
+  with the archive.
 """
-open(os.path.join(out, 'README.md'), 'w').write(README)
 
-print('build: wrote dist/sections/ (%d files)' % (len(order) + 3))
+
+def readme_for(pieces, title, note):
+    lines = ['# %s\n' % title, note, '\n', HOW]
+    for i, (name, label, body) in enumerate(pieces, 1):
+        lines.append('%d. **`%s`** — %s  \n   %s bytes\n' % (i, name, label, f'{len(body):,}'))
+    lines.append(FOOT)
+    return ''.join(lines)
+
+
+write_set('sections', PIECES, readme_for(
+    PIECES, 'The front page, piece by piece',
+    'Seven pieces, each for one Elementor HTML widget. Two of them are deliberately not '
+    'split further, and the reasons are given beside them.\n'))
+
+write_set('sections-grouped', GROUPED, readme_for(
+    GROUPED, 'The front page in three pieces',
+    'The same page in three widgets rather than seven: fewer things to place, and fewer '
+    'seams. Use this one unless a section needs editing on its own.\n'))
+
+print('build: wrote dist/sections (%d pieces) and dist/sections-grouped (%d)'
+      % (len(PIECES), len(GROUPED)))
+
+# ── one self-contained file ───────────────────────────────────────────────────
+# Everything inlined, the typefaces and the three images included as data URIs, so the
+# file opens from disk and still contacts nothing. It is the thing to send someone who
+# wants to see the site without a WordPress install.
+single = html
+
+
+def read(rel):
+    return open(os.path.join(repo, rel), encoding='utf-8').read()
+
+
+def data_uri(rel):
+    path = os.path.join(repo, rel)
+    mime = mimetypes.guess_type(path)[0] or 'application/octet-stream'
+    if rel.endswith('.woff2'):
+        mime = 'font/woff2'
+    with open(path, 'rb') as fh:
+        return 'data:%s;base64,%s' % (mime, base64.b64encode(fh.read()).decode('ascii'))
+
+
+fonts = read('assets/css/fonts.css')
+for face in sorted(os.listdir(os.path.join(repo, 'assets/fonts'))):
+    fonts = fonts.replace('../fonts/' + face, data_uri('assets/fonts/' + face))
+
+styles = read('assets/css/styles.css')
+for img in sorted(os.listdir(os.path.join(repo, 'assets/img'))):
+    styles = styles.replace('../img/' + img, data_uri('assets/img/' + img))
+
+bundle = ('<style>\n' + read('assets/css/tokens.css').rstrip() + '\n\n'
+          + fonts.rstrip() + '\n\n' + styles.rstrip() + '\n</style>')
+
+single = re.sub(
+    r'<link rel="stylesheet" href="assets/css/tokens\.css">\s*'
+    r'<link rel="stylesheet" href="assets/css/fonts\.css">\s*'
+    r'<link rel="stylesheet" href="assets/css/styles\.css">',
+    bundle, single)
+single = single.replace('<script src="assets/js/main.js" defer></script>',
+                        '<script>\n' + read('assets/js/main.js').rstrip() + '\n</script>')
+
+# Sub-resources only. An <a href> is a link, not a fetch, and tokens.css naming its own
+# sources in a comment is neither.
+left = re.findall(r'<(?:link|script|img|source|iframe)\b[^>]*\b(?:href|src)="(?!data:)[^"]*"', single)
+left += [u for u in re.findall(r'url\(\s*["\']?([^"\')]+)', single) if not u.startswith('data:')]
+if left:
+    sys.exit('build: the single file still fetches %s' % left[:4])
+
+open(os.path.join(repo, 'dist', 'capiital-website.html'), 'w', encoding='utf-8').write(single)
+print('build: wrote dist/capiital-website.html (%.1f KB, nothing external)'
+      % (len(single.encode('utf-8')) / 1024))
 PY
 
+# ── deterministic archives ────────────────────────────────────────────────────
+# A plain `zip -r` stores each file's mtime and walks the directory in filesystem order, so
+# an unchanged source produced a byte-different zip on every run — a tracked binary showing
+# a spurious diff each time. Fixed mtimes, a sorted entry list and -X make identical inputs
+# give identical bytes.
+pack() {
+  local zip="$1" root="$2"; shift 2
+  rm -f "$zip"
+  ( cd "$root" && find "$@" -print0 | LC_ALL=C sort -z \
+      | xargs -0 touch -t 202001010000.00 )
+  ( cd "$root" && find "$@" -type f -print | LC_ALL=C sort | zip -qX "$repo/$zip" -@ )
+  echo "build: wrote $zip"
+}
 
-# A newline-free copy of the script. WordPress's wpautop turns every newline
-# inside a pasted <script> into a <br />, which destroys the JavaScript — so a
-# build with no newlines in it has nothing to destroy. Optional: the readable
-# copy is always written, and this one is skipped with a warning if the minifier
-# is unavailable rather than failing the build.
-if [ -f "$repo/node_modules/terser/package.json" ] || command -v terser >/dev/null 2>&1; then
-  node - "$repo" <<'NODE' || echo "build: minifier failed — 10-script-oneline.html not written" >&2
-const path = require('path');
-const fs = require('fs');
-const repo = process.argv[2];
-let minify;
-try { ({ minify } = require(path.join(repo, 'node_modules/terser'))); }
-catch (e) { ({ minify } = require('terser')); }
-(async () => {
-  const src = fs.readFileSync(path.join(repo, 'assets/js/main.js'), 'utf8');
-  const r = await minify(src, { format: { comments: false }, compress: true, mangle: true });
-  if (r.error) throw r.error;
-  if (r.code.includes('\n')) throw new Error('minified output still contains a newline');
-  const oneline = (readable) =>
-    '<!-- Capiital — SCRIPT, on one line. Identical behaviour to ' + readable + '.\n'
-  + '     Use this one if the readable copy comes back broken: WordPress turns\n'
-  + '     newlines inside a pasted <script> into <br /> tags, and a file with no\n'
-  + '     newlines has nothing for it to break. -->\n'
-  + '<div class="capiital-part">\n<script>' + r.code + '</script>\n</div>\n';
-  fs.writeFileSync(path.join(repo, 'dist/sections/10-script-oneline.html'), oneline('10-script.html'));
-  fs.writeFileSync(path.join(repo, 'dist/sections-grouped/4-script-oneline.html'), oneline('4-script.html'));
-  console.log('build: wrote both one-line script snippets');
-})();
-NODE
-else
-  echo "build: terser not installed — skipping 10-script-oneline.html" >&2
-fi
+mkdir -p dist
+pack dist/capiital-child-theme.zip wordpress capiital
+pack dist/capiital-sections.zip dist sections
+pack dist/capiital-sections-grouped.zip dist sections-grouped
+pack dist/capiital-blank-theme.zip wordpress capiital-blank
 
-# Packed last, so everything generated above is inside it.
-rm -f "$repo/dist/capiital-sections.zip"
-find "$repo/dist/sections" -exec touch -t 202001010000.00 {} +
-( cd "$repo/dist" \
-  && find sections -type f ! -name '.DS_Store' | LC_ALL=C sort \
-     | zip -qX capiital-sections.zip -@ )
-echo "build: wrote dist/capiital-sections.zip"
+# The site as separate files, for a plain static host.
+staging="$(mktemp -d)"
+trap 'rm -rf "$staging"' EXIT
+mkdir -p "$staging/site"
+cp index.html "$staging/site/"
+mkdir -p "$staging/site/assets"
+cp -R assets/css assets/js assets/img assets/fonts "$staging/site/assets/"
+pack dist/capiital-website.zip "$staging" site
 
-rm -f "$repo/dist/capiital-sections-grouped.zip"
-find "$repo/dist/sections-grouped" -exec touch -t 202001010000.00 {} +
-( cd "$repo/dist" \
-  && find sections-grouped -type f ! -name '.DS_Store' | LC_ALL=C sort \
-     | zip -qX capiital-sections-grouped.zip -@ )
-echo "build: wrote dist/capiital-sections-grouped.zip"
-
-# The blank theme is hand-written source, not generated from index.html — it has
-# no design in it to keep in sync. The build only packs it, on the same
-# deterministic terms as everything else.
-rm -f "$repo/dist/capiital-blank-theme.zip"
-find "$repo/wordpress/capiital-blank" -exec touch -t 202001010000.00 {} +
-( cd "$repo/wordpress" \
-  && find capiital-blank -type f ! -name '.DS_Store' | LC_ALL=C sort \
-     | zip -qX "$repo/dist/capiital-blank-theme.zip" -@ )
-echo "build: wrote dist/capiital-blank-theme.zip"
+echo "build: done"
