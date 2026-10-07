@@ -14,19 +14,32 @@
 /* ── Base · elementor.md §4 ───────────────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:auto}                  /* smooth scrolling is done in JS · spec/60 */
+/* Neither a font-weight nor a line-height here, deliberately, and both were wrong before.
+   Setting the page to 300 made every element that does not declare a weight — the stage
+   numerals, the quotation, the ledger titles, the footer's e-mail, the archive's count
+   figure — inherit light where the reference has them at 400. Setting it to 1.625 did the
+   same for leading, loosening the nav, the ledger's meta, the footer's link columns, the
+   principals' details and the legal register, all of which the reference leaves at normal.
+   Prose declares both for itself, section by section, exactly as the reference does. */
 body{
   margin:0;
   background:var(--eggshell);
   color:var(--ink);
   font-family:var(--font-sans);
-  font-weight:var(--weight-light);
   font-size:var(--text-base);
-  line-height:var(--leading-relaxed);
   -webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;
 }
 h1,h2,h3,h4,p,blockquote,figure{margin:0}
-h1,h2,h3,h4{font-weight:var(--weight-regular)}
+/* Every headline figure is set in the serif — a brand rule, not a preference — and the
+   tracking belongs here rather than on each heading. Without this the cases' sectors, the
+   principals' names and the observations sat at normal tracking, and the legal page's
+   sub-headings were set in the sans. Headings that declare their own keep theirs. */
+h1,h2,h3,h4{
+  font-family:var(--font-display);
+  font-weight:var(--weight-regular);
+  letter-spacing:var(--tracking-heading);
+}
 a{color:inherit;text-decoration:none}
 img,svg{display:block;max-width:100%}
 button,input,textarea{font:inherit;color:inherit}
