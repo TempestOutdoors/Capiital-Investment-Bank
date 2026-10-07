@@ -13,45 +13,56 @@ found so far are listed at the foot of this file.
 kept for its component library and its brief, but it is a generation behind: its palette is
 the sea palette, which the ice palette replaced on 30 September. Build nothing from it.
 
-## The two halves
+## The three halves
 
-**The page.** `index.html`, `assets/`. One front page, eight sections, built to the 7 October
-spec. Open it from a local server (the wordmark is a CSS mask, which `file://` will not
-load). It is the source of truth: everything installed or pasted is generated from it.
+Everything installed or pasted is generated from the sources at the root. Run
+`wordpress/build.sh` after any change.
+
+**The pages.** `index.html`, and `archive.html` and `legal.html` generated from
+`templates/`. Open them from a local server — the wordmark is a CSS mask, which `file://`
+will not load.
 
 ```
-assets/css/tokens/     the five token files, carried in byte for byte from the design folder,
+assets/css/tokens/     the five token files, byte for byte from the design folder,
                        plus site.css for the only two values this site changes
 assets/css/tokens.css  generated from those, by the build
 assets/css/fonts.css   @font-face for the two self-hosted families
-assets/css/styles.css  the design
-assets/js/main.js      the behaviour, ported from the reference's React
+assets/css/styles.css  the design: the front page, the archive, the legal page
+assets/js/main.js      reveals, header, in-page links, the two held sections, the form
+assets/js/archive.js   the archive's filters, cards and reading panel
 assets/fonts/          Source Serif 4 and Inter, latin and latin-ext, SIL OFL
 assets/img/            the skyline, the Logo Border's shape, the wordmark mask
+content/               publications.json — the twelve placeholder entries, both languages
+templates/             the archive and legal page shells, filled by the build
 ```
 
-**The server.** `wordpress/`. A Hello Elementor child theme carrying the tokens, the
-typefaces, the styles and the behaviour, and rendering no content of its own. See
-`wordpress/README.md`.
+**The theme.** `wordpress/capiital/` — a Hello Elementor child carrying the tokens, the
+typefaces and every style, and rendering no content of its own.
 
-Run `wordpress/build.sh` after any change to the page. It writes the theme, the paste
-pieces, one self-contained file and the zips, all into `dist/`.
+**The plugin.** `wordpress/capiital-site/` — the Publication post type behind the archive and
+the front page's ledger, six custom Elementor widgets, the shared behaviour, the form's spam
+floor, and a Reveal control so the firm keeps the house motion on anything it adds.
+
+See `wordpress/README.md` for the order to install them in, and `wordpress/SETTINGS.md` for
+the Elementor settings to click through once.
+
+## One archive, two sources
+
+`assets/js/archive.js` draws the filters, the cards and the reading panel from a JSON island
+and never knows where it came from. The static page's island is built from
+`content/publications.json`; the *Capiital · Archive* widget writes the same island from the
+publication post type. The archive is therefore written, tested and fixed once rather than
+twice, and the static build is a real test of what ships.
 
 ## Where this is going
 
 The handoff asks for the site rebuilt in Elementor Pro so the firm can edit text,
-publications, people and images without a developer: native widgets where Elementor can do
-the work, six custom widgets in a `capiital-site` plugin where it cannot, a Publication post
-type behind the archive and the front page's ledger, and WPML for the Danish.
+publications, people and images without a developer. What is built: the child theme, the
+plugin, the post type, the six widgets, the archive, the legal page, the Theme Builder
+templates and the WPML configuration.
 
-This repository is the first step of that, and deliberately stops short of it. The child
-theme is the part of the architecture that does not change: it is where the CSS, the fonts
-and the shared JS belong in the finished build too. The front page sits in Elementor as
-markup for now, and each section can be converted into its widget without the rest being
-touched. Nothing here has to be thrown away to get to the finished architecture.
-
-Still to come, in the handoff's own order: the archive page, the legal page, the Publication
-post type, the six custom widgets, the Elementor Pro form, and WPML.
+What is left: putting it on the server, and the Danish. WPML is installed but four major
+versions behind, which is why the translation pass is last.
 
 ## What is settled, and what is not
 

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  What WPML may translate.
+
+  Every text control on the six widgets is declared here, including the ones inside repeaters.
+  Without this file WPML cannot see a custom widget's fields at all, and the Danish site shows
+  the English text with nothing to translate — elementor.md §7 names it as the thing to test.
+
+  Two rules the declarations follow:
+
+  · A field holding an address, an id or a numeral is not translated. The anchors and the
+    publication slugs are deliberately the same in both languages, so that an in-page link and
+    a shared archive address work unchanged on /da/. The stage numerals I to IV are numerals.
+
+  · The archive's filter values are not here either. A filter matches on the English value in
+    both languages and only its label is translated, which is how a filter chosen on /da/
+    answers to the same posts as the one chosen on /.
+-->
+<wpml-config>
+
+  <custom-types>
+    <custom-type translate="1">publication</custom-type>
+  </custom-types>
+
+  <taxonomies>
+    <taxonomy translate="1">publication_kind</taxonomy>
+    <taxonomy translate="1">publication_sector</taxonomy>
+    <taxonomy translate="1">publication_stage</taxonomy>
+  </taxonomies>
+
+  <custom-fields>
+    <custom-field action="translate">summary</custom-field>
+    <custom-field action="translate">photo_brief</custom-field>
+    <!-- "12 min" is the same in both languages, and copying it keeps the two in step. -->
+    <custom-field action="copy">read_time</custom-field>
+    <custom-field action="copy">pdf</custom-field>
+    <custom-field action="copy">is_placeholder</custom-field>
+  </custom-fields>
+
+  <elementor-widgets>
+
+    <!-- The header has nothing to translate: its labels come from the menu and its languages
+         from WPML. It is listed so WPML does not report it as unknown. -->
+    <widget name="capiital-header"/>
+
+    <widget name="capiital-front-page">
+      <fields>
+        <field type="Line 1">line_1</field>
+        <field type="Line 2">line_2</field>
+        <field type="Line 3">line_3</field>
+        <field type="Standfirst">standfirst</field>
+      </fields>
+    </widget>
+
+    <widget name="capiital-engage">
+      <fields>
+        <field type="Heading">heading_line</field>
+        <field type="Accent line">accent_line</field>
+      </fields>
+      <fields-in-item item="stages">
+        <field type="Stage">title</field>
+        <field type="What it involves">line</field>
+      </fields-in-item>
+    </widget>
+
+    <widget name="capiital-learned">
+      <fields>
+        <field type="Heading">heading_line</field>
+        <field type="Accent line">accent_line</field>
+        <field type="Standfirst">standfirst</field>
+      </fields>
+      <fields-in-item item="observations">
+        <field type="Observation">title</field>
+        <field type="What it means">body</field>
+      </fields-in-item>
+    </widget>
+
+    <widget name="capiital-archive">
+      <fields>
+        <field type="Heading">heading_line</field>
+        <field type="Accent line">accent_line</field>
+        <field type="Standfirst">standfirst</field>
+      </fields>
+    </widget>
+
+    <widget name="capiital-contact">
+      <fields>
+        <field type="Heading">heading_line</field>
+        <field type="Accent line">accent_line</field>
+        <field type="Paragraph">lead</field>
+        <field type="First legal line">legal_1</field>
+        <field type="Second legal line">legal_2</field>
+      </fields>
+      <fields-in-item item="columns">
+        <field type="Column heading">heading</field>
+      </fields-in-item>
+    </widget>
+
+  </elementor-widgets>
+
+</wpml-config>

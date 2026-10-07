@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capiital &middot; The archive</title>
+<meta name="description" content="Every letter, note and review the house has published, arranged by type, sector, stage of engagement and year.">
+<script>document.documentElement.className += " js";</script>
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-da="G&aring; til indhold">Skip to content</a>
+
+<!--CAPIITAL:HEADER-->
+
+<!-- ═══ 30 · The archive · spec/30 ═══════════════════════════════════════════════
+     The shell only. Every card and the reading panel are drawn by assets/js/archive.js
+     from the JSON island below, so the same renderer serves this page and the WordPress
+     widget — there, the island is written from the publication post type instead. -->
+<main class="page-main" id="main" data-archive>
+  <div class="wrap">
+    <div class="page-intro" data-reveal="veil">
+      <div>
+        <h2 class="s-head s-head--md"><span data-da="Hvad vi mener,">What we think,</span><br><span class="s-head__accent" data-da="i sin helhed.">in full.</span></h2>
+      </div>
+      <p class="page-intro__sub" data-da="Alle breve, notater og gennemgange, huset har udgivet, ordnet efter type, sektor, fase og &aring;r.">Every letter, note and review the house has published, arranged by type, sector, stage of engagement and year.</p>
+    </div>
+
+    <div class="arc-wrap">
+      <div class="arc-bar" role="group" aria-label="Filter and order the archive" data-da-label="Filtr&eacute;r og sort&eacute;r arkivet">
+        <div class="arc-menus" data-arc-menus></div>
+        <div data-arc-order></div>
+      </div>
+      <div class="arc-line">
+        <span aria-live="polite" data-arc-count></span>
+        <button type="button" class="arc-toggle" data-arc-clear hidden data-da="Ryd filtre">Clear filters</button>
+      </div>
+    </div>
+
+    <div class="arc-grid" data-arc-grid></div>
+    <div class="arc-empty" data-arc-empty hidden data-da="Ingen publikation svarer til alle de valgte filtre.">No publication answers to every filter chosen.</div>
+  </div>
+</main>
+
+<script type="application/json" id="arc-data"><!--CAPIITAL:ARC-DATA--></script>
+
+<!--CAPIITAL:FOOTER-->
+
+<script src="assets/js/main.js" defer></script>
+<script src="assets/js/archive.js" defer></script>
+</body>
+</html>

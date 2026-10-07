@@ -206,9 +206,13 @@
     var a = ev.target.closest && ev.target.closest("a[href]");
     if (!a) return;
     var href = a.getAttribute("href");
-    if (href && href.length > 1 && href.charAt(0) === "#" && scrollToSection(decodeURIComponent(href.slice(1)), true)) {
+    if (!href || href.length < 2) return;
+    var hash = null;
+    if (href.charAt(0) === "#") hash = href.slice(1);
+    else if (href.indexOf("#") > 0 && a.pathname === win.location.pathname) hash = href.slice(href.indexOf("#") + 1);
+    if (hash && scrollToSection(decodeURIComponent(hash), true)) {
       ev.preventDefault();
-      if (win.history && win.history.replaceState) win.history.replaceState(null, "", href);
+      if (win.history && win.history.replaceState) win.history.replaceState(null, "", "#" + hash);
     }
   });
   (function arrival() {
@@ -367,6 +371,36 @@
       ro.observe(rail); ro.observe(pin);
     }
     measure();
+  })();
+
+  /* ── The legal page's index · spec/40 ───────────────────────────────────────
+     The live part is the last one whose top is at or above 34% of the viewport — the same
+     reading line the header's section links use, so the two never disagree. The column
+     itself is pinned by CSS position:sticky, which is the sanctioned sticky-column read;
+     nothing here moves it. */
+  (function legalIndex() {
+    var nav = doc.querySelector("[data-legal-index]");
+    if (!nav) return;
+    var links = nav.querySelectorAll('a[href^="#"]');
+    if (!links.length) return;
+    var raf = 0;
+
+    function check() {
+      raf = 0;
+      var line = win.innerHeight * 0.34;
+      var live = links[0].getAttribute("href").slice(1);
+      for (var i = 0; i < links.length; i++) {
+        var id = links[i].getAttribute("href").slice(1);
+        var part = doc.getElementById(id);
+        if (part && part.getBoundingClientRect().top <= line) live = id;
+      }
+      for (var j = 0; j < links.length; j++) {
+        links[j].classList.toggle("is-live", links[j].getAttribute("href") === "#" + live);
+      }
+    }
+    on(win, "scroll", function () { if (!raf) raf = win.requestAnimationFrame(check); }, { passive: true });
+    on(win, "resize", function () { if (!raf) raf = win.requestAnimationFrame(check); });
+    check();
   })();
 
   /* ── The contact form · spec/20, elementor.md §6 ────────────────────────────

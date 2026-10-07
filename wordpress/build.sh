@@ -60,21 +60,31 @@ cp assets/js/main.js "$theme/assets/js/"
 cp assets/img/*.jpg assets/img/*.png "$theme/assets/img/"
 cp assets/fonts/*.woff2 "$theme/assets/fonts/"
 
+# ── the plugin ────────────────────────────────────────────────────────────────
+# The plugin carries the behaviour and the publications data; the theme carries the look.
+# Both are copied from the same sources at the repository root, so neither can drift from
+# what the static pages are built and tested against.
+plugin="wordpress/capiital-site"
+rm -rf "$plugin/assets" "$plugin/data"
+mkdir -p "$plugin/assets/js" "$plugin/data"
+cp assets/js/main.js assets/js/archive.js "$plugin/assets/js/"
+cp content/publications.json "$plugin/data/"
+
 # ── nothing may be fetched from a third party ─────────────────────────────────
 # spec/70 and checklist.md both require it, and the legal page's cookie paragraph states
 # it as a fact. A single reinstated @import would make that paragraph untrue.
 # The pattern requires the `//` of a real URL, so the guard in functions.php — which exists
 # precisely to refuse such a request — and the prose explaining it do not trip it.
 EXTERNAL='//(fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.|cdnjs\.|unpkg\.com|ajax\.googleapis\.com)'
-if grep -rInE "$EXTERNAL" index.html assets wordpress/capiital >/dev/null 2>&1; then
+if grep -rInE "$EXTERNAL" index.html templates assets wordpress/capiital wordpress/capiital-site >/dev/null 2>&1; then
   echo "build: a third-party request survives in the sources —" >&2
-  grep -rInE "$EXTERNAL" index.html assets wordpress/capiital >&2
+  grep -rInE "$EXTERNAL" index.html templates assets wordpress/capiital wordpress/capiital-site >&2
   exit 1
 fi
 echo "build: no third-party requests in the sources"
 
 python3 - "$repo" <<'PY'
-import base64, mimetypes, os, re, shutil, sys
+import base64, json, mimetypes, os, re, shutil, sys
 
 repo = sys.argv[1]
 html = open(os.path.join(repo, 'index.html'), encoding='utf-8').read()
@@ -110,6 +120,56 @@ learned = section('learned')
 cases = section('cases')
 people = section('people')
 papers = section('papers')
+
+# ── the archive and the legal page ────────────────────────────────────────────
+# Both pages carry the same header and footer as the front page, so they are injected from
+# index.html rather than kept as second copies that would drift. On a sub-page every
+# section link has to lead back to the front page: a bare "#services" would resolve against
+# the wrong document, so those hrefs are rewritten here (spec/60).
+#
+# The archive's cards and its reading panel are not written out at all. assets/js/archive.js
+# draws them from the JSON island this injects, which is exactly how the WordPress widget
+# will feed the same renderer from the publication post type.
+def for_subpage(markup):
+    def fix(m):
+        target = m.group(1)
+        return 'href="index.html#%s"' % target
+    return re.sub(r'href="#([A-Za-z0-9_-]+)"', fix, markup)
+
+
+pubs = json.load(open(os.path.join(repo, 'content', 'publications.json'), encoding='utf-8'))
+island = json.dumps({'terms': pubs['terms'], 'publications': pubs['publications']},
+                    ensure_ascii=False, separators=(',', ':'))
+
+# Every ledger row on the front page opens the archive at one entry. A slug that matches no
+# publication opens nothing at all, and does so silently — the four were wrong once, invented
+# from the titles rather than taken from the data. On WordPress the ledger becomes a Loop Grid
+# and the hrefs are generated, so this guard only matters for the static build; it costs
+# nothing and it caught a real fault.
+slugs = {entry['slug'] for entry in pubs['publications']}
+for linked in re.findall(r'<a class="pub-row" href="archive\.html#([a-z0-9-]+)"', html):
+    if linked not in slugs:
+        sys.exit('build: the ledger links to #%s, which is not a publication' % linked)
+
+sub_header = for_subpage(header)
+sub_footer = for_subpage(footer)
+for label, chrome in (('header', sub_header), ('footer', sub_footer)):
+    bare = re.findall(r'href="#[A-Za-z0-9_-]+"', chrome)
+    if bare:
+        sys.exit('build: the sub-page %s still has bare anchors %s; they would resolve '
+                 'against the wrong document' % (label, bare[:3]))
+
+for name, data in (('archive.html', island), ('legal.html', None)):
+    tpl = open(os.path.join(repo, 'templates', name), encoding='utf-8').read()
+    page = tpl.replace('<!--CAPIITAL:HEADER-->', sub_header).replace('<!--CAPIITAL:FOOTER-->', sub_footer)
+    if data is not None:
+        page = page.replace('<!--CAPIITAL:ARC-DATA-->', data)
+    for left in re.findall(r'<!--CAPIITAL:[A-Z-]+-->', page):
+        sys.exit('build: %s left %s unfilled' % (name, left))
+    open(os.path.join(repo, name), 'w', encoding='utf-8').write(page)
+
+print('build: wrote archive.html and legal.html (%d publications in the island)'
+      % len(pubs['publications']))
 
 # ── the pieces ────────────────────────────────────────────────────────────────
 # Markup only. The tokens, the typefaces, the styles and the behaviour all come from the
@@ -284,6 +344,7 @@ pack() {
 
 mkdir -p dist
 pack dist/capiital-child-theme.zip wordpress capiital
+pack dist/capiital-site-plugin.zip wordpress capiital-site
 pack dist/capiital-sections.zip dist sections
 pack dist/capiital-sections-grouped.zip dist sections-grouped
 pack dist/capiital-blank-theme.zip wordpress capiital-blank
@@ -292,9 +353,20 @@ pack dist/capiital-blank-theme.zip wordpress capiital-blank
 staging="$(mktemp -d)"
 trap 'rm -rf "$staging"' EXIT
 mkdir -p "$staging/site"
-cp index.html "$staging/site/"
+cp index.html archive.html legal.html "$staging/site/"
 mkdir -p "$staging/site/assets"
 cp -R assets/css assets/js assets/img assets/fonts "$staging/site/assets/"
 pack dist/capiital-website.zip "$staging" site
+
+# The plugin's copies must be the sources, byte for byte. A hand-edit inside the plugin
+# folder would otherwise survive here and be lost on the next run, silently.
+for f in assets/js/main.js assets/js/archive.js; do
+  cmp -s "$f" "wordpress/capiital-site/${f#assets/}" 2>/dev/null \
+    || cmp -s "$f" "wordpress/capiital-site/assets/js/$(basename "$f")" \
+    || { echo "build: wordpress/capiital-site has a different $(basename "$f")" >&2; exit 1; }
+done
+cmp -s content/publications.json wordpress/capiital-site/data/publications.json \
+  || { echo "build: the plugin's publications.json differs from content/" >&2; exit 1; }
+echo "build: the plugin carries the same behaviour and data as the repository"
 
 echo "build: done"

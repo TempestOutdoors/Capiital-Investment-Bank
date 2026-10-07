@@ -49,7 +49,12 @@ function capiital_assets() {
 	wp_enqueue_style( 'capiital-fonts', $uri . '/assets/css/fonts.css', array( 'capiital-tokens' ), $ver( 'assets/css/fonts.css' ) );
 	wp_enqueue_style( 'capiital', $uri . '/assets/css/styles.css', array( 'capiital-fonts' ), $ver( 'assets/css/styles.css' ) );
 
-	wp_enqueue_script( 'capiital', $uri . '/assets/js/main.js', array(), $ver( 'assets/js/main.js' ), true );
+	/* The behaviour belongs to the capiital-site plugin (elementor.md §2), and the theme keeps
+	   a copy only so that neither half is broken on its own. When the plugin is active it
+	   enqueues its own, newer copy, and this one stands down rather than loading it twice. */
+	if ( ! defined( 'CAPIITAL_SITE_VERSION' ) ) {
+		wp_enqueue_script( 'capiital', $uri . '/assets/js/main.js', array(), $ver( 'assets/js/main.js' ), true );
+	}
 
 }
 add_action( 'wp_enqueue_scripts', 'capiital_assets', 20 );

@@ -1,0 +1,54 @@
+{
+  "version": "0.4",
+  "title": "Capiital · How to reach us",
+  "type": "footer",
+  "content": [
+    {
+      "id": "4d0a736",
+      "elType": "container",
+      "isInner": false,
+      "settings": {
+        "content_width": "full",
+        "width": {
+          "unit": "%",
+          "size": 100
+        },
+        "padding": {
+          "unit": "px",
+          "top": "0",
+          "right": "0",
+          "bottom": "0",
+          "left": "0",
+          "isLinked": true
+        },
+        "margin": {
+          "unit": "px",
+          "top": "0",
+          "right": "0",
+          "bottom": "0",
+          "left": "0",
+          "isLinked": true
+        },
+        "flex_gap": {
+          "unit": "px",
+          "size": 0,
+          "column": "0",
+          "row": "0"
+        }
+      },
+      "elements": [
+        {
+          "id": "33a521b",
+          "elType": "widget",
+          "widgetType": "capiital-contact",
+          "settings": {},
+          "elements": []
+        }
+      ]
+    }
+  ],
+  "page_settings": [],
+  "metadata": {
+    "capiital_note": "Import under Templates → Theme Builder → Footer, then set it to display on the Entire Site. Build the Elementor Pro Form once as a saved template and choose it in the widget's Form field; it is edited there, as a form, and its submissions are stored by Elementor as usual."
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "version": "0.4",
+  "title": "Capiital · Header",
+  "type": "header",
+  "content": [
+    {
+      "id": "78d7656",
+      "elType": "container",
+      "isInner": false,
+      "settings": {
+        "content_width": "full",
+        "width": {
+          "unit": "%",
+          "size": 100
+        },
+        "padding": {
+          "unit": "px",
+          "top": "0",
+          "right": "0",
+          "bottom": "0",
+          "left": "0",
+          "isLinked": true
+        },
+        "margin": {
+          "unit": "px",
+          "top": "0",
+          "right": "0",
+          "bottom": "0",
+          "left": "0",
+          "isLinked": true
+        },
+        "flex_gap": {
+          "unit": "px",
+          "size": 0,
+          "column": "0",
+          "row": "0"
+        }
+      },
+      "elements": [
+        {
+          "id": "8e387b1",
+          "elType": "widget",
+          "widgetType": "capiital-header",
+          "settings": {},
+          "elements": []
+        }
+      ]
+    }
+  ],
+  "page_settings": [],
+  "metadata": {
+    "capiital_note": "Import under Templates → Theme Builder → Header, then set it to display on the Entire Site. The widget takes no settings: the six links come from the menu assigned to the primary location so WPML can translate their labels, and the languages come from WPML. Do not switch on Elementor's sticky header — the bar is plain position:fixed."
+  }
+}

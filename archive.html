@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capiital &middot; The archive</title>
+<meta name="description" content="Every letter, note and review the house has published, arranged by type, sector, stage of engagement and year.">
+<script>document.documentElement.className += " js";</script>
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main" data-da="G&aring; til indhold">Skip to content</a>
+
+<header class="site-header" data-scrolled="false">
+  <div class="site-progress" aria-hidden="true"><span class="site-progress__bar" data-progress></span></div>
+  <div class="site-header__inner">
+    <a class="logo-border" href="index.html#top" aria-label="Capiital">
+      <span class="logo-border__strip" aria-hidden="true"></span>
+      <span class="logo-border__shape" aria-hidden="true"></span>
+      <span class="logo-border__mark" aria-hidden="true"></span>
+    </a>
+    <nav class="site-nav" aria-label="Sections" data-da-label="Afsnit">
+      <a href="index.html#services" data-da="Hvor vi r&aring;dgiver">Where we engage<span class="site-nav__rule" aria-hidden="true"></span></a>
+      <a href="index.html#learned" data-da="Hvad vi har l&aelig;rt">What we learned<span class="site-nav__rule" aria-hidden="true"></span></a>
+      <a href="index.html#cases">Cases<span class="site-nav__rule" aria-hidden="true"></span></a>
+      <a href="index.html#people" data-da="Hvem vi er">Who we are<span class="site-nav__rule" aria-hidden="true"></span></a>
+      <a href="index.html#papers" data-da="Hvad vi mener">What we think<span class="site-nav__rule" aria-hidden="true"></span></a>
+      <a href="index.html#contact" data-da="Kontakt">How to reach us<span class="site-nav__rule" aria-hidden="true"></span></a>
+    </nav>
+    <div class="site-header__right">
+      <div class="lang lang--bar" role="group" aria-label="Language" data-da-label="Sprog">
+        <a class="lang__code is-current" href="?lang=en" lang="en" aria-label="English" aria-current="true">EN</a>
+        <span class="lang__dot" aria-hidden="true">&middot;</span>
+        <a class="lang__code" href="?lang=da" lang="da" aria-label="Dansk">DK</a>
+      </div>
+      <button class="site-menu-btn" type="button" aria-expanded="false" aria-controls="site-menu">
+        <span class="site-menu-btn__label" data-menu-label data-da="Menu">Menu</span>
+        <svg class="site-menu-btn__icon" data-menu-icon aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="site-menu" id="site-menu" aria-label="Sections" data-da-label="Afsnit">
+    <a href="index.html#services" data-da="Hvor vi r&aring;dgiver">Where we engage</a>
+    <a href="index.html#learned" data-da="Hvad vi har l&aelig;rt">What we learned</a>
+    <a href="index.html#cases">Cases</a>
+    <a href="index.html#people" data-da="Hvem vi er">Who we are</a>
+    <a href="index.html#papers" data-da="Hvad vi mener">What we think</a>
+    <a href="index.html#contact" data-da="Kontakt">How to reach us</a>
+    <div class="lang lang--menu" role="group" aria-label="Language" data-da-label="Sprog">
+      <a class="lang__code is-current" href="?lang=en" lang="en" aria-label="English" aria-current="true">EN</a>
+      <span class="lang__dot" aria-hidden="true">&middot;</span>
+      <a class="lang__code" href="?lang=da" lang="da" aria-label="Dansk">DK</a>
+    </div>
+  </nav>
+</header>
+
+<!-- ═══ 30 · The archive · spec/30 ═══════════════════════════════════════════════
+     The shell only. Every card and the reading panel are drawn by assets/js/archive.js
+     from the JSON island below, so the same renderer serves this page and the WordPress
+     widget — there, the island is written from the publication post type instead. -->
+<main class="page-main" id="main" data-archive>
+  <div class="wrap">
+    <div class="page-intro" data-reveal="veil">
+      <div>
+        <h2 class="s-head s-head--md"><span data-da="Hvad vi mener,">What we think,</span><br><span class="s-head__accent" data-da="i sin helhed.">in full.</span></h2>
+      </div>
+      <p class="page-intro__sub" data-da="Alle breve, notater og gennemgange, huset har udgivet, ordnet efter type, sektor, fase og &aring;r.">Every letter, note and review the house has published, arranged by type, sector, stage of engagement and year.</p>
+    </div>
+
+    <div class="arc-wrap">
+      <div class="arc-bar" role="group" aria-label="Filter and order the archive" data-da-label="Filtr&eacute;r og sort&eacute;r arkivet">
+        <div class="arc-menus" data-arc-menus></div>
+        <div data-arc-order></div>
+      </div>
+      <div class="arc-line">
+        <span aria-live="polite" data-arc-count></span>
+        <button type="button" class="arc-toggle" data-arc-clear hidden data-da="Ryd filtre">Clear filters</button>
+      </div>
+    </div>
+
+    <div class="arc-grid" data-arc-grid></div>
+    <div class="arc-empty" data-arc-empty hidden data-da="Ingen publikation svarer til alle de valgte filtre.">No publication answers to every filter chosen.</div>
+  </div>
+</main>
+
+<script type="application/json" id="arc-data">{"terms":{"Sector note":"Sektornotat","Quarterly review":"Kvartalsgennemgang","Owner's letter":"Ejerbrev","Market letter":"Markedsbrev","Chemicals":"Kemi","Across sectors":"Tværgående","Sponsor-backed services":"Kapitalfondsejet service","Industrial manufacturing":"Industriel produktion","Energy":"Energi","Life sciences":"Life science","Before a transaction":"Før en transaktion","After a transaction":"Efter en transaktion","During ownership":"Under ejerskabet","Before exit":"Før exit"},"publications":[{"slug":"specialty-chemicals","kind":"Sector note","sector":"Chemicals","stage":"After a transaction","date":"2026-09-12","read":"10 min","en":{"title":"Specialty Chemicals and the Patience of Consolidation","summary":"Why the sector's mid-sized producers are better sold as platforms than as plants.","photo":"Chemical plant, exterior, daylight","body":["The specialty producers of the Nordic region are, for the most part, sound businesses with narrow customer books and long qualification cycles. A purchaser values the qualification; an owner tends to value the plant.","It is our view that the better course is to assemble before selling: two or three complementary producers, one finance function, one account of the customer book. The premium is earned in the assembly, not in the auction."]},"da":{"title":"Specialkemi og konsolideringens tålmodighed","summary":"Hvorfor sektorens mellemstore producenter sælges bedre som platforme end som fabrikker.","photo":"Kemisk fabrik, udefra, dagslys","body":["Nordens specialproducenter er for størstedelen sunde virksomheder med en smal kundekreds og lange godkendelsesforløb. En køber værdsætter godkendelserne; en ejer værdsætter som regel fabrikken.","Det er vores opfattelse, at den bedre vej er at samle før salget: to eller tre producenter, der supplerer hinanden, én økonomifunktion og ét samlet billede af kundekredsen. Præmien skabes i sammenlægningen, ikke i auktionen."]}},{"slug":"the-third-quarter","kind":"Quarterly review","sector":"Across sectors","stage":"Before exit","date":"2026-09-30","read":"16 min","en":{"title":"The Third Quarter: Fewer Processes, Firmer Prices","summary":"Volumes held below the prior year; terms for prepared companies did not.","photo":"Harbour office, morning light","body":["Fewer companies came to market in the quarter, and those that did were better prepared. Where a vendor arrived with a clean account and a settled board, terms held; where either was missing, the discount was larger than a year ago.","We expect the pattern to persist into the new year. Preparation is no longer a refinement of price; it is increasingly the condition of a process at all."]},"da":{"title":"Tredje kvartal: færre processer, fastere priser","summary":"Antallet lå under sidste år; vilkårene for forberedte virksomheder gjorde ikke.","photo":"Kontor ved havnen, morgenlys","body":["Færre virksomheder kom på markedet i kvartalet, og de, der gjorde, var bedre forberedt. Hvor en sælger mødte op med et klart regnskab og en afklaret bestyrelse, holdt vilkårene; hvor et af delene manglede, var nedslaget større end for et år siden.","Vi forventer, at mønsteret fortsætter ind i det nye år. Forberedelse er ikke længere en justering af prisen; den er i stigende grad forudsætningen for overhovedet at gennemføre en proces."]}},{"slug":"sponsor-activity","kind":"Quarterly review","sector":"Sponsor-backed services","stage":"Before exit","date":"2026-06-30","read":"18 min","en":{"title":"Sponsor Activity and the Return of the Private Company","summary":"Sponsors are buying again, and buying from founders rather than from one another.","photo":"Boardroom table, empty, natural light","body":["The secondary market between sponsors has slowed; primary acquisitions from founders and families have not. Those we advise are being approached earlier and more often than at any point in the past three years.","An approach is not an offer. We set out what a founder should establish before the first conversation, and what may safely wait until the second."]},"da":{"title":"Kapitalfondenes aktivitet og den private virksomheds tilbagekomst","summary":"Kapitalfondene køber igen, og de køber af stiftere frem for af hinanden.","photo":"Bestyrelsesbord, tomt, naturligt lys","body":["Handlen mellem kapitalfonde er aftaget; de direkte opkøb fra stiftere og familier er ikke. Dem, vi rådgiver, bliver kontaktet tidligere og oftere end på noget tidspunkt i de seneste tre år.","En henvendelse er ikke et tilbud. Vi gennemgår, hvad en stifter bør have afklaret før den første samtale, og hvad der roligt kan vente til den anden."]}},{"slug":"selling-a-business","kind":"Owner's letter","sector":"Industrial manufacturing","stage":"Before a transaction","date":"2026-03-18","read":"11 min","en":{"title":"On Selling a Business One Did Not Intend to Sell","summary":"An unsolicited approach, and the questions an owner should settle before answering it.","photo":"Workshop floor, owner at work, side light","body":["Most of the owners we meet did not set out to sell. A letter arrives, a figure is mentioned, and a decision that ought to take a year is asked for in a month.","We hold that the first answer should be neither yes nor no, but a request for time; and that the time is best spent on an account of the business the owner would be content to defend."]},"da":{"title":"Om at sælge en virksomhed, man ikke havde tænkt sig at sælge","summary":"En uopfordret henvendelse, og de spørgsmål en ejer bør afklare, før der svares.","photo":"Værkstedsgulv, ejer i arbejde, sidelys","body":["De fleste ejere, vi møder, havde ikke sat sig for at sælge. Et brev ankommer, et beløb bliver nævnt, og en beslutning, der burde tage et år, forventes truffet på en måned.","Vi mener, at det første svar hverken bør være ja eller nej, men en anmodning om tid; og at tiden bedst bruges på et billede af virksomheden, som ejeren vil være tryg ved at forsvare."]}},{"slug":"energy-transition","kind":"Sector note","sector":"Energy","stage":"After a transaction","date":"2026-02-10","read":"9 min","en":{"title":"The Energy Transition and the Capital It Will Require","summary":"The capital is available; the companies able to receive it are fewer than supposed.","photo":"Wind farm, offshore, overcast","body":["Institutional appetite for transition assets remains strong. What is scarce is the company that can absorb it: a sound order book, a finance function equal to an investor's questions, and a board prepared to share control.","We describe the work that precedes a raise in this sector, and why it is better begun eighteen months ahead than six."]},"da":{"title":"Den grønne omstilling og den kapital, den vil kræve","summary":"Kapitalen er til stede; de virksomheder, der kan tage imod den, er færre end antaget.","photo":"Havvindmøllepark, overskyet","body":["Den institutionelle interesse for omstillingsaktiver er fortsat stærk. Det, der er knapt, er virksomheden, der kan rumme den: en sund ordrebog, en økonomifunktion, der kan svare på en investors spørgsmål, og en bestyrelse, der er parat til at dele kontrollen.","Vi beskriver det arbejde, der går forud for en kapitalrejsning i sektoren, og hvorfor det med fordel begyndes atten måneder før frem for seks."]}},{"slug":"laboratory-to-ledger","kind":"Sector note","sector":"Life sciences","stage":"Before a transaction","date":"2025-11-04","read":"12 min","en":{"title":"From the Laboratory to the Ledger","summary":"Research-led companies are trusted for their science and doubted for their accounts.","photo":"Laboratory bench, scientist at work","body":["An investor will accept scientific risk that it can describe. It will not accept a cost base it cannot follow. The gap between the two is where most life-science raises lose time.","It is our view that the finance function need not be built before a round; it must only be legible. We set out what legible means in practice."]},"da":{"title":"Fra laboratoriet til regnskabet","summary":"Forskningsdrevne virksomheder har tillid for deres videnskab og mødes med tvivl om deres regnskab.","photo":"Laboratoriebord, forsker i arbejde","body":["En investor accepterer en videnskabelig risiko, den kan beskrive. Den accepterer ikke en omkostningsbase, den ikke kan følge. Afstanden mellem de to er der, hvor de fleste kapitalrejsninger i life science taber tid.","Det er vores opfattelse, at økonomifunktionen ikke behøver at være bygget før en runde; den skal blot være til at læse. Vi beskriver, hvad det betyder i praksis."]}},{"slug":"rates-and-rotation","kind":"Market letter","sector":"Across sectors","stage":"After a transaction","date":"2025-05-15","read":"12 min","en":{"title":"Rates, Rotation and the Return of Strategic Capital","summary":"As rates settle, the strategic purchaser returns, and with it a different kind of process.","photo":"Trading floor, empty, evening","body":["A strategic purchaser buys for reasons a financial one does not: a customer, a capability, a territory. The process it prefers is shorter and the diligence deeper.","We consider how an owner should prepare for a purchaser of this kind, and what it will ask that a sponsor would not."]},"da":{"title":"Renter, rotation og den strategiske kapitals tilbagekomst","summary":"Når renterne falder til ro, vender den strategiske køber tilbage, og med den en anden slags proces.","photo":"Handelsgulv, tomt, aften","body":["En strategisk køber køber af grunde, en finansiel køber ikke har: en kunde, en kompetence, et marked. Den foretrukne proces er kortere, og due diligence går dybere.","Vi ser på, hvordan en ejer bør forberede sig på en køber af denne art, og hvad den vil spørge om, som en kapitalfond ikke ville."]}},{"slug":"the-second-generation","kind":"Owner's letter","sector":"Industrial manufacturing","stage":"During ownership","date":"2025-09-22","read":"14 min","en":{"title":"The Second Generation and the Question of Custody","summary":"Succession is a transaction in all but name, and deserves the same preparation.","photo":"Family-owned factory, exterior, autumn","body":["Where a business passes within a family, the price is rarely the difficulty. The difficulty is the account: who is owed what, who decides, and on what terms the founder steps back.","We hold that a succession should be prepared as a sale is prepared, with an independent account of the business and a settled governance, whether or not a purchaser is ever invited."]},"da":{"title":"Anden generation og spørgsmålet om forvaltning","summary":"Et generationsskifte er en transaktion i alt undtagen navnet og fortjener samme forberedelse.","photo":"Familieejet fabrik, udefra, efterår","body":["Når en virksomhed går videre inden for en familie, er prisen sjældent det svære. Det svære er opgørelsen: hvem har krav på hvad, hvem træffer beslutningerne, og på hvilke vilkår træder stifteren tilbage.","Vi mener, at et generationsskifte bør forberedes, som et salg forberedes, med en uafhængig gennemgang af virksomheden og en afklaret ledelsesstruktur, uanset om en køber nogensinde bliver inviteret."]}},{"slug":"first-hundred-days","kind":"Sector note","sector":"Sponsor-backed services","stage":"During ownership","date":"2025-03-06","read":"8 min","en":{"title":"The First Hundred Days of Institutional Ownership","summary":"What a newly acquired services company should report, and what it should stop reporting.","photo":"Operations room, team in discussion","body":["The first months under a sponsor are often spent producing reports the board does not read. The plan slips while the reporting grows.","We describe a shorter set of measures, agreed with the board in the first fortnight, and the discipline of holding to it."]},"da":{"title":"De første hundrede dage under institutionelt ejerskab","summary":"Hvad en nyopkøbt servicevirksomhed bør rapportere, og hvad den bør holde op med at rapportere.","photo":"Driftslokale, team i drøftelse","body":["De første måneder under en kapitalfond går ofte med at udarbejde rapporter, bestyrelsen ikke læser. Planen glider, mens rapporteringen vokser.","Vi beskriver et kortere sæt nøgletal, aftalt med bestyrelsen i de første fjorten dage, og disciplinen i at holde fast i det."]}},{"slug":"winter-letter","kind":"Market letter","sector":"Across sectors","stage":"Before a transaction","date":"2024-12-10","read":"10 min","en":{"title":"A Winter Letter: Valuation After the Correction","summary":"The gap between what owners expect and what purchasers will pay has narrowed, though not closed.","photo":"Copenhagen harbour, winter, low sun","body":["Expectations formed in the years of cheap capital are slow to fade. Purchasers have adjusted; many owners have not.","It is our view that the gap is best closed by evidence rather than negotiation: an account of the business that makes the price self-evident."]},"da":{"title":"Et vinterbrev: værdiansættelse efter korrektionen","summary":"Afstanden mellem det, ejere forventer, og det, købere vil betale, er blevet mindre, men ikke lukket.","photo":"Københavns havn, vinter, lav sol","body":["Forventninger dannet i årene med billig kapital forsvinder langsomt. Køberne har tilpasset sig; mange ejere har ikke.","Det er vores opfattelse, at afstanden bedst lukkes med dokumentation frem for forhandling: et billede af virksomheden, der gør prisen selvindlysende."]}},{"slug":"process-chemicals-carve-out","kind":"Sector note","sector":"Chemicals","stage":"Before exit","date":"2024-10-01","read":"13 min","en":{"title":"Carving Out a Chemicals Division","summary":"A division sold from a group must first be shown to stand on its own.","photo":"Process control room, operators at desks","body":["A purchaser of a carved-out division buys a business that has never existed alone. Shared services, shared customers and shared people must each be accounted for before the price can be.","We set out the order in which a separation should be prepared, and the points at which a vendor most often concedes value it need not."]},"da":{"title":"Udskillelse af en kemidivision","summary":"En division, der sælges ud af en koncern, skal først vises at kunne stå alene.","photo":"Kontrolrum, operatører ved pultene","body":["En køber af en udskilt division køber en virksomhed, der aldrig har eksisteret for sig selv. Fælles funktioner, fælles kunder og fælles medarbejdere skal hver især gøres op, før prisen kan.","Vi beskriver, i hvilken rækkefølge en udskillelse bør forberedes, og de steder, hvor en sælger oftest afgiver værdi, den ikke behøvede."]}},{"slug":"clinical-stage-capital","kind":"Quarterly review","sector":"Life sciences","stage":"Before exit","date":"2024-06-28","read":"15 min","en":{"title":"Clinical-Stage Capital in the Nordic Market","summary":"Specialist investors have returned to the region, and are selective in what they fund.","photo":"Research campus, exterior, spring","body":["The specialist funds that withdrew from the region have begun to return, with smaller cheques and more questions. They fund programmes, not platforms.","We review the half-year's financings and the terms on which they were concluded."]},"da":{"title":"Kapital til klinisk fase på det nordiske marked","summary":"Specialiserede investorer er vendt tilbage til regionen og er selektive med, hvad de finansierer.","photo":"Forskningscampus, udefra, forår","body":["De specialiserede fonde, der trak sig ud af regionen, er begyndt at vende tilbage, med mindre beløb og flere spørgsmål. De finansierer programmer, ikke platforme.","Vi gennemgår halvårets finansieringsrunder og de vilkår, de blev indgået på."]}}]}</script>
+
+<footer class="capiital-part site-footer foot-ice" id="contact">
+  <div class="wrap site-footer__grid">
+    <div class="foot-left" data-reveal="settle">
+      <h2 class="s-head s-head--md"><span data-da="Ethvert samarbejde">Every engagement</span><br><span class="s-head__accent" data-da="begynder med et brev.">begins with a letter.</span></h2>
+      <p class="foot-left__lead" data-da="Opgaver kommer til os gennem anbefaling eller ved brev. St&aring;r et salg, et opk&oslash;b, en kapitalrejsning eller et generationsskifte for d&oslash;ren, h&oslash;rer vi gerne om det.">Engagements come to us by introduction or by letter. If you are considering a sale, an acquisition, a capital raise or a succession, we would be glad to hear of it.</p>
+      <a class="foot-email" href="mailto:contact@capiital.eu">contact@capiital.eu
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+
+      <form class="foot-form" novalidate aria-label="Write to the firm" data-da-label="Skriv til huset" data-contact-form>
+        <div class="foot-form__field foot-form__field--wide">
+          <label class="foot-form__label" for="cf-weighing" data-da="Hvad der overvejes">What you are weighing</label>
+          <textarea id="cf-weighing" name="weighing" rows="2" placeholder="A sale, an acquisition, a raise, a succession" data-da-placeholder="Et salg, et opk&oslash;b, en kapitalrejsning, et generationsskifte"></textarea>
+        </div>
+        <div class="foot-form__field">
+          <label class="foot-form__label" for="cf-address" data-da="Hvor vi svarer">Where we reply</label>
+          <input id="cf-address" name="address" type="email" autocomplete="email" placeholder="name@company.eu" data-da-placeholder="navn@virksomhed.dk">
+        </div>
+        <div class="foot-form__trap" aria-hidden="true">
+          <label for="cf-website" data-da="Lad dette felt st&aring; tomt">Leave this field empty</label>
+          <input id="cf-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+        <div class="foot-send">
+          <button class="btn-editorial" type="submit"><span data-submit-label data-da="Send">Message</span> <span aria-hidden="true">&rarr;</span></button>
+        </div>
+        <span class="foot-form__status" role="status" aria-live="polite" data-form-status data-da="Alle opgaver er underlagt s&aelig;rskilte skriftlige vilk&aring;r.">All engagements are governed by separate written terms.</span>
+      </form>
+    </div>
+
+    <div class="foot-cols">
+      <div class="foot-col">
+        <div class="foot-col__heading" data-da="Hvor vi r&aring;dgiver">Where we engage</div>
+        <div class="foot-col__links">
+          <a href="index.html#services" data-da="F&oslash;r en transaktion">Before a transaction</a>
+          <a href="index.html#services" data-da="Efter en transaktion">After a transaction</a>
+          <a href="index.html#services" data-da="Under ejerskabet">During ownership</a>
+          <a href="index.html#services" data-da="F&oslash;r exit">Before exit</a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <div class="foot-col__heading" data-da="Huset">The house</div>
+        <div class="foot-col__links">
+          <a href="index.html#learned" data-da="Hvad vi har l&aelig;rt">What we learned</a>
+          <a href="index.html#cases">Cases</a>
+          <a href="index.html#people" data-da="Hvem vi er">Who we are</a>
+          <a href="index.html#papers" data-da="Hvad vi mener">What we think</a>
+          <a href="archive.html" data-da="Arkiv">Archive</a>
+        </div>
+      </div>
+      <div class="foot-col">
+        <div class="foot-col__heading" data-da="Juridisk">Legal</div>
+        <div class="foot-col__links">
+          <a href="legal.html#legal-notice" data-da="Juridisk information">Legal notice</a>
+          <a href="legal.html#privacy" data-da="Privatliv">Privacy</a>
+          <a href="legal.html#cookies">Cookies</a>
+          <a href="legal.html#regulatory" data-da="Regulatoriske oplysninger">Regulatory disclosures</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap site-footer__legal">
+    <div>&copy; MMXXVI Capiital ApS &middot; Dampf&aelig;rgevej 27, 2100 K&oslash;benhavn &Oslash;, <span data-da="Danmark">Denmark</span> &middot; CVR 42842699</div>
+    <div data-da="Oplysningerne p&aring; dette websted er alene af generel karakter og udg&oslash;r ikke investerings-, juridisk, skattem&aelig;ssig eller regnskabsm&aelig;ssig r&aring;dgivning.">Information on this site is provided for general informational purposes only and does not constitute investment, legal, tax or accounting advice.</div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+<script src="assets/js/archive.js" defer></script>
+</body>
+</html>

@@ -1,77 +1,57 @@
 # The WordPress half
 
-This folder holds the theme that goes on the server. It is the first step of a staged
-build: the theme carries the colours, the typefaces, the styles and the behaviour now, and
-the front page sits in Elementor as markup while its sections are converted into
-`capiital-site` widgets one at a time. The architecture it is heading for is written out in
-`wordpress-elementor-v3-2026-10-06/elementor.md`.
+Two things go on the server, and `SETTINGS.md` is clicked through once between them.
 
-## What to install
+| | | |
+| --- | --- | --- |
+| **Hello Elementor** | the parent theme | install, do not activate |
+| **`dist/capiital-child-theme.zip`** | tokens, the two typefaces, every style | install and activate |
+| **`dist/capiital-site-plugin.zip`** | publications, the six widgets, the behaviour | install and activate |
+| **Advanced Custom Fields** (free) | the four publication fields | install before the plugin |
 
-| | |
-| --- | --- |
-| **Hello Elementor** | The parent theme. Install it from Appearance → Themes → Add New; do not activate it. |
-| **`dist/capiital-child-theme.zip`** | The child theme. Upload, then activate this one. |
+Elementor Pro, WPML and Yoast are already on the site. Do not add Rank Math — Yoast is there,
+and two SEO plugins fight.
 
-That is the whole installation. Elementor Pro, ACF and WPML come later, with the custom
-widgets and the Publication post type; nothing here needs them yet.
+## The order
 
-## What the theme does, and what it refuses to do
+1. **Hello Elementor**, installed and left inactive.
+2. **`capiital`**, uploaded and activated. The site now has the colours, both typefaces and
+   every style, and renders no content of its own.
+3. **`SETTINGS.md`**, clicked through. Google Fonts off is the one that matters most.
+4. **ACF**, then **`capiital-site`**. Then *Publications → Placeholder entries → Import* for
+   the twelve drafts the archive was designed against.
+5. **The two Theme Builder templates**, from `wordpress/templates/`: Templates → Theme
+   Builder → Import, then set each to display on the Entire Site.
+6. **The front page**: a page set to **Elementor Canvas**, with the pieces from
+   `dist/sections-grouped/` — minus the header and the footer, which the templates now own.
+   Or, section by section, the six custom widgets from the **Capiital** category.
+7. **The archive**: a page at `/archive/`, Canvas, with one *Capiital · Archive* widget.
+8. **The legal page**: a page at `/legal/`, Canvas, built from `templates/legal.html`.
+9. **WPML last.** Translating fields that are still moving wastes the work twice.
 
-It enqueues four files and registers one menu location. It renders no content of its own.
-The theme before it put the design into every page whether or not that was wanted, which is
-why it is gone.
+## What goes where, and why
 
-```
-capiital/
-  style.css               the theme header, and no rules
-  functions.php           the enqueues, the menu, the Elementor locations, the guards
-  screenshot.png
-  assets/css/tokens.css   generated from assets/css/tokens/*.css at the repository root
-  assets/css/fonts.css    @font-face for the two self-hosted families
-  assets/css/styles.css   the whole design, including the Elementor wrapper reset
-  assets/js/main.js       reveals, header, in-page links, the two held sections, the form
-  assets/fonts/*.woff2    Source Serif 4 and Inter, latin and latin-ext
-  assets/img/             the skyline, the Logo Border's shape, the wordmark mask
-```
+**The theme styles; the plugin behaves; Elementor arranges.** The line between the first two
+is one question: would it be lost if the design were restyled? Colours, type and layout
+belong to the theme. Publications, their fields and the page's behaviour belong to the
+plugin, because they have to survive that.
 
-**No CSS is ever pasted anywhere.** Not into a widget — WordPress strips `<style>` out of
-widget content, and the whole stylesheet disappeared that way once, leaving the site to
-render as unstyled markup. Not into Appearance → Customize → Additional CSS either; that
-worked, but it is one forgotten paste away from the same result. A stylesheet enqueued by
-PHP is not page content and is never filtered.
+**No CSS is ever pasted anywhere.** Not into a widget — WordPress strips `<style>` from widget
+content, and the whole stylesheet disappeared that way once, leaving the site as unstyled
+markup. Not into Additional CSS either. A stylesheet enqueued by PHP is not page content and
+is never filtered.
 
-**Nothing loads from a third party.** Both typefaces are served from the theme.
-`functions.php` also refuses any `fonts.googleapis.com` or `fonts.gstatic.com` request that
-a plugin or an Elementor setting might reintroduce, because the legal page's cookie
-paragraph states as a fact that no third party is contacted when a page loads.
-`wordpress/build.sh` fails rather than ship a build where that has stopped being true.
+**Nothing loads from a third party.** Both typefaces are served from the theme, and
+`functions.php` refuses any Google Fonts request a plugin might reintroduce. The legal page
+states as a fact that no third party is contacted when a page loads; `build.sh` fails rather
+than ship a build where that has stopped being true.
 
-## Putting the page in
+## The archive is one implementation, not two
 
-Install the theme first. Then, in Elementor's settings: Flexbox Container on, Grid Container
-on, Google Fonts off, Load Font Awesome off, Disable Default Colours on, Disable Default
-Fonts on, content width 1400, container padding 0, default gap 0, border-radius 0 under
-Theme Style. Leave every widget's *Motion Effects* empty — the site's own motion is in the
-theme and Elementor's would fight it.
-
-Then add an HTML widget per file from either set, in order, and set the page template to
-**Elementor Canvas**:
-
-- `dist/sections-grouped/` — three pieces. Use this unless a section needs editing alone.
-- `dist/sections/` — seven pieces, one per section, for finer editing.
-
-Two pieces are deliberately not split further, and the reason is written beside each: the
-header travels with the front page because a fixed header given its own Elementor section
-still occupies layout space; and *What we learned* travels with the quote because the
-selector that closes the gap between them on release is an adjacent-sibling selector, which
-stops matching the moment they are in separate widgets.
-
-## The other theme here
-
-`capiital-blank/` is the neutral standalone theme written before this one, and it is what is
-installed today. It is kept because it works and because it needs no parent, but it carries
-none of the design: the child theme supersedes it. Install `capiital` and this one can go.
+`assets/js/archive.js` draws the filters, the cards and the reading panel from a JSON island
+and never knows where that island came from. The static `archive.html` is built from
+`content/publications.json`; the *Capiital · Archive* widget writes the same island from the
+publication post type. So the archive is written, tested and fixed once.
 
 ## Rebuilding
 
@@ -79,11 +59,20 @@ none of the design: the child theme supersedes it. Install `capiital` and this o
 wordpress/build.sh
 ```
 
-It reads `index.html` and `assets/` at the repository root and writes the theme, the paste
-pieces, the single self-contained file and the zips. Editing a generated file directly means
-the next run discards the change without saying so. The zips are byte-reproducible, so an
-unchanged source gives an unchanged archive and no spurious diff.
+Reads `index.html`, `templates/`, `assets/` and `content/` at the repository root and writes
+the theme, the plugin's copies, `archive.html`, `legal.html`, the paste pieces, the single
+self-contained file and every zip. Editing a generated file directly means the next run
+discards the change without saying so.
 
-The build refuses to finish if a third-party request has reappeared in the sources, if a
-paste-able piece has acquired a `<style>` or a `<script>`, or if the single-file build still
-fetches anything.
+It refuses to finish if a third-party request has appeared, if a paste-able piece has
+acquired a `<style>` or a `<script>`, if the single-file build still fetches anything, if a
+sub-page's header or footer still carries a bare `#anchor`, if the ledger links to a slug no
+publication answers to, or if the plugin's copy of the behaviour has drifted from the source.
+Each of those guards exists because the fault it catches happened.
+
+## The other theme here
+
+`capiital-blank/` is the neutral standalone theme written before the child theme, and it is
+what is active on the site today. It carries none of the design. Once `capiital` is on and the
+front page renders, it can be deleted — along with `CAP=TAL One-Page`, which is the retired
+generation.
