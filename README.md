@@ -1,111 +1,103 @@
-# Capiital — v3
+# Capiital
 
-A one-page site for Capiital, an advisory firm working with private equity funds,
-portfolio companies and ambitious businesses. Eight sections: the front page, what
-we engage, what we believe, what we learned, cases, who we are, what we think, and
-contact running into the footer.
+The firm's website: the design as a working page, and the WordPress theme it runs on.
 
-Built from the supplied design as a static site — no build step, no dependencies.
-Open `index.html`, or serve the folder:
+The design is specified elsewhere and implemented here. **`wordpress-elementor-v3-2026-10-06/`
+governs.** It is the handoff written in Claude Design on 6 October 2026, with the Elementor
+build in view: a spec per section, the five token files, every string in English and Danish,
+the three images, a checklist to test against, and the reference prototypes. Where its spec
+and its reference disagree, the reference wins and the disagreement is reported — the ones
+found so far are listed at the foot of this file.
 
-```sh
-python3 -m http.server 8000
-```
+`Capiital Website Design/` is the earlier snapshot of the same project, from September. It is
+kept for its component library and its brief, but it is a generation behind: its palette is
+the sea palette, which the ice palette replaced on 30 September. Build nothing from it.
 
-## What is in this repository
+## The two halves
 
-Two things live here, and they are not the same kind of thing.
-
-**`Capiital Website Design/`** is the upstream design project, as exported from
-Claude Design. It is the source of truth for the design and it is not built from
-anything in this repository:
-
-```
-Capiital Website Design/
-  CLAUDE-CODE-BRIEF.md      what changed since the first handoff, and what it obliges
-  project-log.md            the reasoning behind the decisions, and the traps
-  copy-register.md          the house voice; read before writing any copy
-  sections.jsx              the reference for layout and copy
-  CAPIITAL Website v3.html  the whole site as one file — the intended result
-  tokens/                   the only source of colour, type, spacing and motion
-  components/               the shared building blocks, by category
-```
-
-**Everything else is the WordPress implementation** — the static site built from
-that design, and the two themes and paste-ready snippets generated from it.
-`index.html` is its source of truth; `wordpress/build.sh` generates the rest.
-
-Editing a file under `Capiital Website Design/` changes the design record.
-Editing `index.html` changes what ships. They are kept apart deliberately.
-
-## Structure
+**The page.** `index.html`, `assets/`. One front page, eight sections, built to the 7 October
+spec. Open it from a local server (the wordmark is a CSS mask, which `file://` will not
+load). It is the source of truth: everything installed or pasted is generated from it.
 
 ```
-index.html              markup and copy for all eight sections
-assets/css/tokens.css   design tokens — palette, type, space, motion
-assets/css/styles.css   base styles, components, responsive rules
-assets/js/main.js       header state, scroll progress, active nav, reveals
-assets/favicon.svg      the doubled skewed bars of the wordmark
-wordpress/              the same site as an Elementor-compatible theme
+assets/css/tokens/     the five token files, carried in byte for byte from the design folder,
+                       plus site.css for the only two values this site changes
+assets/css/tokens.css  generated from those, by the build
+assets/css/fonts.css   @font-face for the two self-hosted families
+assets/css/styles.css  the design
+assets/js/main.js      the behaviour, ported from the reference's React
+assets/fonts/          Source Serif 4 and Inter, latin and latin-ext, SIL OFL
+assets/img/            the skyline, the Logo Border's shape, the wordmark mask
 ```
 
-## Design notes
+**The server.** `wordpress/`. A Hello Elementor child theme carrying the tokens, the
+typefaces, the styles and the behaviour, and rendering no content of its own. See
+`wordpress/README.md`.
 
-The values in `tokens.css` come verbatim from the design and are not
-approximations to be tidied up:
+Run `wordpress/build.sh` after any change to the page. It writes the theme, the paste
+pieces, one self-contained file and the zips, all into `dist/`.
 
-- **The palette is derived, not picked.** Two colours are carried from the
-  artwork — the eggshell ground `#EBE8DF` and the signature green `#5A8281`.
-  Every chromatic token takes that green and rotates its OKLCH hue 34° toward
-  blue (190 → 224) at identical lightness and chroma. Distribution stays 60/30/10,
-  and **never two accents at once**.
-- **One ground: eggshell.** Sections 02–07 share it; only the front page and the
-  contact/footer are dark. Separation therefore rests entirely on hairlines, the
-  numbered marks and vertical spacing. If the page starts reading as one column
-  the answer is wider section padding, not a second ground returning.
-- **Every radius token is `0`.** The brand is square; `--radius-pill` exists for
-  switch and radio dots only.
-- **Tracking is restrained.** Caps are tracked enough to read as structure, never
-  as ornament — `0.14em` on nav and meta, `0.2em` on eyebrows.
-- **The wordmark is set in type.** `CAP//TAL` is Inter 300 with the doubled *ii*
-  as two bars skewed 16°. That skew is the cut the identity is built on; it is
-  never drawn as artwork.
-- **Emphasis by withdrawal.** Section 02's hovered quadrant does not grow — the
-  other three recede to 42%. The system forbids hover-scaling.
-- **The Solomon knot draws once and holds.** At the centre of section 02, on its
-  own clock when half of it is in view — scroll speed and direction play no part,
-  and it never un-draws. Each crossing is *ploughed*: a `--bone` blade runs ahead
-  of the over-strand's own ink, both dash-drawn along the strand in its direction
-  of travel, so the under-strand is whole until the blade reaches it and cut the
-  instant it passes. If section 02 ever changes ground, the blade must follow or
-  the crossings show as stripes.
-- **Section marks are scaffolding.** `[ 02 — What we engage ]` renders at 34% of
-  the accent so the build can be followed against the section list. Remove the
-  `<i class="ref">` wrapper to restore a permanent eyebrow.
+## Where this is going
 
-Both faces — Inter and Source Serif 4 — load from Google Fonts, matching the
-design source, with system and Georgia fallbacks.
+The handoff asks for the site rebuilt in Elementor Pro so the firm can edit text,
+publications, people and images without a developer: native widgets where Elementor can do
+the work, six custom widgets in a `capiital-site` plugin where it cannot, a Publication post
+type behind the archive and the front page's ledger, and WPML for the Danish.
 
-## Motion
+This repository is the first step of that, and deliberately stops short of it. The child
+theme is the part of the architecture that does not change: it is where the CSS, the fonts
+and the shared JS belong in the finished build too. The front page sits in Elementor as
+markup for now, and each section can be converted into its widget without the rest being
+touched. Nothing here has to be thrown away to get to the finished architecture.
 
-Three scroll-entry motions only, all one-way, all colour- and opacity-quiet:
-`settle` (14px up and fade), `veil` (opacity only, for prose) and `draw` (a
-hairline growing from its left edge). Elements start hidden and are released by
-an IntersectionObserver; a `<noscript>` rule and a no-observer fallback both
-release them, so the page is never blank without script.
+Still to come, in the handoff's own order: the archive page, the legal page, the Publication
+post type, the six custom widgets, the Elementor Pro form, and WPML.
 
-The front page's wash arrives once on load: a veil of the darkest stop laid on
-the gradient's own 140° axis, moved by `transform` alone. Every length is in
-`vmax` measured along the veil's own axis — sized in percent it stops covering a
-tall viewport, and a visible travelling edge would fail the gesture outright.
+## What is settled, and what is not
 
-## Responsive
+`wordpress-elementor-v3-2026-10-06/open-items.md` lists what the firm has yet to supply —
+portraits, two principals' details, LinkedIn addresses, the three real cases, the twelve
+publications, the legal brackets. Each has a stand-in in the build and none of it is to be
+invented.
 
-The design is drawn at desktop and is reproduced exactly there. Below 1100px the
-12-column editorial grids are re-declared rather than re-spanned (a
-`repeat(12, 1fr)` track floors each column at its min-content width, which pushes
-the page wider than the viewport), the quadrants fold to two columns and their
-hover-only text becomes permanently visible, and below 860px the nav becomes a
-toggle sheet.
+The copy is the draft in `content/copy-en-da.md`, and the Danish awaits a native-speaker
+review. The eight held copy fixes are not applied: the file as it stands is what is built.
 
-Verified free of horizontal overflow from 320px to 1920px.
+## House rules that bind the code
+
+The full account is in `CLAUDE.md` and in the design folder's own README. In short: every
+corner square; hairlines, not boxes; no outlined box anywhere; no shadow doing a border's
+work; every headline figure in the serif; nothing centred but the quote; one accent at a
+time; motion arrives and does not perform, fires once and never reverses. If an element's
+purpose is to be noticed, it is wrong.
+
+Two of those are checked by the build rather than left to care: no third-party request may
+appear in the sources, and no paste-able piece may carry a `<style>` or a `<script>`.
+
+## Disagreements reported
+
+The handoff asks for these rather than for silent corrections.
+
+- **`spec/80-content-model.md`** still lists a *hint* field for Where we engage and names
+  "figure, knot, hover logic" as fixed. `spec/03` removed the hint and retired the knot.
+  Built to `spec/03`.
+- **`spec/70-accessibility.md`** calls the four stages "the quadrants". Terminology only.
+- **`spec/00` §5** says card grids use `gap:1px` over a border ground. The *Current detail*
+  note at the foot of the same file, and `spec/30`, both say space and no outline. Built to
+  the later notes.
+- **`spec/20`** says slate is never used on the ice ground, while `FOOT_ICE_CSS` sets the
+  form's placeholder to slate. The spec's own type table exempts placeholders. Built to the
+  reference; the placeholder is the only slate in the footer.
+- **`elementor.md` §8** gives UI icons stroke-width 2; the reference's `Icon` renders them at
+  1.25. Built to the reference.
+- **The footer band overflows the viewport below 900px** in the reference, by 186px at
+  390px: twelve `minmax(0,1fr)` tracks collapse, but the items spanning them keep
+  `min-width:auto`. Fixed here by re-declaring the tracks at the breakpoint.
+- **The three case accounts could not be read on a desktop keyboard.** They are shown on
+  hover alone, and the cells were not reachable; `spec/70` covers touch but not keyboard.
+  The cells are focusable here and focus works exactly as hover does, which is the rule
+  `spec/03` already sets for the stages.
+- **The header overflows by 15px at 390px** in the reference: the Logo Border, a 40px gap and
+  the Menu button need 405px. The gap is narrowed on phones here. A deviation, not a
+  correction of the spec — reverse it by deleting one rule if the firm would rather the
+  reference stood.

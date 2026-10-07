@@ -768,17 +768,24 @@ html:not(.js) .svc-in,html:not(.js) .svc-line{opacity:1;transform:none}
   display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));
   gap:var(--space-12) var(--space-10);
 }
-.case-cell{display:flex;flex-direction:column}
+.case-cell{display:flex;flex-direction:column;outline:none}
+/* Focus works exactly as hover does, which spec/03 already requires of the stages and
+   which is applied here for the same reason: on a desktop keyboard the accounts could
+   otherwise never be read at all, since they are shown on hover alone and the cells were
+   not reachable. Reported as a deviation from the reference. */
+.case-cell:focus-visible{outline:1px solid var(--ring);outline-offset:-1px}
 .case-cell__title{
   margin:0;font-family:var(--font-display);font-weight:var(--weight-regular);
   font-size:var(--text-3xl);line-height:1.08;
   transition:color var(--duration-fast) var(--ease-standard);
 }
-.case-cell:hover .case-cell__title{color:var(--navy)}
+.case-cell:hover .case-cell__title,
+.case-cell:focus-within .case-cell__title{color:var(--navy)}
 /* The account veils in on hover; the space is held throughout, so nothing reflows. */
 .case-cell__body{margin-top:var(--space-6);opacity:0;
   transition:opacity var(--duration-settle) var(--ease-standard)}
-.case-cell:hover .case-cell__body{opacity:1}
+.case-cell:hover .case-cell__body,
+.case-cell:focus-within .case-cell__body{opacity:1}
 .case-cell__body p{font-size:var(--text-sm);line-height:var(--leading-relaxed);
   font-weight:var(--weight-light);color:var(--text-body)}
 
@@ -833,18 +840,20 @@ html:not(.js) .svc-in,html:not(.js) .svc-line{opacity:1;transform:none}
   background:transparent;
   transition:background-color var(--duration-fast) var(--ease-standard);
 }
-.pub-row:hover{background:var(--white)}
+.pub-row:hover,.pub-row:focus-visible{background:var(--white)}
 .pub-row__kind{font-size:var(--text-2xs);text-transform:uppercase;
   letter-spacing:var(--tracking-caps);color:var(--navy)}
 .pub-row__date{font-size:var(--text-xs);color:var(--slate)}
 .pub-row__title{font-family:var(--font-display);font-size:var(--text-2xl);line-height:1.15;
   transition:color var(--duration-fast) var(--ease-standard)}
-.pub-row:hover .pub-row__title{color:var(--navy)}
+.pub-row:hover .pub-row__title,
+.pub-row:focus-visible .pub-row__title{color:var(--navy)}
 .pub-row__read{font-size:var(--text-xs);color:var(--slate);white-space:nowrap}
 .pub-row__cta{font-size:var(--text-2xs);text-transform:uppercase;
   letter-spacing:var(--tracking-caps);color:var(--slate);text-align:right;
   transition:color var(--duration-fast) var(--ease-standard)}
-.pub-row:hover .pub-row__cta{color:var(--navy)}
+.pub-row:hover .pub-row__cta,
+.pub-row:focus-visible .pub-row__cta{color:var(--navy)}
 .papers-all{margin-top:var(--space-10)}
 
 @media (min-width:901px) and (max-width:1300px){
@@ -1233,7 +1242,7 @@ html:not(.js) [data-reveal]{opacity:1;transform:none}
     </div>
     <div class="case-grid">
 
-      <div class="case-cell" data-reveal="settle" data-reveal-step="0">
+      <div class="case-cell" tabindex="0" data-reveal="settle" data-reveal-step="0">
         <h3 class="case-cell__title" data-da="Industriel produktion">Industrial manufacturing</h3>
         <div class="ph ph--3x2" role="img" aria-label="Photograph to follow" data-da-label="Fotografi f&oslash;lger">
           <svg class="ph__icon" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
@@ -1243,7 +1252,7 @@ html:not(.js) [data-reveal]{opacity:1;transform:none}
         </div>
       </div>
 
-      <div class="case-cell" data-reveal="settle" data-reveal-step="1">
+      <div class="case-cell" tabindex="0" data-reveal="settle" data-reveal-step="1">
         <h3 class="case-cell__title" data-da="Kapitalfondsejet service">Sponsor-backed services</h3>
         <div class="ph ph--3x2" role="img" aria-label="Photograph to follow" data-da-label="Fotografi f&oslash;lger">
           <svg class="ph__icon" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
@@ -1253,7 +1262,7 @@ html:not(.js) [data-reveal]{opacity:1;transform:none}
         </div>
       </div>
 
-      <div class="case-cell" data-reveal="settle" data-reveal-step="2">
+      <div class="case-cell" tabindex="0" data-reveal="settle" data-reveal-step="2">
         <h3 class="case-cell__title" data-da="Life science">Life sciences</h3>
         <div class="ph ph--3x2" role="img" aria-label="Photograph to follow" data-da-label="Fotografi f&oslash;lger">
           <svg class="ph__icon" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
