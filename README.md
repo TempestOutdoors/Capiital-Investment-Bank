@@ -104,6 +104,11 @@ The handoff asks for these rather than for silent corrections.
 - **The footer band overflows the viewport below 900px** in the reference, by 186px at
   390px: twelve `minmax(0,1fr)` tracks collapse, but the items spanning them keep
   `min-width:auto`. Fixed here by re-declaring the tracks at the breakpoint.
+- **`spec/05` names the selector `#learned.is-staged + .quote-sec`.** Adjacency is correct
+  while both sections are one piece of markup and wrong once *What we learned* is its own
+  Elementor widget, since each widget is wrapped in a chain of boxes and the two stop being
+  siblings. Matched on the page instead, with `:has()`. The behaviour the spec decides is
+  unchanged; only how the rule finds the quote.
 - **The three case accounts could not be read on a desktop keyboard.** They are shown on
   hover alone, and the cells were not reachable; `spec/70` covers touch but not keyboard.
   The cells are focusable here and focus works exactly as hover does, which is the rule

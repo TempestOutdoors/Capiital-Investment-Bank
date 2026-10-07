@@ -253,11 +253,21 @@ have real widgets ready — *Capiital · Front page*, *Where we engage*, *What w
 swapping each one makes its text editable in the panel. Do them one at a time, checking the
 page after each.
 
-One seam to know about before you start. The rule that closes the gap between *What we
-learned* and the quote beneath it is an adjacent-sibling selector, so the two must remain
-siblings. Split into separate Elementor widgets they are not, and an eggshell strip opens
-between them on release. Converting *What we learned* therefore needs a small change to the
-stylesheet first — ask for it rather than working around it.
+**One thing to do as you convert each section.** Elementor does not know the design's class
+names, so a section rebuilt as native widgets has to be told them. On the container holding
+it, open **Advanced → CSS Classes** and type the class the stylesheet expects:
+
+| Section | Class on its container |
+| --- | --- |
+| The quote | `quote-sec` |
+| Cases | `section section--cases on-sand`, and `id` **cases** under Advanced |
+| Who we are | `section on-sand`, `id` **people** |
+| What we think | `section on-sand`, `id` **papers** |
+
+The quote's is the one that matters most: without `quote-sec` the rule that closes the gap
+beneath *What we learned* has nothing to match, and an eggshell strip opens between the two
+when the pinned stage lets go. (The rule itself no longer depends on the two being
+siblings — that was fixed — but it does still need the class.)
 
 **WPML and the Danish.** Last, and after WPML is updated: it is four major versions behind,
 and the plugin's `wpml-config.xml` depends on a current one to see the widgets' fields.

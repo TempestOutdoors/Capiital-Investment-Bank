@@ -345,7 +345,18 @@ html:not(.js) .svc-in,html:not(.js) .svc-line{opacity:1;transform:none}
   box-sizing:border-box;min-height:calc(100vh - var(--nav-height));
 }
 #learned.is-staged{padding-bottom:0}
-#learned.is-staged + .quote-sec{padding-top:0}
+/* Deviation from spec/05, which names this selector as `#learned.is-staged + .quote-sec`.
+   The adjacent-sibling form is correct while both sections sit in one piece of markup, and
+   wrong the moment What we learned becomes its own Elementor widget: each widget is wrapped
+   in a chain of six boxes, so the two stop being siblings, the rule stops matching, and an
+   eggshell strip opens between them when the stage lets go.
+   Nothing about the design changes — spec/04 and spec/05 still decide the behaviour — only
+   how the rule finds the quote on a platform that nests. :has() is already load-bearing in
+   this stylesheet, in the Elementor wrapper reset, so this adds no new requirement. There is
+   one quote section per page, so matching on the page rather than on adjacency is equivalent.
+   NOTE for whoever rebuilds the quote as native Elementor widgets: put `quote-sec` in the
+   container's Advanced → CSS Classes, or this rule has nothing to match. */
+body:has(#learned.is-staged) .quote-sec{padding-top:0}
 #learned.is-staged .learned-window{
   overflow:hidden;
   -webkit-mask-image:linear-gradient(to bottom, transparent, #000 var(--space-6));
