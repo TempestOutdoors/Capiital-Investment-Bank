@@ -14,6 +14,11 @@ and two SEO plugins fight.
 
 ## The order
 
+**`INSTALL.md` is the click-by-click version of this list** — every button, what to check
+after each step, and what it means when a check fails. Follow that at the keyboard; what is
+below is the shape of it.
+
+
 1. **Hello Elementor**, installed and left inactive.
 2. **`capiital`**, uploaded and activated. The site now has the colours, both typefaces and
    every style, and renders no content of its own.

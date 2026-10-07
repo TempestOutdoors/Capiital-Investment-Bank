@@ -43,8 +43,8 @@ typefaces and every style, and rendering no content of its own.
 the front page's ledger, six custom Elementor widgets, the shared behaviour, the form's spam
 floor, and a Reveal control so the firm keeps the house motion on anything it adds.
 
-See `wordpress/README.md` for the order to install them in, and `wordpress/SETTINGS.md` for
-the Elementor settings to click through once.
+`wordpress/INSTALL.md` installs all three, click by click; `wordpress/SETTINGS.md` is the
+Elementor settings to work through once, between the theme and the plugin.
 
 ## One archive, two sources
 
